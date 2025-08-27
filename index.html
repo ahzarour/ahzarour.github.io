@@ -27,7 +27,7 @@
     }
     a { color: var(--accent); }
     .wrap { max-width: 1200px; margin: 24px auto; padding: 0 16px; }
-    header { display: grid; gap: 12px; grid-template-columns: 1fr auto; align-items: end; margin-bottom: 8px; }
+    /*header { display: grid; gap: 12px; grid-template-columns: 1fr auto; align-items: end; margin-bottom: 8px; }*/
     h1 { font-size: 28px; margin: 0; letter-spacing: 0.3px; }
     .sub { color: var(--muted); font-size: 13px; margin-top: 6px; }
     .panel { background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.0)), var(--panel);
@@ -41,7 +41,7 @@
     label { font-size: 13px; color: var(--muted); }
     input[type="range"] { width: 100%; }
     .val { font-variant-numeric: tabular-nums; background: var(--chip); padding: 4px 8px; border-radius: 999px; font-size: 12px; }
-    .btns { display: flex; gap: 8px; flex-wrap: wrap; }
+    .btns { display: grid; margin: 20px 0;}
     button, .filelabel { background: #232a61; color: var(--text); border: 1px solid rgba(255,255,255,0.12);
       border-radius: 12px; padding: 10px 14px; font-weight: 600; cursor: pointer; transition: 120ms ease; }
     button:hover, .filelabel:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(0,0,0,0.25); }
@@ -75,13 +75,12 @@
   <div class="wrap">
     <header>
       <div>
-        <h1>Hot–Cold Powerball Analyzer <span class="badge">HTML5 • Client‑side</span></h1>
+    <h1>Hot–Cold Powerball Analyzer</h1>
         <div class="sub">Upload your Powerball CSV → auto‑detect columns → compute frequencies → classify <strong>Hot</strong>, <strong>Cold</strong>, and <strong>Natural</strong> numbers for <em>White (1–69)</em> and <em>Red (1–26)</em>.</div>
       </div>
-      <div class="btns" style="justify-content:flex-end; align-items:end;">
+      <div class="btns">
   <label class="filelabel" for="csvFile">📄 Load CSV</label>
   <input id="csvFile" type="file" accept=".csv,text/csv" />
-  <button id="exportBtn" disabled>Export Results (CSV)</button>
       </div>
     </header>
 
@@ -168,7 +167,7 @@
       </div>
     </section>
 
-    <section class="panel" style="margin-top:16px;">
+    <section class="panel" style="margin-top:16px; text-wrap-mode: nowrap;">
       <h2 style="margin:0 0 8px 0; font-size:18px;">Combination patterns</h2>
       <div style="border: 1px solid rgba(255,255,255,0.06); border-radius: 12px; padding: 8px;">
       <table id="comboTable" style="width:100%; border-collapse:collapse;">
@@ -493,9 +492,7 @@
       updateClassification();
     });
 
-    document.getElementById('exportBtn').addEventListener('click', ()=>{
-      if(state.counts && state.classes) exportCSV(state.counts, state.classes);
-    });
+  // Removed Export Results button and its event listener
 
     
 
