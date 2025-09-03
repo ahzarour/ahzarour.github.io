@@ -4,8 +4,12 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Hot–Cold Powerball Analyzer</title>
+  <title>إلعب ما تلعب</title>
   <style>
+    @import url('https://fonts.googleapis.com/css2?family=Readex+Pro:wght@160..700&display=swap');
+
+
+
     :root {
       --bg: #0f1220;
       --panel: #151935;
@@ -55,7 +59,8 @@
       font-size: 28px;
       margin: 0;
       letter-spacing: 0.3px;
-    }
+      font-family: "Readex Pro", sans-serif;
+      }
 
     .sub {
       color: var(--muted);
@@ -125,6 +130,7 @@
 
     button,
     .filelabel {
+      max-width: fit-content;
       background: #232a61;
       color: var(--text);
       border: 1px solid rgba(255, 255, 255, 0.12);
@@ -295,18 +301,18 @@
 <body>
   <div class="wrap">
     <header>
-      <div>
-        <h1>Hot–Cold Powerball Analyzer</h1>
-        <div class="sub">
+      <div style="display: flex; flex-direction: column; gap: 6px; text-align: center;">
+        <h1 style="direction: rtl; padding: 14px 0;">تحليل إلعب ما تلعب !!!</h1>
+        <div class="sub" style="max-width: 600px; margin: 0 auto; direction: ltr; text-align: left;">
           Upload your Powerball CSV → auto‑detect columns → compute
           frequencies → classify <strong>Hot</strong>, <strong>Cold</strong>,
           and <strong>Natural</strong> numbers for <em>White (1–69)</em> and
           <em>Red (1–26)</em>.
         </div>
       </div>
-      <div class="btns">
-        <label class="filelabel" for="csvFile">📄 Load CSV</label>
-        <input id="csvFile" type="file" accept=".csv,text/csv" />
+      <div class="btns" style="align-items: center; justify-content: center;">
+        <label class="filelabel" for="csvFile">📄 Load Historic Data txt</label>
+        <input id="csvFile" type="file" accept=".csv,.CSV,.txt,text/csv,text/plain" />
       </div>
     </header>
 
@@ -341,7 +347,7 @@
               <option value="1y">Last year</option>
               <option value="2y">Last 2 years</option>
               <option value="3y">Last 3 years</option>
-              <option value="all">All time</option>
+              <option value="all" selected>All time</option>
               <option value="custom">Custom dates</option>
             </select>
           </div>
@@ -410,7 +416,7 @@
           </div>
         </div>
         <div id="whiteBoard" class="board" aria-live="polite"></div>
-  <!-- charts removed -->
+        <!-- charts removed -->
       </div>
 
       <div class="panel">
@@ -430,7 +436,7 @@
           </div>
         </div>
         <div id="redBoard" class="board" aria-live="polite" style="grid-template-columns: repeat(10, 1fr)"></div>
-  <!-- charts removed -->
+        <!-- charts removed -->
       </div>
     </section>
 
@@ -506,10 +512,10 @@
     </section>
 
     <p class="footer">
-      Tip: the app auto‑detects common schemas like
-      <em>winning_numbers</em> with space‑separated values (last is red), or
+      Tip: the app auto-detects common schemas like
+      <em>winning_numbers</em> with space-separated values (last is red), or
       columns like <em>white1…white5</em> plus <em>powerball/pb</em>.
-      Everything stays on your device.
+      Expected date format: <strong>dd/mm/yyyy</strong>. Everything stays on your device.
     </p>
   </div>
 
@@ -519,6 +525,38 @@
     // --- Utilities ---
     const WHITE_MAX = 69;
     const RED_MAX = 26;
+
+    // --- Date helpers ---
+    function parseDateDMY(value) {
+      if (!value) return null;
+      const v = String(value).trim();
+      // ISO (YYYY-MM-DD)
+      if (/^\d{4}-\d{2}-\d{2}$/.test(v)) {
+        const d = new Date(v);
+        return isNaN(d) ? null : d;
+      }
+      // DMY with / or - separators (dd/mm/yyyy or d/m/yy)
+      const m = v.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{2,4})$/);
+      if (m) {
+        let dd = parseInt(m[1], 10);
+        let mm = parseInt(m[2], 10);
+        let yy = parseInt(m[3], 10);
+        if (yy < 100) yy += 2000;
+        const d = new Date(yy, mm - 1, dd);
+        return isNaN(d) ? null : d;
+      }
+      // Fallback (rare)
+      const p = Date.parse(v);
+      return isNaN(p) ? null : new Date(p);
+    }
+    function fmtISO(d) { return d.toISOString().slice(0, 10); }
+    function fmtDMY(d) {
+      const dd = String(d.getDate()).padStart(2, '0');
+      const mm = String(d.getMonth() + 1).padStart(2, '0');
+      const yy = d.getFullYear();
+      return `${dd}/${mm}/${yy}`;
+    }
+
 
     function normalizeHeader(h) {
       return h.trim().toLowerCase().replaceAll(/\s+|_/g, "");
@@ -742,7 +780,7 @@
       }
     }
 
-  // Charting removed: canvas elements and Chart.js usage deleted
+    // Charting removed: canvas elements and Chart.js usage deleted
 
     function exportCSV(counts, classes) {
       const rows = [["group", "number", "count", "class"]];
@@ -809,7 +847,7 @@
         state.counts.red,
         redCls.cls
       );
-      rebuildCharts(state.counts, state.classes);
+      // rebuildCharts(state.counts, state.classes);
       renderCombinationTable();
       const exportBtn = document.getElementById("exportBtn");
       if (exportBtn) exportBtn.disabled = false;
@@ -919,21 +957,7 @@
 
       for (const row of _lastParsedObjects) {
         const parsedDate = (row[dateKey] || "").trim();
-        let dObj = null;
-        if (parsedDate) {
-          const dt = Date.parse(parsedDate);
-          if (!isNaN(dt)) dObj = new Date(dt);
-          else {
-            const m = parsedDate.match(/(\d{1,2})\/(\d{1,2})\/(\d{2,4})/);
-            if (m) {
-              let mm = parseInt(m[1], 10),
-                dd = parseInt(m[2], 10),
-                yy = parseInt(m[3], 10);
-              if (yy < 100) yy += 2000;
-              dObj = new Date(yy, mm - 1, dd);
-            }
-          }
-        }
+        const dObj = parseDateDMY(parsedDate);
         allDraws.push({ row, date: dObj });
       }
 
@@ -965,12 +989,8 @@
 
       // Update detected range display to the applied filter or the full CSV range when 'all'
       if (from && to) {
-        document.getElementById("dateFrom").textContent = from
-          .toISOString()
-          .slice(0, 10);
-        document.getElementById("dateTo").textContent = to
-          .toISOString()
-          .slice(0, 10);
+        document.getElementById("dateFrom").textContent = fmtDMY(from);
+        document.getElementById("dateTo").textContent = fmtDMY(to);
       } else if (document.getElementById("datePreset").value === "all") {
         const dr = extractDateRange(_lastParsedObjects);
         if (dr) {
@@ -987,23 +1007,31 @@
       const objs = toObjects(rows);
       _lastParsedObjects = objs; // store for filtering
 
-      // Initialize UI date inputs to full range
+      // Extract date range from the loaded CSV
       const dr = extractDateRange(objs);
+      const fi = document.getElementById("dateFromInput");
+      const ti = document.getElementById("dateToInput");
       if (dr) {
+        // Set the display for oldest and newest dates (DMY)
         document.getElementById("dateFrom").textContent = dr.from;
         document.getElementById("dateTo").textContent = dr.to;
-        // set inputs default to the full range
-        const fi = document.getElementById("dateFromInput");
-        const ti = document.getElementById("dateToInput");
-        if (fi) fi.value = dr.from;
-        if (ti) ti.value = dr.to;
+        // Set date inputs to full range (ISO)
+        if (fi) fi.value = dr.fromISO;
+        if (ti) ti.value = dr.toISO;
       } else {
         document.getElementById("dateFrom").textContent = "—";
         document.getElementById("dateTo").textContent = "—";
+        if (fi) fi.value = "";
+        if (ti) ti.value = "";
       }
 
-      // By default apply 'all' (no filter)
-      document.getElementById("datePreset").value = "all";
+      // Set preset to 'all' and disable date inputs
+      const preset = document.getElementById("datePreset");
+      if (preset) preset.value = "all";
+      if (fi) fi.disabled = true;
+      if (ti) ti.disabled = true;
+
+      // Run analysis for the full range
       applyDateFilterAndRecompute();
     }
 
@@ -1018,36 +1046,18 @@
       const scanKeys = dateKeyCandidates.length ? dateKeyCandidates : keys;
 
       const dates = [];
-      const mdSlash = /(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{2,4})/; // mm/dd/yyyy or m/d/yy
-      const iso = /^\d{4}-\d{2}-\d{2}$/;
-
       for (const row of objs) {
         for (const k of scanKeys) {
           const v = (row[k] || "").trim();
           if (!v) continue;
-          let d = null;
-          if (iso.test(v)) d = new Date(v);
-          else {
-            const m = v.match(mdSlash);
-            if (m) {
-              let mm = parseInt(m[1], 10),
-                dd = parseInt(m[2], 10),
-                yy = parseInt(m[3], 10);
-              if (yy < 100) yy += 2000;
-              d = new Date(yy, mm - 1, dd);
-            } else {
-              const pd = Date.parse(v);
-              if (!isNaN(pd)) d = new Date(pd);
-            }
-          }
-          if (d && !isNaN(d)) dates.push(d);
+          const d = parseDateDMY(v);
+          if (d) dates.push(d);
         }
       }
       if (!dates.length) return null;
       const min = new Date(Math.min(...dates));
       const max = new Date(Math.max(...dates));
-      const fmt = (d) => d.toISOString().slice(0, 10);
-      return { from: fmt(min), to: fmt(max) };
+      return { from: fmtDMY(min), to: fmtDMY(max), fromISO: fmtISO(min), toISO: fmtISO(max) };
     }
 
     // --- Events ---
@@ -1104,8 +1114,8 @@
         if (v === "all") {
           const dr = extractDateRange(_lastParsedObjects || []);
           if (dr) {
-            fi.value = dr.from;
-            ti.value = dr.to;
+            fi.value = dr.fromISO;
+            ti.value = dr.toISO;
           }
           applyDateFilterAndRecompute();
         } else if (v.endsWith("m")) {
