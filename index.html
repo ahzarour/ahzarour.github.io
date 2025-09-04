@@ -6,9 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>إلعب ما تلعب</title>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Readex+Pro:wght@160..700&display=swap');
-
-
+    @import url("https://fonts.googleapis.com/css2?family=Readex+Pro:wght@160..700&display=swap");
 
     :root {
       --bg: #0f1220;
@@ -60,7 +58,7 @@
       margin: 0;
       letter-spacing: 0.3px;
       font-family: "Readex Pro", sans-serif;
-      }
+    }
 
     .sub {
       color: var(--muted);
@@ -281,6 +279,18 @@
       font-weight: 600;
     }
 
+    /* Hidden scrollbar container for combo table */
+    .combo-scroll {
+      max-height: 224px; /* ~5 rows visible including header */
+      overflow: auto;
+      -ms-overflow-style: none; /* IE/Edge */
+      scrollbar-width: none;     /* Firefox */
+    }
+    .combo-scroll::-webkit-scrollbar { /* Chrome/Safari */
+      width: 0;
+      height: 0;
+    }
+
     canvas {
       width: 100% !important;
       height: 320px !important;
@@ -301,16 +311,28 @@
 <body>
   <div class="wrap">
     <header>
-      <div style="display: flex; flex-direction: column; gap: 6px; text-align: center;">
-        <h1 style="direction: rtl; padding: 14px 0;">تحليل إلعب ما تلعب !!!</h1>
-        <div class="sub" style="max-width: 600px; margin: 0 auto; direction: ltr; text-align: left;">
+      <div style="
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            text-align: center;
+          ">
+        <h1 style="direction: rtl; padding: 14px 0">
+          تحليل إلعب ما تلعب !!!
+        </h1>
+        <div class="sub" style="
+              max-width: 600px;
+              margin: 0 auto;
+              direction: ltr;
+              text-align: left;
+            ">
           Upload your Powerball CSV → auto‑detect columns → compute
           frequencies → classify <strong>Hot</strong>, <strong>Cold</strong>,
           and <strong>Natural</strong> numbers for <em>White (1–69)</em> and
           <em>Red (1–26)</em>.
         </div>
       </div>
-      <div class="btns" style="align-items: center; justify-content: center;">
+      <div class="btns" style="align-items: center; justify-content: center">
         <label class="filelabel" for="csvFile">📄 Load Historic Data txt</label>
         <input id="csvFile" type="file" accept=".csv,.CSV,.txt,text/csv,text/plain" />
       </div>
@@ -492,7 +514,7 @@
 
     <section class="panel" style="margin-top: 16px; text-wrap-mode: nowrap">
       <h2 style="margin: 0 0 8px 0; font-size: 18px">Combination patterns</h2>
-      <div style="
+      <div class="combo-scroll" style="
             border: 1px solid rgba(255, 255, 255, 0.06);
             border-radius: 12px;
             padding: 8px;
@@ -511,11 +533,46 @@
       </div>
     </section>
 
+
+    <!--Number Cruncher-->
+<section class="panel" style="margin-top: 16px">
+  <h2 style="margin: 0 0 8px 0; font-size: 18px">Number Cruncher</h2>
+  <div style="overflow:auto; border: 1px solid rgba(255,255,255,0.06); border-radius:12px;">
+    <table id="crunchTable">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Qty Drawn</th>
+          <th>% of total balls drawn</th>
+          <th>Last Drawn</th>
+          <th>Total as Powerball</th>
+          <th>% of total draws held</th>
+          <th>Last drawn as Powerball</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Rows will be populated by JavaScript -->
+      </tbody>
+    </table>
+  </div>
+  <div style="color:var(--muted); font-size:12px; margin-top:8px; line-height:1.5;">
+    <div>White-ball % = (Qty Drawn ÷ (Draws × 5)) × 100</div>
+    <div>Powerball % = (Total as Powerball ÷ total draws) × 100</div>
+    <div>Dates reflect the current filter above.</div>
+  </div>
+</section>
+
+
+
+
+
+
+    <!-- ---------------- footer ----------- -->
     <p class="footer">
-      Plan Don't Play is copyrited <strong>&copy; 2025 Ahmed Zarour</strong> 
-    <br><strong>All rights reserved.</strong>
+      Plan Don't Play is copyrited <strong>&copy; 2025 Ahmed Zarour</strong>
+      <br /><strong>All rights reserved.</strong>
     </p>
-    </div>
+  </div>
 
   <!-- Charting removed -->
 
@@ -547,14 +604,15 @@
       const p = Date.parse(v);
       return isNaN(p) ? null : new Date(p);
     }
-    function fmtISO(d) { return d.toISOString().slice(0, 10); }
+    function fmtISO(d) {
+      return d.toISOString().slice(0, 10);
+    }
     function fmtDMY(d) {
-      const dd = String(d.getDate()).padStart(2, '0');
-      const mm = String(d.getMonth() + 1).padStart(2, '0');
+      const dd = String(d.getDate()).padStart(2, "0");
+      const mm = String(d.getMonth() + 1).padStart(2, "0");
       const yy = d.getFullYear();
       return `${dd}/${mm}/${yy}`;
     }
-
 
     function normalizeHeader(h) {
       return h.trim().toLowerCase().replaceAll(/\s+|_/g, "");
@@ -619,6 +677,54 @@
           return o;
         });
     }
+
+
+    // === Number Cruncher helpers ===
+function extractWhitesRed(row) {
+  const keys = Object.keys(row);
+  const has = (k) => keys.includes(k);
+  const findKey = (...cands) => cands.find((k) => keys.includes(k));
+
+  // Try explicit columns (white1..white5, w1..w5, n1..n5, etc.)
+  const whiteCandidates = [];
+  for (let i = 1; i <= 7; i++) {
+    ["white"+i, "w"+i, "n"+i, "num"+i, "ball"+i, "wb"+i].forEach((k) => {
+      if (has(k)) whiteCandidates.push(k);
+    });
+  }
+  const redKey = findKey("powerball", "pb", "red", "r", "power", "pball");
+
+  // Or a combined column like "winningnumbers"
+  const combinedKey = findKey(
+    "winningnumbers", "winningnumber", "numbers", "winning", "results"
+  );
+
+  let whites = [], red = null;
+  if (whiteCandidates.length) {
+    for (const k of whiteCandidates) {
+      const v = row[k];
+      if (/^-?\d+$/.test(v)) {
+        const n = parseInt(v, 10);
+        if (n > 0) whites.push(n);
+      }
+    }
+    whites = whites.filter((n) => n >= 1 && n <= WHITE_MAX).slice(0, 5);
+    if (redKey && /^-?\d+$/.test(row[redKey])) red = parseInt(row[redKey], 10);
+  } else if (combinedKey && row[combinedKey]) {
+    const toks = row[combinedKey].split(/[\s,;-]+/).map((t) => t.trim()).filter(Boolean);
+    const nums = toks.filter((t) => /^\d+$/.test(t)).map((t) => parseInt(t, 10));
+    if (nums.length >= 6) {
+      whites = nums.slice(0, 5).filter((n) => n >= 1 && n <= WHITE_MAX);
+      red = nums[5];
+    } else if (nums.length >= 5) {
+      whites = nums.slice(0, 5);
+    }
+  }
+  return { whites, red: red >= 1 && red <= RED_MAX ? red : null };
+}
+
+
+
 
     function parseDraws(objs) {
       // Attempt schema detection for whites (array of up to 5) + red (single)
@@ -896,6 +1002,58 @@
       }
     }
 
+   
+function renderCrunchTable() {
+  const tbody = document.querySelector('#crunchTable tbody');
+  if (!tbody || !state.counts || !state.draws) return;
+  tbody.innerHTML = '';
+
+  const totalDraws = state.draws.length;
+  const totalWhiteBalls = totalDraws * 5;
+  const totalRedsPresent = state.draws.reduce((acc, d) => acc + (d.red ? 1 : 0), 0);
+
+  // Track last-drawn dates per number
+  const lastWhite = Array(WHITE_MAX + 1).fill(null);
+  const lastRed = Array(RED_MAX + 1).fill(null);
+  for (const d of state.draws) {
+    const dt = d.date;
+    if (dt) {
+      for (const n of d.whites) {
+        if (!lastWhite[n] || dt > lastWhite[n]) lastWhite[n] = dt;
+      }
+      if (d.red) {
+        const r = d.red;
+        if (!lastRed[r] || dt > lastRed[r]) lastRed[r] = dt;
+      }
+    }
+  }
+
+  // Build rows 1..69 (white numbers). Red stats shown for 1..26 only.
+  for (let n = 1; n <= WHITE_MAX; n++) {
+    const qtyWhite = state.counts.white[n] || 0;
+    const pctWhite = totalWhiteBalls ? (qtyWhite / totalWhiteBalls) * 100 : 0;
+    const lastW = lastWhite[n] ? fmtDMY(lastWhite[n]) : '—';
+
+    const qtyRed = n <= RED_MAX ? (state.counts.red[n] || 0) : 0;
+    const pctRed = (n <= RED_MAX && totalRedsPresent) ? (qtyRed / totalRedsPresent) * 100 : 0;
+    const lastR = (n <= RED_MAX && lastRed[n]) ? fmtDMY(lastRed[n]) : '—';
+
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${n}</td>
+      <td>${qtyWhite.toLocaleString()}</td>
+      <td>${pctWhite.toFixed(2)}%</td>
+      <td>${lastW}</td>
+      <td>${qtyRed ? qtyRed.toLocaleString() : 0}</td>
+      <td>${qtyRed ? pctRed.toFixed(2) + '%' : '0%'}</td>
+      <td>${lastR}</td>
+    `;
+    tbody.appendChild(tr);
+  }
+}
+
+
+
     // We'll keep the original parsed objects so we can re-filter by date without reparsing the CSV
     let _lastParsedObjects = null;
 
@@ -946,35 +1104,38 @@
         if (toInput) to = endOfDay(new Date(toInput));
       }
 
-      // Build draws from parsed objects and filter by date if we have from/to
-      const allDraws = [];
-      // We need to detect which key contains date if any
-      const keys = Object.keys(_lastParsedObjects[0] || {});
-      const dateKey =
-        keys.find((k) => /date|drawdate|draw_date|draw/.test(k)) || keys[0];
 
-      for (const row of _lastParsedObjects) {
-        const parsedDate = (row[dateKey] || "").trim();
-        const dObj = parseDateDMY(parsedDate);
-        allDraws.push({ row, date: dObj });
-      }
+// Build list with date attached
+const keys = Object.keys(_lastParsedObjects[0] || {});
+const dateKey = keys.find((k) => /date|drawdate|draw_date|draw/.test(k)) || keys[0];
 
-      const filteredObjs =
-        from || to
-          ? allDraws
-            .filter((x) => {
-              if (!x.date) return false;
-              if (from && x.date < from) return false;
-              if (to && x.date > to) return false;
-              return true;
-            })
-            .map((x) => x.row)
-          : _lastParsedObjects.slice();
+const dated = [];
+for (const row of _lastParsedObjects) {
+  const parsedDate = (row[dateKey] || "").trim();
+  const dObj = parseDateDMY(parsedDate);
+  dated.push({ row, date: dObj });
+}
 
-      // Now parse draws from filtered objects
-      const draws = parseDraws(filteredObjs);
-      state.draws = draws;
-      state.counts = tally(draws);
+const filtered = from || to
+  ? dated.filter((x) => {
+      if (!x.date) return false;
+      if (from && x.date < from) return false;
+      if (to && x.date > to) return false;
+      return true;
+    })
+  : dated;
+
+const draws = [];
+for (const { row, date } of filtered) {
+  const { whites, red } = extractWhitesRed(row);
+  if (whites && whites.length >= 5) {
+    draws.push({ whites, red, date });
+  }
+}
+state.draws = draws;
+// counts only need numeric parts
+state.counts = tally(draws.map(d => ({ whites: d.whites, red: d.red })));
+
 
       const totalDraws = draws.length;
       const redsWithValue = draws.filter((d) => d.red != null).length;
@@ -998,6 +1159,8 @@
       }
 
       updateClassification();
+      renderCrunchTable();
+
     }
 
     function loadFromCSVText(text) {
@@ -1055,7 +1218,12 @@
       if (!dates.length) return null;
       const min = new Date(Math.min(...dates));
       const max = new Date(Math.max(...dates));
-      return { from: fmtDMY(min), to: fmtDMY(max), fromISO: fmtISO(min), toISO: fmtISO(max) };
+      return {
+        from: fmtDMY(min),
+        to: fmtDMY(max),
+        fromISO: fmtISO(min),
+        toISO: fmtISO(max),
+      };
     }
 
     // --- Events ---
