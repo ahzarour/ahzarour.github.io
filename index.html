@@ -560,10 +560,11 @@
     <section class="panel" style="margin-top: 16px">
       <h2 style="margin: 0 0 8px 0; font-size: 18px">Number Cruncher</h2>
       <div class="meta" style="justify-content: space-between; align-items:center; margin-bottom: 8px;">
-        <span style="color: var(--muted)">Sorted by <strong>Qty Drawn</strong> (white) • <em>Show All enables number sort</em></span>
+        <span style="color: var(--muted)">Sorted by <strong>Qty</strong> • <em>Show All enables sorting</em></span>
         <div style="display:flex; gap:8px; align-items:center;">
           <button id="crunchToggleBtn" type="button">Show All</button>
           <button id="crunchSortBtn" type="button" disabled>Sort 1→69</button>
+          <button id="crunchSortPBBtn" type="button" disabled>Sort as PB</button>
         </div>
       </div>
       <div id="crunchScrollWrap" class="crunch-scroll"
@@ -941,6 +942,7 @@
       coldPct: 20,
       crunchShowAll: false,
       crunchSortByNumberAsc: false,
+      crunchSortByPB: false,
     };
 
     function updateClassification() {
@@ -1076,12 +1078,16 @@
         rows.push({ n, qtyWhite, pctWhite, lastW, qtyRed, pctRed, lastR });
       }
 
-      // Decide sorting
+      // Decide sorting (Show All enables sort options)
+      const sortByPB = state.crunchShowAll && state.crunchSortByPB;
       const sortByNumber = state.crunchShowAll && state.crunchSortByNumberAsc;
-      if (sortByNumber) {
+      if (sortByPB) {
+        rows.sort((a, b) => b.qtyRed - a.qtyRed || a.n - b.n);
+      } else if (sortByNumber) {
         rows.sort((a, b) => a.n - b.n);
       } else {
-        rows.sort((a, b) => b.qtyWhite - a.qtyWhite);
+        // default: sort by white quantity desc
+        rows.sort((a, b) => b.qtyWhite - a.qtyWhite || a.n - b.n);
       }
 
       // Decide how many to show
@@ -1096,9 +1102,15 @@
 
       // Update sort button state
       const sortBtn = document.getElementById('crunchSortBtn');
+      const sortPBBtn = document.getElementById('crunchSortPBBtn');
       if (sortBtn) {
         sortBtn.disabled = !state.crunchShowAll; // only active when showing all
+        // If PB sort is active, keep this showing the default option label
         sortBtn.textContent = state.crunchSortByNumberAsc ? 'Sort by Qty' : 'Sort 1→69';
+      }
+      if (sortPBBtn) {
+        sortPBBtn.disabled = !state.crunchShowAll; // only active when showing all
+        sortPBBtn.textContent = state.crunchSortByPB ? 'Sort by Qty' : 'Sort as PB';
       }
 
       // Render
@@ -1400,6 +1412,18 @@
       if (!sortBtn) return;
       sortBtn.addEventListener('click', () => {
         state.crunchSortByNumberAsc = !state.crunchSortByNumberAsc;
+        if (state.crunchSortByNumberAsc) state.crunchSortByPB = false;
+        renderCrunchTable();
+      });
+    })();
+
+    // Toggle PB sort mode (only effective when Show All). Selecting PB sort clears number sort.
+    (function attachCrunchSortPB(){
+      const pbBtn = document.getElementById('crunchSortPBBtn');
+      if (!pbBtn) return;
+      pbBtn.addEventListener('click', () => {
+        state.crunchSortByPB = !state.crunchSortByPB;
+        if (state.crunchSortByPB) state.crunchSortByNumberAsc = false;
         renderCrunchTable();
       });
     })();
