@@ -1440,6 +1440,29 @@
         renderCrunchTable();
       });
     })();
+
+    // Auto-load default dataset on page load (keeps manual Load button)
+    (function autoLoadDefault(){
+      const DEFAULT_DATA_URL = 'https://ahzarour.github.io/PB-1998.txt';
+      try {
+        const metaEl = document.getElementById('datasetMeta');
+        if (metaEl) metaEl.textContent = 'Loading default dataset...';
+        fetch(DEFAULT_DATA_URL, { cache: 'no-cache', mode: 'cors' })
+          .then(res => {
+            if (!res.ok) throw new Error('Failed to fetch default dataset');
+            return res.text();
+          })
+          .then(txt => {
+            loadFromCSVText(txt);
+          })
+          .catch(err => {
+            console.error('Auto-load failed:', err);
+            if (metaEl) metaEl.textContent = 'Failed to load default dataset. Use the Load button to pick a file.';
+          });
+      } catch (e) {
+        console.error('Auto-load error:', e);
+      }
+    })();
   </script>
 
 </body>
