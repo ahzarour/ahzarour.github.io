@@ -313,6 +313,18 @@
       height: 0;
     }
 
+    /* Hidden scrollbar container for Frequency Tables */
+    .freq-scroll {
+      max-height: 340px; /* matches current containers */
+      overflow: auto;
+      -ms-overflow-style: none; /* IE/Edge */
+      scrollbar-width: none;     /* Firefox */
+    }
+    .freq-scroll::-webkit-scrollbar { /* Chrome/Safari */
+      width: 0;
+      height: 0;
+    }
+
     canvas {
       width: 100% !important;
       height: 320px !important;
@@ -325,7 +337,8 @@
       color: var(--muted);
       font-size: 12px;
       text-align: center;
-      margin: 16px 0 40px;
+      margin: 0px;
+      padding: 30px 40px 40px 40px;
     }
   </style>
 </head>
@@ -491,7 +504,7 @@
           <h3 style="margin: 0 0 8px 0; font-size: 15px; color: var(--muted)">
             White
           </h3>
-          <div style="
+          <div class="freq-scroll" style="
                 max-height: 340px;
                 overflow: auto;
                 border: 1px solid rgba(255, 255, 255, 0.06);
@@ -513,7 +526,7 @@
           <h3 style="margin: 0 0 8px 0; font-size: 15px; color: var(--muted)">
             Red
           </h3>
-          <div style="
+          <div class="freq-scroll" style="
                 max-height: 340px;
                 overflow: auto;
                 border: 1px solid rgba(255, 255, 255, 0.06);
