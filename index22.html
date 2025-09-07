@@ -34,7 +34,7 @@
       margin: 0;
       font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto,
         Ubuntu, Cantarell, Noto Sans, "Helvetica Neue", Arial,
-        "Apple Color Emoji", "Segoe UI Emoji";
+        "Apple Color Emoji", "Segoe UI Emoji", "Readex Pro", sans-serif;
       background: radial-gradient(1000px 600px at 20% -10%,
           #1a1f46 0%,
           #0f1220 55%) no-repeat,
@@ -57,13 +57,18 @@
       font-size: 28px;
       margin: 0;
       letter-spacing: 0.3px;
-      font-family: "Readex Pro", sans-serif;
+      font-family: "Readex Pro";
     }
 
     .sub {
       color: var(--muted);
+      font-family: "Readex Pro";
       font-size: 13px;
       margin-top: 6px;
+      max-width: 600px;
+      margin: 0 auto;
+      direction: rtl;
+      text-align: justify;
     }
 
     .sectionPanelSettings {
@@ -74,7 +79,6 @@
       border: 1px solid rgba(255, 255, 255, 0.08);
       border-radius: 16px;
       padding: 16px;
-      margin-top: 16px;
     }
 
     .h2SectionStyle{
@@ -544,16 +548,11 @@
         <h1 style="direction: rtl; padding: 14px 0">
           تحليل إلعب ما تلعب !!!
         </h1>
-        <div class="sub" style="
-              max-width: 600px;
-              margin: 0 auto;
-              direction: ltr;
-              text-align: left;
-            ">
-          Upload your Powerball CSV → auto‑detect columns → compute
-          frequencies → classify <strong>Hot</strong>, <strong>Cold</strong>,
-          and <strong>Natural</strong> numbers for <em>White (1–69)</em> and
-          <em>Red (1–26)</em>.
+        <div class="sub">
+          ارفع ملف CSV الخاص بسحوبات Powerball ⬅ سنكتشف الأعمدة تلقائيًا ⬅
+          نحسب التكرارات ⬅ نُصنّف الأرقام إلى <strong>حارة</strong>،
+          <strong>باردة</strong>، و<strong>طبيعية</strong> لكلٍ من
+          الأبيض (1–69) والأحمر (1–26).
         </div>
       </div>
       <div class="btns" style="align-items: center; justify-content: center">
@@ -773,10 +772,10 @@
     <section class="sectionPanelSettings">
       <h2 class="h2SectionStyle">Number Cruncher</h2>
       <div class="meta" style="justify-content: space-between; align-items:center; margin-bottom: 8px;">
-        <span style="color: var(--muted)">Sorted by <strong>Qty</strong> • <em>Show All enables sorting</em></span>
+        <span style="color: var(--muted)">Sorted by <strong>Qty</strong> • Show All enables sorting</em></span>
         <div style="display:flex; gap:8px; align-items:center;">
           <button id="crunchToggleBtn" type="button">Show All</button>
-          <button id="crunchSortBtn" type="button" disabled>Sort 1→69</button>
+          <button id="crunchSortBtn" type="button" disabled>Sort 1⬅69</button>
           <button id="crunchSortPBBtn" type="button" disabled>Sort as PB</button>
         </div>
       </div>
@@ -1370,7 +1369,7 @@
       if (sortBtn) {
         sortBtn.disabled = !state.crunchShowAll; // only active when showing all
         // If PB sort is active, keep this showing the default option label
-        sortBtn.textContent = state.crunchSortByNumberAsc ? 'Sort by Qty' : 'Sort 1→69';
+        sortBtn.textContent = state.crunchSortByNumberAsc ? 'Sort by Qty' : 'Sort 1⬅69';
       }
       if (sortPBBtn) {
         sortPBBtn.disabled = !state.crunchShowAll; // only active when showing all
