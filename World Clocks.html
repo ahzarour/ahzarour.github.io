@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>World Clocks — Responsive</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+<style>
+  /* notes for me
+----------------------  
+align-content: center;  \\make the content in the middle horizantally
+justify-items: center;  \\align the content center vertically 
+
+
+*/
+
+/* General page styling */
+body,
+html {
+  font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial,
+    Helvetica;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  color: #e8f0ff;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 3%;
+  /* Nature photo background with dark blue overlay for readability */
+  background-image: linear-gradient(
+      180deg,
+      rgba(5, 12, 28, 0.7),
+      rgba(77, 88, 112, 0.3)
+    ),
+    url('assets/nature.jpg'); /* Place your image at assets/nature.jpg */
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  background-color: #0a1b3a; /* solid fallback */
+
+  
+}
+
+section {
+  flex: 1;
+  display: flex;
+  max-width: 900px;
+  width: 100%;
+  align-self: center;
+}
+
+section:nth-child(2) {
+  flex: 4;
+}
+
+.grid-container,
+.section-Container {
+  width: 100%;
+  max-width: 900px;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.25);
+  margin-bottom: 20px;
+}
+
+.section-Container {
+  display: flex;
+  flex-direction: column;
+  background: rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(8px) saturate(120%);
+  -webkit-backdrop-filter: blur(8px) saturate(120%);
+}
+
+.grid-container {
+  display: grid;
+  grid-template-columns: 1.8fr 0.5fr 1.3fr;
+  /* Glassmorphism styling */
+  background: rgba(255, 255, 255, 0.14);
+  backdrop-filter: blur(12px) saturate(120%);
+  -webkit-backdrop-filter: blur(12px) saturate(120%);
+
+  transition: background 200ms ease, box-shadow 200ms ease, transform 120ms ease;
+}
+
+.grid-container:hover {
+  background: rgba(255, 255, 255, 0.2);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.35);
+}
+
+/* Wrapper that distributes available vertical space to its children */
+.fit-screen-hight {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  flex: 1 1 auto;
+  align-self: stretch;
+  min-height: 0;
+  height: auto;
+  width: 100%;
+}
+
+/* Each row (grid-container) grows evenly to fill the wrapper */
+.fit-screen-hight > .grid-container {
+  flex: 1;
+  margin-bottom: 0;
+  min-height: 0;
+}
+
+.grid-cell {
+  padding: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  white-space: nowrap;
+  /* background-color: red; */
+}
+
+.grid-cell-left {
+  justify-content: left;
+  /* background-color: darkcyan; */
+}
+
+.grid-cell-right {
+  justify-content: right;
+}
+
+.grid-cell-mid {
+  justify-content: center;
+  
+}
+
+.container-child {
+  flex: 1;
+  /* make the content in the middle horizantally */
+  align-content: center;
+
+  /* align the content center vertically  */
+  justify-items: center;
+
+  /* background-color: aquamarine; */
+}
+
+
+.my-font, .grid-cell-left, .grid-cell-mid, .grid-cell-right, .section-Container {
+  font-size: clamp(16px, 4.6vw, 60px);
+  font-weight: 900;
+  /* Digital clock styling */
+  color: white;
+  /* color: #39ff14; */
+  text-shadow: 0 0 6px rgba(36, 37, 35, 0.3);
+  letter-spacing: 0.02em;
+}
+
+.section-Container {
+  font-size: clamp(23px, 4.6vw, 60px);
+
+}
+
+.grid-cell-mid {
+  font-size: clamp(16px, 4.6vw, 26px);
+  font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1;
+}
+.grid-cell-right {
+  font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1;
+}
+
+/* ----------- this part is for the different screen size setups ------------ */
+
+
+/* Fluid font sizing for small screens */
+@media (max-width: 375px) {
+  /* body { font-size: clamp(0.5em, 6vw, 36px); } */
+  /* .grid-cell {font-size: clamp(12px, 2vw, 60px);} */
+  
+
+
+}
+
+/* Fallback if backdrop-filter is not supported */
+@supports not (
+  (-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))
+) {
+  .grid-container,
+  .section-Container {
+    background: rgba(255, 255, 255, 0.35);
+  }
+}
+
+</style>
+
+  <body>
+    <section class="section-Container">
+      <div class="container-child">
+        <div>BBC NEWS</div>
+        <div>Washington DC</div>
+      </div>
+    </section>
+    <section>
+      <div class="fit-screen-hight">
+        <div class="grid-container">
+          <div class="grid-cell grid-cell-left">LOCAL</div>
+          <div class="grid-cell grid-cell-mid" id="offset1">+0h</div>
+          <div class="grid-cell grid-cell-right" id="time1">time1</div>
+        </div>
+
+        <div class="grid-container">
+          <div class="grid-cell grid-cell-left">LONDON</div>
+          <div class="grid-cell grid-cell-mid" id="offset2">+5h</div>
+          <div class="grid-cell grid-cell-right" id="time2">time2</div>
+        </div>
+
+        <div class="grid-container">
+          <div class="grid-cell grid-cell-left">LOS ANGELES</div>
+          <div class="grid-cell grid-cell-mid" id="offset3">-3h</div>
+          <div class="grid-cell grid-cell-right" id="time3">time3</div>
+        </div>
+
+        <div class="grid-container">
+          <div class="grid-cell grid-cell-left">CAIRO</div>
+          <div class="grid-cell grid-cell-mid" id="offset4">+7h</div>
+          <div class="grid-cell grid-cell-right" id="time4">time4</div>
+        </div>
+
+        <div class="grid-container">
+          <div class="grid-cell grid-cell-left">DUBAI</div>
+          <div class="grid-cell grid-cell-mid" id="offset5">+8h</div>
+          <div class="grid-cell grid-cell-right" id="time5">time5</div>
+        </div>
+
+        <div class="grid-container">
+          <div class="grid-cell grid-cell-left">SINGAPORE</div>
+          <div class="grid-cell grid-cell-mid" id="offset6">+12h</div>
+          <div class="grid-cell grid-cell-right" id="time6">time6</div>
+        </div>
+      </div>
+    </section>
+
+    <script>
+      (function () {
+        var localTz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+        var clocks = [
+          { timeId: "time1", offsetId: "offset1", tz: localTz }, // Local
+          { timeId: "time2", offsetId: "offset2", tz: "Europe/London" },
+          { timeId: "time3", offsetId: "offset3", tz: "America/Los_Angeles" },
+          { timeId: "time4", offsetId: "offset4", tz: "Africa/Cairo" },
+          { timeId: "time5", offsetId: "offset5", tz: "Asia/Dubai" },
+          { timeId: "time6", offsetId: "offset6", tz: "Asia/Singapore" },
+        ];
+
+        function getTzOffsetMinutes(date, timeZone) {
+          var dtf = new Intl.DateTimeFormat("en-US", {
+            timeZone: timeZone,
+            hour12: false,
+            year: "numeric",
+            month: "2-digit",
+            day: "2-digit",
+            hour: "2-digit",
+            minute: "2-digit",
+            second: "2-digit",
+          });
+          var parts = dtf.formatToParts(date);
+          var map = {};
+          for (var i = 0; i < parts.length; i++) {
+            map[parts[i].type] = parts[i].value;
+          }
+          var asUTC = Date.UTC(
+            Number(map.year),
+            Number(map.month) - 1,
+            Number(map.day),
+            Number(map.hour),
+            Number(map.minute),
+            Number(map.second)
+          );
+          return (asUTC - date.getTime()) / 60000; // minutes east of UTC
+        }
+
+        function formatDelta(mins) {
+          var sign = mins >= 0 ? "+" : "-";
+          var abs = Math.abs(Math.round(mins));
+          var h = Math.floor(abs / 60);
+          var m = abs % 60;
+          if (m === 0) return sign + h + "h";
+          return sign + h + "h " + m + "m";
+        }
+
+        function updateAll() {
+          var now = new Date();
+          var localOffset = getTzOffsetMinutes(now, localTz);
+          for (var i = 0; i < clocks.length; i++) {
+            var cfg = clocks[i];
+            var timeEl = document.getElementById(cfg.timeId);
+            if (timeEl) {
+              timeEl.textContent = now.toLocaleTimeString([], {
+                hour: "2-digit",
+                minute: "2-digit",
+                second: "2-digit",
+                hour12: false,
+                timeZone: cfg.tz,
+              });
+            }
+            var offEl = document.getElementById(cfg.offsetId);
+            if (offEl) {
+              var tzOffset = getTzOffsetMinutes(now, cfg.tz);
+              var delta = tzOffset - localOffset; // minutes difference from local
+              offEl.textContent = formatDelta(delta);
+            }
+          }
+        }
+
+        updateAll();
+        setInterval(updateAll, 1000);
+      })();
+    </script>
+  </body>
+</html>
