@@ -9,202 +9,232 @@
       rel="stylesheet"
     />
   </head>
-<style>
-  /* notes for me
+  <style>
+/* notes for me
 ----------------------  
 align-content: center;  \\make the content in the middle horizantally
 justify-items: center;  \\align the content center vertically 
-
-
 */
 
-/* General page styling */
-body,
-html {
-  font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial,
-    Helvetica;
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  color: #e8f0ff;
-  box-sizing: border-box;
-  margin: 0;
-  padding: 3%;
-  /* Nature photo background with dark blue overlay for readability */
-  background-image: linear-gradient(
-      180deg,
-      rgba(5, 12, 28, 0.7),
-      rgba(77, 88, 112, 0.3)
-    ),
-    url('assets/nature.jpg'); /* Place your image at assets/nature.jpg */
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  background-attachment: fixed;
-  background-color: #0a1b3a; /* solid fallback */
+    /* General page styling */
+    body,
+    html {
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto,
+        Arial, Helvetica;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      color: #e8f0ff;
+      box-sizing: border-box;
+      margin: 0;
+      padding: 3%;
+      /* Nature photo background with dark blue overlay for readability */
+      background-image: linear-gradient(
+          180deg,
+          rgba(5, 12, 28, 0.7),
+          rgba(77, 88, 112, 0.3)
+        ),
+        url("assets/nature.jpg");
+      /* Place your image at assets/nature.jpg */
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      background-attachment: fixed;
+      background-color: #0a1b3a;
+      /* solid fallback */
+    }
 
-  
-}
+    section {
+      display: flex;
+      flex: 1;
+      max-width: 900px;
+      width: 100%;
+      align-self: center;
+      min-height: 0;
+      /* Safari flex sizing fix */
+    }
 
-section {
-  flex: 1;
-  display: flex;
-  max-width: 900px;
-  width: 100%;
-  align-self: center;
-}
+    section:nth-child(3) {
+      flex: 3;
+    }
 
-section:nth-child(2) {
-  flex: 4;
-}
+    .grid-container,
+    .section-Container {
+      width: 100%;
+      max-width: 900px;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15),
+        inset 0 1px 0 rgba(255, 255, 255, 0.25);
+      margin-bottom: 20px;
+    }
 
-.grid-container,
-.section-Container {
-  width: 100%;
-  max-width: 900px;
-  border-radius: 12px;
-  overflow: hidden;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15),
-    inset 0 1px 0 rgba(255, 255, 255, 0.25);
-  margin-bottom: 20px;
-}
+    .section-Container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      /* center children horizontally */
+      justify-content: center;
+      /* center children vertically */
+      min-height: 0;
+      /* Safari flex sizing fix */
+      background: rgba(255, 255, 255, 0.12);
+      backdrop-filter: blur(8px) saturate(120%);
+      -webkit-backdrop-filter: blur(8px) saturate(120%);
+    }
 
-.section-Container {
-  display: flex;
-  flex-direction: column;
-  background: rgba(255, 255, 255, 0.12);
-  backdrop-filter: blur(8px) saturate(120%);
-  -webkit-backdrop-filter: blur(8px) saturate(120%);
-}
+    .grid-container {
+      display: grid;
+      grid-template-columns: 1.8fr 0.5fr 1.3fr;
+      /* Glassmorphism styling */
+      background: rgba(255, 255, 255, 0.14);
+      backdrop-filter: blur(12px) saturate(120%);
+      -webkit-backdrop-filter: blur(12px) saturate(120%);
 
-.grid-container {
-  display: grid;
-  grid-template-columns: 1.8fr 0.5fr 1.3fr;
-  /* Glassmorphism styling */
-  background: rgba(255, 255, 255, 0.14);
-  backdrop-filter: blur(12px) saturate(120%);
-  -webkit-backdrop-filter: blur(12px) saturate(120%);
+      transition: background 200ms ease, box-shadow 200ms ease,
+        transform 120ms ease;
+    }
 
-  transition: background 200ms ease, box-shadow 200ms ease, transform 120ms ease;
-}
+    .grid-container:hover {
+      background: rgba(255, 255, 255, 0.2);
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.18),
+        inset 0 1px 0 rgba(255, 255, 255, 0.35);
+    }
 
-.grid-container:hover {
-  background: rgba(255, 255, 255, 0.2);
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.18),
-    inset 0 1px 0 rgba(255, 255, 255, 0.35);
-}
+    /* Wrapper that distributes available vertical space to its children */
+    .fit-screen-hight {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      flex: 1 1 px;
+      align-self: stretch;
+      min-height: 0;
+      height: auto;
+      width: 100%;
+      white-space: nowrap;
+    }
 
-/* Wrapper that distributes available vertical space to its children */
-.fit-screen-hight {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  flex: 1 1 auto;
-  align-self: stretch;
-  min-height: 0;
-  height: auto;
-  width: 100%;
-}
+    /* Each row (grid-container) grows evenly to fill the wrapper */
+    .fit-screen-hight > .grid-container {
+      flex: 1;
+      margin-bottom: 0;
+      min-height: 0;
+    }
 
-/* Each row (grid-container) grows evenly to fill the wrapper */
-.fit-screen-hight > .grid-container {
-  flex: 1;
-  margin-bottom: 0;
-  min-height: 0;
-}
+    .grid-cell {
+      padding: 10px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+      white-space: nowrap;
+      /* background-color: red; */
+    }
 
-.grid-cell {
-  padding: 10px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  overflow: hidden;
-  white-space: nowrap;
-  /* background-color: red; */
-}
+    .grid-cell-left {
+      justify-content: left;
+      /* background-color: darkcyan; */
+    }
 
-.grid-cell-left {
-  justify-content: left;
-  /* background-color: darkcyan; */
-}
+    .grid-cell-right {
+      justify-content: right;
+    }
 
-.grid-cell-right {
-  justify-content: right;
-}
+    .grid-cell-mid {
+      justify-content: center;
+    }
 
-.grid-cell-mid {
-  justify-content: center;
-  
-}
+    .logo-font {
+      font-size: clamp(20px, 6vw, 120px);
+      font-weight: 900;
+      /* color: rgba(255, 255, 255, 0.806); */
+      text-shadow: 0 0 6px rgba(36, 37, 35, 0.3);
+      letter-spacing: 0.2dvw;
+    }
 
-.container-child {
-  flex: 1;
-  /* make the content in the middle horizantally */
-  align-content: center;
+    .sub-logo{
+      font-size: clamp(12px, 3vw, 40px);
+      font-weight: 400;
+      letter-spacing: 0.1dvw;
+      margin-top: 10px;
+      /* color: rgba(255, 255, 255, 0.806); */
+    }
 
-  /* align the content center vertically  */
-  justify-items: center;
+    .local-date {
+      font-size: clamp(20px, 4.6vw, 50px);
+      font-weight: 700;
+      letter-spacing: 0.2dvw;
+      /* color: rgba(255, 255, 255, 0.806); */
+    }
 
-  /* background-color: aquamarine; */
-}
+    .container-logo {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      flex: 0 0 auto;
+    }
 
+    .my-font,
+    .grid-cell-left,
+    .grid-cell-mid,
+    .grid-cell-right,
+    .section-Container {
+      font-size: clamp(16px, 4.6vw, 50px);
+      font-weight: 900;
+      /* Digital clock styling */
+      color: white;
+      /* color: #39ff14; */
+      text-shadow: 0 0 6px rgba(36, 37, 35, 0.3);
+      letter-spacing: 0.02em;
+    }
 
-.my-font, .grid-cell-left, .grid-cell-mid, .grid-cell-right, .section-Container {
-  font-size: clamp(16px, 4.6vw, 60px);
-  font-weight: 900;
-  /* Digital clock styling */
-  color: white;
-  /* color: #39ff14; */
-  text-shadow: 0 0 6px rgba(36, 37, 35, 0.3);
-  letter-spacing: 0.02em;
-}
+    .grid-cell-mid {
+      font-size: clamp(16px, 4.6vw, 26px);
+      font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo,
+        monospace;
+      font-variant-numeric: tabular-nums;
+      font-feature-settings: "tnum" 1;
+    }
 
-.section-Container {
-  font-size: clamp(23px, 4.6vw, 60px);
+    .grid-cell-right {
+      font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo,
+        monospace;
+      font-variant-numeric: tabular-nums;
+      font-feature-settings: "tnum" 1;
+    }
 
-}
+    /* ----------- this part is for the different screen size setups ------------ */
 
-.grid-cell-mid {
-  font-size: clamp(16px, 4.6vw, 26px);
-  font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
-  font-variant-numeric: tabular-nums;
-  font-feature-settings: "tnum" 1;
-}
-.grid-cell-right {
-  font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
-  font-variant-numeric: tabular-nums;
-  font-feature-settings: "tnum" 1;
-}
+    /* Fluid font sizing for small screens */
+    @media (max-width: 375px) {
+      /* body { font-size: clamp(0.5em, 6vw, 36px); } */
+      /* .grid-cell {font-size: clamp(12px, 2vw, 60px);} */
+    }
 
-/* ----------- this part is for the different screen size setups ------------ */
-
-
-/* Fluid font sizing for small screens */
-@media (max-width: 375px) {
-  /* body { font-size: clamp(0.5em, 6vw, 36px); } */
-  /* .grid-cell {font-size: clamp(12px, 2vw, 60px);} */
-  
-
-
-}
-
-/* Fallback if backdrop-filter is not supported */
-@supports not (
-  (-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))
-) {
-  .grid-container,
-  .section-Container {
-    background: rgba(255, 255, 255, 0.35);
-  }
-}
-
-</style>
+    /* Fallback if backdrop-filter is not supported */
+    @supports not (
+      (-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))
+    ) {
+      .grid-container,
+      .section-Container {
+        background: rgba(255, 255, 255, 0.35);
+      }
+    }
+  </style>
 
   <body>
     <section class="section-Container">
-      <div class="container-child">
-        <div>BBC NEWS</div>
-        <div>Washington DC</div>
+      <div class="container-logo">
+        <div class="logo-font">BBC NEWS</div>
+        <div class="sub-logo">Washington DC</div>
+      </div>
+    </section>
+    <!-- Date displayed under the header -->
+    <section>
+      <div class="section-Container">
+        <div id="currentdatelocal" class="local-date"></div>
       </div>
     </section>
     <section>
@@ -298,6 +328,17 @@ section:nth-child(2) {
         function updateAll() {
           var now = new Date();
           var localOffset = getTzOffsetMinutes(now, localTz);
+          // Update local date in the second section
+          var dateEl = document.getElementById("currentdatelocal");
+          if (dateEl) {
+            dateEl.textContent = now.toLocaleDateString([], {
+              weekday: "long",
+              year: "numeric",
+              month: "long",
+              day: "numeric",
+              timeZone: localTz,
+            });
+          }
           for (var i = 0; i < clocks.length; i++) {
             var cfg = clocks[i];
             var timeEl = document.getElementById(cfg.timeId);
