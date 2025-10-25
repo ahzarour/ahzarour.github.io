@@ -277,7 +277,7 @@
     .tables {
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 2px;
+      gap: 5px;
     }
 
     table {
@@ -487,6 +487,13 @@
         font-size: clamp(8px, 2.4vw, 11px);
       }
     }
+    /* For Range Groups, create a 2x2 grid on wider screens */
+    @media (min-width: 640px) {
+      #rangeGroupsSection .tables {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
 
     /* Smart Tickets */
     .tickets-grid { display: grid; gap: 10px; justify-content: center; justify-items: center; }
@@ -733,7 +740,7 @@
             <div class="freq-header">
               <div>Range</div>
               <div>Count</div>
-              <div>% of draws</div>
+              <div>%</div>
             </div>
             <div id="group1Ranges"></div>
           </div>
@@ -744,20 +751,31 @@
             <div class="freq-header">
               <div>Range</div>
               <div>Count</div>
-              <div>% of draws</div>
+              <div>%</div>
             </div>
             <div id="group2Ranges"></div>
           </div>
         </div>
-        <div>
+        <div style="padding: 10px 0 0 0;">
           <h3 class="freqWhiteNumbersHeader">Group 3: N5</h3>
           <div class="freqTableNumberlist">
             <div class="freq-header">
               <div>Range</div>
               <div>Count</div>
-              <div>% of draws</div>
+              <div>%</div>
             </div>
             <div id="group3Ranges"></div>
+          </div>
+        </div>
+        <div style="padding: 10px 0 0 0;">
+          <h3 class="freqWhiteNumbersHeader">Group 4: N4 & N5</h3>
+          <div class="freqTableNumberlist">
+            <div class="freq-header">
+              <div>Range</div>
+              <div>Count</div>
+              <div>%</div>
+            </div>
+            <div id="group4Ranges"></div>
           </div>
         </div>
       </div>
@@ -2353,7 +2371,8 @@
       const g1 = Array(RANGE_BINS.length).fill(0);
       const g2 = Array(RANGE_BINS.length).fill(0);
       const g3 = Array(RANGE_BINS.length).fill(0);
-      if (!total) return { total, g1, g2, g3 };
+      const g4 = Array(RANGE_BINS.length).fill(0);
+      if (!total) return { total, g1, g2, g3, g4 };
 
       for (const d of draws) {
         const w = d.whites || [];
@@ -2370,9 +2389,12 @@
         if (w.length >= 5) {
           const i5 = binIndex(w[4]);
           if (i5 >= 0) g3[i5]++;
+          // New group: N4 & N5
+          const i4 = binIndex(w[3]);
+          if (i4 >= 0 && i4 === i5) g4[i4]++;
         }
       }
-      return { total, g1, g2, g3 };
+      return { total, g1, g2, g3, g4 };
     }
 
     function renderRangeGroupList(container, counts, total) {
@@ -2395,6 +2417,7 @@
       renderRangeGroupList(document.getElementById('group1Ranges'), stats.g1, stats.total);
       renderRangeGroupList(document.getElementById('group2Ranges'), stats.g2, stats.total);
       renderRangeGroupList(document.getElementById('group3Ranges'), stats.g3, stats.total);
+      renderRangeGroupList(document.getElementById('group4Ranges'), stats.g4, stats.total);
     }
   </script>
 
