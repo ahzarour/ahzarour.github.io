@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -109,7 +110,7 @@
         gap: 16px;
 
       }
-    }
+      }
 
     .controls {
       display: grid;
@@ -813,6 +814,20 @@
         <div>Dates reflect the current filter above.</div>
       </div>
     </section>
+
+    <!-- Winners Map -->
+    <section id="winnersMapSection" class="sectionPanelSettings">
+      <div style="margin-bottom:8px; text-align:center;">
+        <h2 class="h2SectionStyle">Winners Map</h2>
+        <p class="ticket-meta" style="margin-left:0; padding: 0 8px 8px;">
+          A map of the last 10 winning numbers within the selected date range.
+        </p>
+      </div>
+      <div class="tickets-grid" id="winnersMapList">
+        <!-- Winning numbers will be rendered here -->
+      </div>
+    </section>
+
 
     <!-- Smart Tickets 
     <section id="smartTicketsSection" class="sectionPanelSettings">
@@ -1534,6 +1549,7 @@
       generateAndRenderRangeTickets(5);
       generateAndRenderPatternTickets(5);
       renderUltimateTicket();
+      renderWinnersMap();
 
     }
 
@@ -2419,6 +2435,35 @@
       renderRangeGroupList(document.getElementById('group2Ranges'), stats.g2, stats.total);
       renderRangeGroupList(document.getElementById('group3Ranges'), stats.g3, stats.total);
       renderRangeGroupList(document.getElementById('group4Ranges'), stats.g4, stats.total);
+    }
+
+    // --- Winners Map ---
+    function renderWinnersMap() {
+      const listEl = document.getElementById('winnersMapList');
+      if (!listEl) return;
+
+      listEl.innerHTML = '';
+      const last10Draws = (state.draws || []).slice(0, 10);
+
+      if (!last10Draws.length) {
+        const empty = document.createElement('div');
+        empty.className = 'ticket-meta';
+        empty.textContent = 'No draws to display in the selected range.';
+        listEl.appendChild(empty);
+        return;
+      }
+
+      for (const draw of last10Draws) {
+        const row = document.createElement('div');
+        row.className = 'ticket';
+        for (const n of draw.whites) {
+          const b = document.createElement('div'); b.className = 'ball'; b.textContent = n;
+          row.appendChild(b);
+        }
+        const pb = document.createElement('div'); pb.className = 'ball pball'; pb.textContent = draw.red;
+        row.appendChild(pb);
+        listEl.appendChild(row);
+      }
     }
   </script>
 
