@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>BBC News — World Clocks</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@600;800&family=JetBrains+Mono:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      /* BBC News Theme */
+      :root {
+        --bbc-red: #bb1919;
+        --bbc-red-dark: #a21616;
+        --bbc-grey: #333333;
+        --bbc-text: #111111;
+        --bbc-muted: #666666;
+        --bbc-light: #f2f2f2;
+        --bbc-bg: #ffffff;
+        --bbc-panel: #fafafa;
+        --bbc-border: rgba(0, 0, 0, 0.08);
+      }
+
+      body,
+      html {
+        font-family: "Reith Sans", "Helvetica Neue", Arial, sans-serif;
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        margin: 0;
+        padding: 3%;
+        background-color: var(--bbc-bg);
+        background-image: linear-gradient(
+          180deg,
+          var(--bbc-light),
+          #ffffff 45%,
+          var(--bbc-light)
+        );
+        color: var(--bbc-text);
+      }
+
+      section {
+        display: flex;
+        flex: 1;
+        max-width: 900px;
+        width: 100%;
+        align-self: center;
+      }
+
+      /* ----- HEADER ----- */
+      .section-Container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        background: white;
+        border-radius: 10px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+        border: 1px solid var(--bbc-border);
+        margin-bottom: 20px;
+        padding: 16px;
+      }
+
+      .logo-font {
+        font-family: "Orbitron", sans-serif;
+        font-size: clamp(22px, 7vw, 52px);
+        font-weight: 800;
+        letter-spacing: 0.18vw;
+        color: white;
+        background: var(--bbc-red);
+        padding: 8px 16px;
+        border-radius: 4px;
+        box-shadow: 0 4px 16px rgba(187, 25, 25, 0.35);
+      }
+
+      .sub-logo {
+        font-family: "Orbitron", sans-serif;
+        font-size: clamp(12px, 3vw, 26px);
+        font-weight: 600;
+        letter-spacing: 0.24vw;
+        margin-top: 10px;
+        color: var(--bbc-grey);
+        text-transform: uppercase;
+      }
+
+      .local-date {
+        font-family: "Share Tech Mono", monospace;
+        font-size: clamp(18px, 3.5vw, 30px);
+        font-weight: 700;
+        letter-spacing: 0.04em;
+        color: var(--bbc-muted);
+      }
+
+      /* ----- CLOCK GRID ----- */
+      .fit-screen-hight {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        width: 100%;
+      }
+
+      .grid-container {
+        display: grid;
+        grid-template-columns: 1.4fr 0.6fr 1.2fr;
+        border: 1px solid var(--bbc-border);
+        border-radius: 8px;
+        background: var(--bbc-panel);
+        box-shadow: 0 6px 14px rgba(0, 0, 0, 0.05);
+        transition: background 200ms ease, box-shadow 200ms ease;
+      }
+
+      .grid-container:hover {
+        background: #fff;
+        box-shadow: 0 10px 24px rgba(0, 0, 0, 0.1);
+      }
+
+      .grid-cell {
+        padding: 12px 14px;
+        display: flex;
+        align-items: center;
+      }
+
+      .grid-cell-left {
+        justify-content: flex-start;
+        font-size: clamp(16px, 4vw, 48px);
+        font-weight: 700;
+        color: var(--bbc-grey);
+        text-transform: uppercase;
+      }
+
+      .grid-cell-mid {
+        justify-content: center;
+        font-family: "Share Tech Mono", monospace;
+        font-size: clamp(14px, 3vw, 24px);
+        color: var(--bbc-muted);
+      }
+
+      .grid-cell-right {
+        justify-content: flex-end;
+        font-family: "Share Tech Mono", monospace;
+        font-size: clamp(20px, 6vw, 40px);
+        color: var(--bbc-red);
+        font-weight: 700;
+        text-shadow: 0 0 8px rgba(187, 25, 25, 0.2);
+      }
+
+      @media (max-width: 600px) {
+        .grid-cell-left {
+          font-size: clamp(14px, 5vw, 38px);
+        }
+        .grid-cell-right {
+          font-size: clamp(16px, 6vw, 40px);
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <section class="section-Container">
+      <div class="container-logo">
+        <div class="logo-font">BBC NEWS</div>
+        <div class="sub-logo">Washington DC</div>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-Container">
+        <div id="currentdatelocal" class="local-date"></div>
+      </div>
+    </section>
+
+    <section>
+      <div class="fit-screen-hight">
+        <div class="grid-container">
+          <div class="grid-cell grid-cell-left">LOCAL</div>
+          <div class="grid-cell grid-cell-mid" id="offset1">+0h</div>
+          <div class="grid-cell grid-cell-right" id="time1">time1</div>
+        </div>
+
+        <div class="grid-container">
+          <div class="grid-cell grid-cell-left">LONDON</div>
+          <div class="grid-cell grid-cell-mid" id="offset2">+5h</div>
+          <div class="grid-cell grid-cell-right" id="time2">time2</div>
+        </div>
+
+        <div class="grid-container">
+          <div class="grid-cell grid-cell-left">LOS ANGELES</div>
+          <div class="grid-cell grid-cell-mid" id="offset3">-3h</div>
+          <div class="grid-cell grid-cell-right" id="time3">time3</div>
+        </div>
+
+        <div class="grid-container">
+          <div class="grid-cell grid-cell-left">CAIRO</div>
+          <div class="grid-cell grid-cell-mid" id="offset4">+7h</div>
+          <div class="grid-cell grid-cell-right" id="time4">time4</div>
+        </div>
+
+        <div class="grid-container">
+          <div class="grid-cell grid-cell-left">DUBAI</div>
+          <div class="grid-cell grid-cell-mid" id="offset5">+8h</div>
+          <div class="grid-cell grid-cell-right" id="time5">time5</div>
+        </div>
+
+        <div class="grid-container">
+          <div class="grid-cell grid-cell-left">SINGAPORE</div>
+          <div class="grid-cell grid-cell-mid" id="offset6">+12h</div>
+          <div class="grid-cell grid-cell-right" id="time6">time6</div>
+        </div>
+      </div>
+    </section>
+
+    <script>
+      (function () {
+        const localTz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+        const clocks = [
+          { timeId: "time1", offsetId: "offset1", tz: localTz },
+          { timeId: "time2", offsetId: "offset2", tz: "Europe/London" },
+          { timeId: "time3", offsetId: "offset3", tz: "America/Los_Angeles" },
+          { timeId: "time4", offsetId: "offset4", tz: "Africa/Cairo" },
+          { timeId: "time5", offsetId: "offset5", tz: "Asia/Dubai" },
+          { timeId: "time6", offsetId: "offset6", tz: "Asia/Singapore" },
+        ];
+
+        function getTzOffsetMinutes(date, timeZone) {
+          const dtf = new Intl.DateTimeFormat("en-US", {
+            timeZone,
+            hour12: false,
+            year: "numeric",
+            month: "2-digit",
+            day: "2-digit",
+            hour: "2-digit",
+            minute: "2-digit",
+            second: "2-digit",
+          });
+          const parts = dtf.formatToParts(date);
+          const map = Object.fromEntries(parts.map((p) => [p.type, p.value]));
+          const asUTC = Date.UTC(
+            +map.year,
+            +map.month - 1,
+            +map.day,
+            +map.hour,
+            +map.minute,
+            +map.second
+          );
+          return (asUTC - date.getTime()) / 60000;
+        }
+
+        function formatDelta(mins) {
+          const sign = mins >= 0 ? "+" : "-";
+          const abs = Math.abs(Math.round(mins));
+          const h = Math.floor(abs / 60);
+          const m = abs % 60;
+          return sign + h + "h" + (m ? " " + m + "m" : "");
+        }
+
+        function updateAll() {
+          const now = new Date();
+          const localOffset = getTzOffsetMinutes(now, localTz);
+          const dateEl = document.getElementById("currentdatelocal");
+          if (dateEl)
+            dateEl.textContent = now.toLocaleDateString([], {
+              weekday: "long",
+              year: "numeric",
+              month: "long",
+              day: "numeric",
+              timeZone: localTz,
+            });
+
+          for (const c of clocks) {
+            const timeEl = document.getElementById(c.timeId);
+            if (timeEl)
+              timeEl.textContent = now.toLocaleTimeString([], {
+                hour: "2-digit",
+                minute: "2-digit",
+                second: "2-digit",
+                hour12: false,
+                timeZone: c.tz,
+              });
+            const offEl = document.getElementById(c.offsetId);
+            if (offEl) {
+              const tzOffset = getTzOffsetMinutes(now, c.tz);
+              offEl.textContent = formatDelta(tzOffset - localOffset);
+            }
+          }
+        }
+        updateAll();
+        setInterval(updateAll, 1000);
+      })();
+    </script>
+  </body>
+</html>
