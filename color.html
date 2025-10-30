@@ -1,0 +1,188 @@
+<!-- BBC News Color Identity Preview -->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>BBC News Palette Preview</title>
+<style>
+  /* --- Core palette (CSS variables) --- */
+  :root{
+    --bbc-red: #BB1919;        /* BBC News red (primary) */
+    --bbc-red-90: #A21616;
+    --bbc-red-20: #F2D7D7;
+    --black: #000000;
+    --charcoal: #333333;
+    --text: var(--charcoal);
+    --muted: #666666;
+    --bg: #ffffff;
+    --neutral-100: #F2F2F2;
+    --accent: #005DAB;         /* optional secondary blue for links */
+    /* Typography */
+    --font-sans: "Reith Sans", "Helvetica Neue", Arial, sans-serif;
+  }
+
+  /* --- Demo page styling --- */
+  body{
+    font-family: var(--font-sans);
+    color: var(--text);
+    background: linear-gradient(180deg, #fff, var(--neutral-100));
+    margin: 0;
+    padding: 32px;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  /* Header */
+  .bbc-header{
+    display:flex;
+    align-items:center;
+    gap:16px;
+    padding:18px 22px;
+    background:var(--bbc-red);
+    color: white;
+    border-radius:8px;
+    max-width:980px;
+    margin-bottom:20px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+  }
+  .bbc-logo {
+    font-weight:700;
+    letter-spacing:1px;
+    font-size:18px;
+    background: white;
+    color: var(--bbc-red);
+    padding:6px 10px;
+    border-radius:3px;
+  }
+  .bbc-title { font-size:18px; font-weight:600; }
+
+  /* Swatches */
+  .swatches { display:flex; gap:12px; margin:18px 0 28px; flex-wrap:wrap; max-width:980px; }
+  .swatch {
+    width:140px;
+    border-radius:8px;
+    overflow:hidden;
+    box-shadow: 0 6px 14px rgba(0,0,0,0.06);
+  }
+  .swatch .color {
+    height:72px;
+  }
+  .swatch .meta { padding:10px; font-size:13px; background:#fff; color:var(--muted); }
+
+  /* Example components */
+  .card {
+    background: white;
+    border-radius:8px;
+    padding:18px;
+    max-width:980px;
+    box-shadow: 0 8px 22px rgba(0,0,0,0.06);
+    margin-bottom:18px;
+  }
+  .headline {
+    display:flex;
+    align-items:center;
+    gap:12px;
+    font-weight:700;
+    color:var(--charcoal);
+  }
+  .badge {
+    background:var(--bbc-red);
+    color:white;
+    padding:6px 8px;
+    border-radius:4px;
+    font-weight:700;
+    font-size:13px;
+  }
+  .muted { color:var(--muted); font-size:13px; margin-top:8px; }
+
+  .btn {
+    display:inline-block;
+    padding:10px 14px;
+    border-radius:6px;
+    font-weight:600;
+    text-decoration:none;
+    border: none;
+    cursor:pointer;
+  }
+  .btn-primary {
+    background:var(--bbc-red);
+    color:white;
+  }
+  .btn-outline {
+    background:transparent;
+    color:var(--bbc-red);
+    border: 2px solid var(--bbc-red);
+  }
+
+  /* small helpers for accessibility info */
+  .access { font-size:13px; color:var(--muted); margin-top:8px; }
+  .container { display:grid; gap:12px; }
+</style>
+</head>
+<body>
+
+  <div class="bbc-header" role="banner" aria-label="BBC News sample header">
+    <div class="bbc-logo" aria-hidden="true">BBC</div>
+    <div>
+      <div class="bbc-title">BBC News</div>
+      <div style="font-size:13px; color:rgba(255,255,255,0.9)">Trusted global news — sample palette</div>
+    </div>
+  </div>
+
+  <!-- Swatches -->
+  <div class="swatches">
+    <div class="swatch" title="#BB1919">
+      <div class="color" style="background:var(--bbc-red)"></div>
+      <div class="meta"><strong>#BB1919</strong> — BBC Red</div>
+    </div>
+
+    <div class="swatch" title="#A21616">
+      <div class="color" style="background:var(--bbc-red-90)"></div>
+      <div class="meta"><strong>#A21616</strong> — Darker red</div>
+    </div>
+
+    <div class="swatch" title="#F2D7D7">
+      <div class="color" style="background:var(--bbc-red-20)"></div>
+      <div class="meta"><strong>#F2D7D7</strong> — Pale red (use sparingly)</div>
+    </div>
+
+    <div class="swatch" title="#333333">
+      <div class="color" style="background:var(--charcoal)"></div>
+      <div class="meta"><strong>#333333</strong> — Charcoal text</div>
+    </div>
+
+    <div class="swatch" title="#F2F2F2">
+      <div class="color" style="background:var(--neutral-100)"></div>
+      <div class="meta"><strong>#F2F2F2</strong> — Light grey BG</div>
+    </div>
+
+    <div class="swatch" title="#005DAB">
+      <div class="color" style="background:var(--accent)"></div>
+      <div class="meta"><strong>#005DAB</strong> — Secondary accent</div>
+    </div>
+  </div>
+
+  <!-- Example card -->
+  <div class="card container" role="article" aria-label="Sample news card">
+    <div class="headline">
+      <span class="badge" aria-hidden="true">NEWS</span>
+      <div style="font-size:16px">World markets: overnight summary</div>
+    </div>
+    <div class="muted">By BBC News • Oct 30, 2025</div>
+
+    <p style="margin-top:12px; color:var(--muted); line-height:1.5;">
+      This is a short sample paragraph illustrating the typical typographic color and spacing used in BBC News articles. The primary accent color is used sparingly for badges, banners, and key CTAs.
+    </p>
+
+    <div style="margin-top:12px;">
+      <button class="btn btn-primary" type="button">Read full story</button>
+      <button class="btn btn-outline" type="button" style="margin-left:8px;">Save</button>
+    </div>
+
+    <div class="access">
+      Accessibility notes: <strong>#BB1919 on #FFFFFF</strong> provides strong contrast for headings/labels. Use dark charcoal (#333) for body text to optimize readability.
+    </div>
+  </div>
+
+</body>
+</html>
