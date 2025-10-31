@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>World Clocks — Responsive</title>
+    <!-- Fonts for a professional digital look -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@600;800&family=JetBrains+Mono:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <style>
+/* notes for me
+----------------------  
+align-content: center;  \\make the content in the middle horizantally
+justify-items: center;  \\align the content center vertically 
+*/
+
+    /* Digital Pro Theme */
+    :root {
+    --bbc-red: #bb1919;
+    --bbc-red-dark: #a21616;
+    --bbc-grey: #333333;
+    --bbc-text: #111111;
+    --bbc-muted: #666666;
+    --bbc-light: #f2f2f2;
+    --bbc-bg: #ffffff;
+    --bbc-panel: #fafafa;
+    --bbc-border: rgba(0, 0, 0, 0.08);
+    }
+
+    /* General page styling */
+    body,
+    html {
+      font-family: "Reith Sans", "Helvetica Neue", Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      color: var(--text);
+      box-sizing: border-box;
+      margin: 0;
+      padding: 15px;
+
+      
+      /* background */
+      background-color: var(--bbc-muted);
+      background-image: linear-gradient(
+          180deg,
+          var(--bbc-light),
+          rgb(194, 194, 194)
+        );
+      /* background-size: auto, auto, auto, 100% 22px, 22px 100%; */
+      /* background-attachment: fixed, fixed, fixed, fixed, fixed; */
+    }
+
+    section {
+      display: flex;
+      flex: 1;
+      max-width: 900px;
+      width: 100%;
+      align-self: center;
+      min-height: 0;
+      /* Safari flex sizing fix */
+    }
+
+    section:nth-child(3) {
+      flex: 4;
+    }
+
+    .grid-container,
+    .section-Container {
+      width: 100%;
+      max-width: 900px;
+      border-radius: 12px;
+      overflow: hidden;
+      margin-bottom: 20px;
+    }
+
+    .section-Container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      /* center children horizontally */
+      justify-content: center;
+      /* center children vertically */
+      min-height: 0;
+      /* Safari flex sizing fix */
+      
+    }
+
+    .grid-container {
+      display: grid;
+      grid-template-columns: 1.6fr 1.2fr;
+      /* Digital panel styling */
+      background-color: var(--bbc-red-dark);
+      border: 1px solid var(--bbc-panel);
+      border-radius: 12px;
+      box-shadow: 0 14px 36px rgba(0, 0, 0, 0.32),
+      transition: background 160ms ease, box-shadow 160ms ease, transform 120ms ease;
+    }
+
+    /* .grid-container:hover {
+      background: var(--panel-hover);
+      border-color: var(--border-strong);
+      box-shadow: 0 14px 36px rgba(0, 0, 0, 0.32), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    } */
+
+
+
+    /* Wrapper that distributes available vertical space to its children */
+    .fit-screen-hight {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      flex: 1 1 px;
+      align-self: stretch;
+      min-height: 0;
+      height: auto;
+      width: 100%;
+      white-space: nowrap;
+    }
+
+    /* Each row (grid-container) grows evenly to fill the wrapper */
+    .fit-screen-hight > .grid-container {
+      flex: 1;
+      margin-bottom: 0;
+      min-height: 0;
+    }
+
+    .grid-cell {
+      padding: 12px 14px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+      white-space: nowrap;
+      /* min-height: 64px; */
+    }
+
+    .grid-cell-left {
+      justify-content: left;
+      color: var(--bbc-light);
+      font-size: clamp(16px, 4.5vw, 42px);
+      font-weight: 700;
+      /* letter-spacing: 0.08em; */
+    }
+
+    .grid-cell-longText {
+      /* font-size: clamp(12px, 4cqi, 52px); */
+    }
+
+    .grid-cell-right {
+      justify-content: right;
+    }
+
+    .grid-cell-mid {
+      justify-content: center;
+    }
+
+    .logo-font {
+      font-size: clamp(20px, 5vw, 40px);
+      font-weight: 800;
+      letter-spacing: 0.18vw;
+      color: white;
+      background: var(--bbc-red);
+      padding: 8px 16px;
+      border-radius: 4px;
+      box-shadow: 0 4px 16px rgba(187, 25, 25, 0.35);
+    }
+
+    .sub-logo{
+      font-size: clamp(12px, 3.2vw, 28px);
+      font-weight: 600;
+      /* letter-spacing: 0.24dvw; */
+      margin-top: 8px;
+      color: var(--bbc-text);
+      text-shadow: 0 0 8px rgba(77, 76, 76, 0.127);
+    }
+
+    .local-date {
+      font-size: clamp(18px, 3.8vw, 34px);
+      font-weight: 800;
+      letter-spacing: 1px;
+      color: var(--bbc-red);
+      text-shadow: 0 0 10px rgba(84, 23, 23, 0.25);
+      text-transform: uppercase;
+    }
+
+    .container-logo {
+      display: flex;
+      flex-direction: column;
+      align-items: self-start;
+      justify-content: center;
+      text-align: center;
+      flex: 0 0 auto;
+    }
+
+    .grid-cell-mid {
+      font-size: clamp(12px, 3.6vw, 24px);
+      font-variant-numeric: tabular-nums;
+      font-feature-settings: "tnum" 1;
+      color: var(--muted);
+    }
+
+    .grid-cell-right {
+      font-size: clamp(20px, 7vw, 60px);
+      color: var(--bbc-red);
+      text-shadow: #bb191924 1px 0 5px;
+      font-weight: 800;
+      letter-spacing: 2px;
+      color: var(--bbc-light);
+    }
+
+
+    .static-calendar {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
+      font-size: clamp(15px, 5cqi, 10cqi);
+      color: var(--bbc-text);
+    }
+    .date-part {
+      padding: 10px 20px;
+      background: var(--bbc-panel);
+      border: 1px solid var(--bbc-border);
+      border-radius: 5px;
+    }
+
+    
+    /* ----------- this part is for the different screen size setups ------------ */
+
+    /* Fluid font sizing for small screens */
+    @media (max-width: 600px) {
+      /* body { font-size: clamp(0.5em, 6vw, 36px); } */
+      /* .grid-cell {font-size: clamp(12px, 2vw, 60px);} */
+      .grid-cell-right {font-size: clamp(12px, 6vw, 60px);}
+      .grid-cell-left {font-size: clamp(12px, 4.5vw, 60px);}
+    }
+
+
+
+        @media (max-width: 375px) {
+      /* body { font-size: clamp(0.5em, 6vw, 36px); } */
+      /* .grid-cell {font-size: clamp(12px, 2vw, 60px);} */
+      .grid-cell-right {font-size: clamp(12px, 6vw, 20px);}
+      .grid-cell-left {font-size: clamp(12px, 4.5vw, 60px);}
+    }
+
+    /* Reduce motion for users that prefer it */
+    @media (prefers-reduced-motion: reduce) {
+      * { transition: none !important; }
+    }
+  </style>
+
+  <body>
+    <section>
+      <div class="container-logo">
+        <div class="logo-font">BBC NEWS</div>
+        <div class="sub-logo">WASHINGTON DC</div>
+
+        <!-- Date displayed under the header -->
+        <div id="currentdatelocal" class="local-date"></div>
+      </div>
+    </section>
+    <section>
+      <div class="static-calendar">
+        <div class="date-part" id="cal-month"></div>
+        <div class="date-part" id="cal-day"></div>
+        <div class="date-part" id="cal-year"></div>
+      </div>
+    </section>
+    <section>
+      <div class="fit-screen-hight">
+        <div class="grid-container">
+          <div class="grid-cell grid-cell-left">LOS ANGELES</div>
+          <div class="grid-cell grid-cell-right" id="time3">time3</div>
+        </div>        
+        
+        <div class="grid-container">
+          <div class="grid-cell grid-cell-left grid-cell-longText">WASHINGTON DC</div>
+          <div class="grid-cell grid-cell-right" id="time1">time1</div>
+        </div>
+
+        <div class="grid-container">
+          <div class="grid-cell grid-cell-left">LONDON</div>
+          <div class="grid-cell grid-cell-right" id="time2">time2</div>
+        </div>
+
+        <div class="grid-container">
+          <div class="grid-cell grid-cell-left">CAIRO</div>
+          <div class="grid-cell grid-cell-right" id="time4">time4</div>
+        </div>
+
+        <div class="grid-container">
+          <div class="grid-cell grid-cell-left">DUBAI</div>
+          <div class="grid-cell grid-cell-right" id="time5">time5</div>
+        </div>
+
+        <div class="grid-container">
+          <div class="grid-cell grid-cell-left">SINGAPORE</div>
+          <div class="grid-cell grid-cell-right" id="time6">time6</div>
+        </div>
+      </div>
+    </section>
+
+    <script>
+      (function () {
+        var localTz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+        var clocks = [
+          { timeId: "time1", tz: localTz }, // Local
+          { timeId: "time2", tz: "Europe/London" },
+          { timeId: "time3", tz: "America/Los_Angeles" },
+          { timeId: "time4", tz: "Africa/Cairo" },
+          { timeId: "time5", tz: "Asia/Dubai" },
+          { timeId: "time6", tz: "Asia/Singapore" },
+        ];
+
+        function updateAll() {
+          var now = new Date();
+          // Update local date in the second section
+          var dateEl = document.getElementById("currentdatelocal");
+          if (dateEl) {
+            dateEl.textContent = now.toLocaleDateString([], {
+              weekday: "long",
+              year: "numeric",
+              month: "long",
+              day: "numeric",
+              timeZone: localTz,
+            });
+          }
+          for (var i = 0; i < clocks.length; i++) {
+            var cfg = clocks[i];
+            var timeEl = document.getElementById(cfg.timeId);
+            if (timeEl) {
+              timeEl.textContent = now.toLocaleTimeString([], {
+                hour: "2-digit",
+                minute: "2-digit",
+                second: "2-digit",
+                hour12: false,
+                timeZone: cfg.tz,
+              });
+            }
+          }
+        }
+
+        updateAll();
+        setInterval(updateAll, 1000);
+      })();
+    </script>
+    <script>
+      function updateCalendar() {
+        const now = new Date();
+        const month = now.toLocaleString('default', { month: 'long' });
+        const day = now.getDate();
+        const year = now.getFullYear();
+
+        document.getElementById('cal-month').textContent = month;
+        document.getElementById('cal-day').textContent = day;
+        document.getElementById('cal-year').textContent = year;
+      }
+      updateCalendar();
+    </script>
+  </body>
+</html>
