@@ -48,12 +48,13 @@
           padding: 15px;
 
 
-          /* background */
-          background-image: linear-gradient(
-              180deg,
-              var(--bbc-light),
-              rgb(194, 194, 194)
-            );
+      /* background */
+      background-color: var(--bbc-muted);
+      background-image: linear-gradient(
+          180deg,
+          var(--bbc-light),
+          rgb(194, 194, 194)
+        );
         }
 
         section {
@@ -69,6 +70,10 @@
         }
 
         section:nth-child(3) {
+               flex: 2;
+             }
+
+        section:nth-child(4) {
                flex: 4;
              }
 
@@ -249,10 +254,10 @@
       position: relative;
       background: #111;
       color: #fff;
-      font-size: clamp(22px, 6vw, 64px);
+      font-size: clamp(1.5cqi, 4.5cqi, 52px);
       font-weight: 800;
       letter-spacing: 2px;
-      padding: clamp(1.5vw, 4.5vw, 24px) clamp(1.5vw, 1vw, 28px);
+      padding: clamp(1.5cqi, 2.5cqi, 24px) clamp(1vw, 1.5cqi, 28px);
       border-radius: 10px;
       box-shadow: inset 0 -2px 0 #000, 0 4px 12px rgba(0, 0, 0, 0.6);
       border: 1px solid #222;
@@ -308,6 +313,76 @@
       backface-visibility: hidden;
     }
 
+    /* ==================== Weather Section ==================== */
+    .weather-container {
+      width: 100%;
+      max-width: 900px;
+      background-color: var(--bbc-red-dark);
+      border: 1px solid var(--bbc-panel);
+      border-radius: 12px;
+      box-shadow: 0 14px 36px rgba(0, 0, 0, 0.32);
+      padding: 16px 20px;
+      box-sizing: border-box;
+      color: var(--bbc-light);
+    }
+
+    .weather-current {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+      margin-bottom: 12px;
+    }
+
+    .weather-current-icon {
+      font-size: clamp(40px, 8vw, 64px);
+    }
+
+    .weather-current-details {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .weather-current-temp {
+      font-size: clamp(28px, 6vw, 48px);
+      font-weight: 700;
+      line-height: 1;
+    }
+
+    .weather-current-desc {
+      font-size: clamp(14px, 2.5vw, 18px);
+      color: rgba(255, 255, 255, 0.8);
+      text-transform: capitalize;
+    }
+
+    .weather-forecast {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 10px;
+      text-align: center;
+    }
+
+    .forecast-day {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      font-size: clamp(11px, 2vw, 14px);
+    }
+
+    .forecast-day-name {
+      font-weight: 600;
+    }
+
+    .forecast-icon {
+      font-size: clamp(24px, 4vw, 32px);
+    }
+
+    .forecast-temps {
+      color: rgba(255, 255, 255, 0.8);
+    }
+
 
 
         /* ----------- this part is for the different screen size setups ------------ */
@@ -352,6 +427,20 @@
         <div class="date-part" id="cal-month"></div>
         <div class="date-part" id="cal-day"></div>
         <div class="date-part" id="cal-year"></div>
+      </div>
+    </section>
+    <section>
+      <div class="weather-container" id="weather-container">
+        <div class="weather-current">
+          <div class="weather-current-icon" id="weather-icon">...</div>
+          <div class="weather-current-details">
+            <div class="weather-current-temp" id="weather-temp">--°</div>
+            <div class="weather-current-desc" id="weather-desc">Loading Weather</div>
+          </div>
+        </div>
+        <div class="weather-forecast" id="weather-forecast">
+          <!-- 7-day forecast will be injected here -->
+        </div>
       </div>
     </section>
     <section>
@@ -467,6 +556,83 @@
       updateCalendar();
       // refresh every 10 s (or you can do hourly if preferred)
       setInterval(updateCalendar, 10000);
+
+      // --- Weather Section ---
+      (function() {
+        const lat = 38.8951;
+        const lon = -77.0364;
+        const weatherURL = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weather_code&daily=weather_code,temperature_2m_max,temperature_2m_min&temperature_unit=fahrenheit&timezone=America%2FNew_York`;
+
+        // Map WMO weather codes to icons and descriptions
+        const weatherCodes = {
+            0: { desc: "Clear sky", icon: "☀️" },
+            1: { desc: "Mainly clear", icon: "🌤️" },
+            2: { desc: "Partly cloudy", icon: "⛅" },
+            3: { desc: "Overcast", icon: "☁️" },
+            45: { desc: "Fog", icon: "🌫️" },
+            48: { desc: "Depositing rime fog", icon: "🌫️" },
+            51: { desc: "Light drizzle", icon: "💧" },
+            53: { desc: "Moderate drizzle", icon: "💧" },
+            55: { desc: "Dense drizzle", icon: "💧" },
+            61: { desc: "Slight rain", icon: "🌧️" },
+            63: { desc: "Moderate rain", icon: "🌧️" },
+            65: { desc: "Heavy rain", icon: "🌧️" },
+            66: { desc: "Light freezing rain", icon: "🧊" },
+            67: { desc: "Heavy freezing rain", icon: "🧊" },
+            71: { desc: "Slight snow fall", icon: "❄️" },
+            73: { desc: "Moderate snow fall", icon: "❄️" },
+            75: { desc: "Heavy snow fall", icon: "❄️" },
+            80: { desc: "Slight rain showers", icon: "🌦️" },
+            81: { desc: "Moderate rain showers", icon: "🌦️" },
+            82: { desc: "Violent rain showers", icon: "🌦️" },
+            95: { desc: "Thunderstorm", icon: "⛈️" },
+            96: { desc: "Thunderstorm, slight hail", icon: "⛈️" },
+            99: { desc: "Thunderstorm, heavy hail", icon: "⛈️" },
+        };
+
+        async function fetchWeather() {
+            try {
+                const response = await fetch(weatherURL);
+                const data = await response.json();
+
+                // Update current weather
+                const current = data.current;
+                const codeInfo = weatherCodes[current.weather_code] || { desc: "Weather", icon: "🌡️" };
+                document.getElementById('weather-icon').textContent = codeInfo.icon;
+                document.getElementById('weather-temp').textContent = `${Math.round(current.temperature_2m)}°F`;
+                document.getElementById('weather-desc').textContent = codeInfo.desc;
+
+                // Update 7-day forecast
+                const forecastContainer = document.getElementById('weather-forecast');
+                forecastContainer.innerHTML = ''; // Clear previous forecast
+                const daily = data.daily;
+
+                for (let i = 0; i < 7; i++) {
+                    const dayEl = document.createElement('div');
+                    dayEl.className = 'forecast-day';
+
+                    const date = new Date(daily.time[i] + 'T00:00:00'); // Ensure local timezone interpretation
+                    const dayName = date.toLocaleDateString('en-US', { weekday: 'short' });
+                    const dayCodeInfo = weatherCodes[daily.weather_code[i]] || { icon: "🌡️" };
+
+                    dayEl.innerHTML = `
+                        <div class="forecast-day-name">${dayName}</div>
+                        <div class="forecast-icon">${dayCodeInfo.icon}</div>
+                        <div class="forecast-temps">
+                            <strong>${Math.round(daily.temperature_2m_max[i])}°</strong> / ${Math.round(daily.temperature_2m_min[i])}°
+                        </div>
+                    `;
+                    forecastContainer.appendChild(dayEl);
+                }
+            } catch (error) {
+                console.error("Error fetching weather:", error);
+                document.getElementById('weather-desc').textContent = "Weather unavailable";
+            }
+        }
+
+        fetchWeather();
+        setInterval(fetchWeather, 30 * 60 * 1000); // Refresh weather every 30 minutes
+      })();
     </script>
   </body>
 </html>
