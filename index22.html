@@ -1,0 +1,2596 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>إلعب ما تلعب</title>
+  <style>
+    @import url("https://fonts.googleapis.com/css2?family=Readex+Pro:wght@160..700&display=swap");
+
+    :root {
+      --bg: #0f1220;
+      --panel: #151935;
+      --muted: #8a90b4;
+      --text: #e7e9ff;
+      --accent: #6ee7ff;
+      --hot: #ff595a;
+      --cold: #4f9bff;
+      --natural: #34d399;
+      --grid: #1d2249;
+      --chip: #1b2042;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      height: 100%;
+    }
+
+    body {
+      margin: 0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto,
+        Ubuntu, Cantarell, Noto Sans, "Helvetica Neue", Arial,
+        "Apple Color Emoji", "Segoe UI Emoji", "Readex Pro", sans-serif;
+      /* line-height: 1.5; */
+      /* color: var(--text); */
+      background: radial-gradient(1000px 600px at 20% -10%,
+          #1a1f46 0%,
+          #0f1220 55%) no-repeat,
+        var(--bg);
+      color: var(--text);
+    }
+
+    a {
+      color: var(--accent);
+    }
+
+    .wrap {
+      max-width: 1200px;
+      margin: 24px auto;
+      padding: 0 16px;
+    }
+
+    /*header { display: grid; gap: 12px; grid-template-columns: 1fr auto; align-items: end; margin-bottom: 8px; }*/
+    h1 {
+      font-size: 28px;
+      margin: 0;
+      letter-spacing: 0.3px;
+      font-family: "Readex Pro";
+    }
+
+    .sub {
+      color: var(--muted);
+      font-family: "Readex Pro";
+      font-size: 13px;
+      margin-top: 6px;
+      max-width: 600px;
+      margin: 0 auto;
+      direction: rtl;
+      text-align: justify;
+    }
+
+    .sectionPanelSettings {
+      background: linear-gradient(180deg,
+          rgba(255, 255, 255, 0.03),
+          rgba(255, 255, 255, 0)),
+        var(--panel);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 16px;
+      padding: 16px;
+      margin-bottom: 16px;
+    }
+
+    .h2SectionStyle{
+      margin: 0 0 8px 0;
+      font-size: medium;
+      padding-bottom: 8px;
+    }
+
+    .combPattrenSection {
+      font-size: comb(1vw, 12vw, 4px);
+      /* text-wrap-mode: nowrap; */
+    }
+
+    .grid {
+      display: grid;
+    }
+
+    .g-2 {
+      grid-template-columns: 1fr;
+    }
+
+    @media (min-width: 980px) {
+      .g-2 {
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+
+      }
+      }
+
+    .controls {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: center;
+      gap: 12px;
+    }
+
+    label {
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    input[type="range"] {
+      width: 100%;
+    }
+
+    .val {
+      font-variant-numeric: tabular-nums;
+      background: var(--chip);
+      padding: 4px 8px;
+      border-radius: 999px;
+      font-size: 12px;
+    }
+
+    .btns {
+      display: grid;
+      margin: 20px 0;
+    }
+
+    button,
+    .filelabel {
+      max-width: fit-content;
+      background: #232a61;
+      color: var(--text);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 12px;
+      padding: 10px 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 120ms ease;
+    }
+
+    button:hover,
+    .filelabel:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+    }
+
+    input[type="file"] {
+      display: none;
+    }
+
+    .legend {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      display: inline-block;
+      margin-right: 6px;
+    }
+
+    .board {
+      display: grid;
+      grid-template-columns: repeat(10, 1fr);
+      gap: 6px;
+    }
+
+    /* Make each cell its own sizing container */
+    .cell {
+      container-type: inline-size;
+      /* enables cqi units */
+      aspect-ratio: 1 / 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 0.2em;
+      /* space between strong/small */
+      place-items: center;
+      border-radius: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      background: var(--chip);
+      position: relative;
+      overflow: hidden;
+      padding: 0.25rem;
+      /* tiny breathing room */
+    }
+
+    /* Top line (number) scales with the cell width */
+    .cell strong {
+      display: block;
+      line-height: 1;
+      font-weight: 700;
+      /* min size, scale with container (cqi), cap at a max */
+      font-size: clamp(0.8rem, 55cqi, 2rem);
+    }
+
+    /* Bottom line (draws) also scales, but smaller */
+    .cell small {
+      display: block;
+      line-height: 1.05;
+      font-size: clamp(0.6rem, 28cqi, 1.2rem);
+      opacity: 0.9;
+    }
+
+    /*.cell small { position: absolute; bottom: 4px; right: 6px; color: var(--muted); font-variant-numeric: tabular-nums; font-size: 10px; }*/
+    .cell.hot {
+      outline: 2px solid var(--hot);
+      box-shadow: inset 0 0 0 999px rgba(255, 89, 90, 0.08);
+    }
+
+    .cell.cold {
+      outline: 2px solid var(--cold);
+      box-shadow: inset 0 0 0 999px rgba(79, 155, 255, 0.08);
+    }
+
+    .cell.natural {
+      outline: 2px solid var(--natural);
+      box-shadow: inset 0 0 0 999px rgba(52, 211, 153, 0.08);
+    }
+
+    .badge {
+      font-size: 11px;
+      padding: 3px 8px;
+      border-radius: 999px;
+      background: #20265a;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .meta {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    /* Responsive date inputs inside the date-controls column */
+    .date-controls .date-row {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    /* Date inputs scale with viewport but never get too small or too large */
+    .date-controls input[type="date"] {
+      width: clamp(50px, 16vw, 320px);
+      max-width: 50%;
+      box-sizing: border-box;
+    }
+
+    .tables {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 5px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      /* font-size: 13px; */
+      /* font-size: clamp(2vw, 2.2vw, 13px); */
+    }
+
+    /* .freqTable {
+      width: 100%;
+      border-collapse: collapse;
+      /* font-size: 13px; */
+      /* font-size: clamp(1vw, 12vw, 13px); 
+    } */
+
+    .freqWhiteNumbersHeader {
+      margin: 0 0 8px 0;
+      font-size: clamp(1vw, 12vw, 15px);
+      color: var(--muted);
+    }
+
+    .freqTableNumberlist {
+      width: 100%;
+      /* max-height: 340px; */
+      overflow: auto;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 12px;
+      font-size: clamp(1vw, 12vw, 13px);
+    }
+
+    th,
+    td {
+      padding: 8px 10px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      text-align: left;
+    }
+
+    thead th {
+      color: var(--muted);
+      font-weight: 600;
+    }
+
+    /* Hidden scrollbar container for combo list */
+    .combo-scroll {
+      max-height: 224px;
+      /* ~5 rows visible including header */
+      overflow: auto;
+      -ms-overflow-style: none; /* IE/Edge */
+      scrollbar-width: none; /* Firefox */
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 12px;
+    }
+
+    .combo-scroll::-webkit-scrollbar { /* Chrome/Safari */
+      width: 0;
+      height: 0;
+    }
+
+    /* Combination list (div-based replacement for table) */
+    .combo-header,
+    .combo-row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 8px;
+      padding: 8px 10px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .combo-header {
+      color: var(--muted);
+      font-weight: 600;
+      position: sticky;
+      top: 0;
+      background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0)) , var(--panel);
+      z-index: 1;
+      font-size: 13px;
+    }
+
+    .combo-row:last-child { border-bottom: 0; }
+    .combo-count { text-align: right; }
+    .combo-empty { padding: 8px 10px; color: var(--muted); }
+    .match-detail-row { display: grid; grid-template-columns: 2fr 1fr; gap: 8px; padding: 8px 10px; border-bottom: 1px solid rgba(255,255,255,0.08); font-size: 12px; }
+    .match-detail-row:last-child { border-bottom: 0; }
+    .match-detail-ticket { display: flex; flex-wrap: wrap; gap: 4px; align-items: center; }
+    .match-detail-matches { color: var(--muted); }
+
+    /* Frequency lists (div-based replacement) */
+    .freq-header,
+    .freq-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(0, 1fr));
+      gap: 8px;
+      padding: 8px 10px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      justify-items: center;
+    }
+    .freq-header {
+      color: var(--muted);
+      font-weight: 600;
+      position: sticky;
+      top: 0;
+      background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0)) , var(--panel);
+      z-index: 1;
+      font-size: 13px;
+    }
+    .freq-row:last-child { border-bottom: 0; }
+
+    /* Utility */
+    .text-right { text-align: center; }
+
+    /* Number Cruncher (7 columns) */
+    .crunch-header,
+    .crunch-row {
+      display: grid;
+      /* Ensure 7 columns always fit viewport width */
+      grid-template-columns: repeat(7, minmax(0, 1fr));
+      gap: 6px;
+      padding: 8px 8px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      align-items: center;
+      justify-items: center;
+      text-align: center;
+    }
+    .crunch-header {
+      color: var(--muted);
+      font-weight: 600;
+      position: sticky;
+      top: 0;
+      background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0)) , var(--panel);
+      z-index: 1;
+      font-size: clamp(11px, 1.8vw, 13px);
+    }
+    .crunch-row {
+      font-size: clamp(11px, 1.8vw, 13px);
+    }
+    .crunch-header > div,
+    .crunch-row > div {
+      max-width: 100%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    /* Hidden scrollbar container for Number Cruncher */
+    .crunch-scroll {
+      max-height: 224px;
+      /* about 5 rows visible */
+      overflow: auto;
+      -ms-overflow-style: none;
+      /* IE/Edge */
+      scrollbar-width: none;
+      /* Firefox */
+    }
+
+    .crunch-scroll::-webkit-scrollbar {
+      /* Chrome/Safari */
+      width: 0;
+      height: 0;
+    }
+
+    /* Hidden scrollbar container for Frequency Tables */
+    .freq-scroll {
+      max-height: 340px;
+      /* matches current containers */
+      overflow: auto;
+      -ms-overflow-style: none;
+      /* IE/Edge */
+      scrollbar-width: none;
+      /* Firefox */
+    }
+
+    .freq-scroll::-webkit-scrollbar {
+      /* Chrome/Safari */
+      width: 0;
+      height: 0;
+    }
+
+    canvas {
+      width: 100% !important;
+      height: 320px !important;
+      background: #101537;
+      border-radius: 16px;
+      padding: 10px;
+    }
+
+    div#comboList {
+    font-size: clamp(1vw, 13px, 13px);
+    /* text-wrap-mode: nowrap; */
+    /* min-width: 280px; */
+}
+
+    .footer {
+      color: var(--muted);
+      font-size: 12px;
+      text-align: center;
+      margin: 0px;
+      padding: 30px 0px;
+      width: 100%;
+    }
+
+    /* Range Groups: shrink numbers more on very small screens */
+    @media (max-width: 375px) {
+      #rangeGroupsSection .freqTableNumberlist,
+      #rangeGroupsSection .freq-header,
+      #rangeGroupsSection .freq-row {
+        font-size: clamp(9px, 2.8vw, 12px);
+      }
+      #rangeGroupsSection .freq-row > div:nth-child(2),
+      #rangeGroupsSection .freq-row > div:nth-child(3) {
+        font-size: clamp(8px, 2.4vw, 11px);
+      }
+    }
+    /* For Range Groups, create a 2x2 grid on wider screens */
+    @media (min-width: 640px) {
+      #rangeGroupsSection .tables {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+
+    /* Smart Tickets */
+    .tickets-grid { display: grid; gap: 10px; justify-content: center; justify-items: center; }
+    .tickets-block { text-align: center; padding: 8px; }
+    .ticket { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; justify-content: center; }
+    .ball { width: 34px; height: 34px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; background: #1e2554; border: 1px solid rgba(255,255,255,0.08); font-weight: 700; }
+    .pball { background: #4b1f2c; border-color: rgba(255,255,255,0.14); }
+    .ticket-meta { color: var(--muted); font-size: 12px; margin-left: 8px; }
+    @media (max-width: 420px) {
+      .ball { width: 30px; height: 30px; font-size: 12px; }
+    }
+
+    /* Number Quality Checker */
+    .quality-wrap { display: grid; }
+    .quality-controls { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; justify-content: center; }
+    .quality-controls--inline { flex-wrap: nowrap; gap: 8px; overflow-x: auto; }
+    .quality-controls input[type="number"]:not(.ball-input) { width: 120px; }
+    .quality-result { display: grid; gap: 8px; justify-items: center; text-align: center; }
+    .quality-badge { display: inline-block; padding: 8px 12px; border-radius: 999px; font-weight: 700; }
+    .q-ultimate { background: #1f3a5f; border: 1px solid rgba(255,255,255,0.12); }
+    .q-excellent { background: #1f4f3a; border: 1px solid rgba(255,255,255,0.12); }
+    .q-strong { background: #2a3a1f; border: 1px solid rgba(255,255,255,0.12); }
+    .q-moderate { background: #3a361f; border: 1px solid rgba(255,255,255,0.12); }
+    .q-weak { background: #3a2a1f; border: 1px solid rgba(255,255,255,0.12); }
+    .q-veryweak { background: #3a1f1f; border: 1px solid rgba(255,255,255,0.12); }
+
+    /* Ball-styled number inputs */
+    .ball-input {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      background: #1e2554;
+      border: 1px solid rgba(255,255,255,0.08);
+      color: var(--text);
+      text-align: center;
+      font-weight: 700;
+      outline: none;
+      padding: 0;
+      margin: 0;
+    }
+    .ball-input.pball { background: #4b1f2c; border-color: rgba(255,255,255,0.14); }
+    /* Remove spinners */
+    input.ball-input[type=number]::-webkit-outer-spin-button,
+    input.ball-input[type=number]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+    input.ball-input[type=number] { -moz-appearance: textfield; }
+    /* Smaller on narrow screens to fit one line */
+    @media (max-width: 420px) {
+      .ball-input { width: 30px; height: 30px; font-size: 12px; }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+    <header>
+      <div style="
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            text-align: center;
+            padding: 50px 0;
+          ">
+        <h1 style="direction: rtl; white-space: nowrap;">
+          تحليل إلعب ما تلعب !!!
+        </h1>
+      </div>
+    </header>
+
+    <!-- date selector and quick range  -->
+    <section class="sectionPanelSettings" style="margin-bottom: 16px; padding: 16px">
+      <div id="dateRange" class="meta date-range" style="
+            display: flex;
+            gap: 16px;
+            align-items: flex-start;
+            flex-wrap: nowrap;
+            overflow-x: auto;
+          ">
+        <div class="date-labels" style="display: flex; flex-direction: column; gap: 14px">
+          <div style="font-size: 13px; color: var(--muted)">Quick range:</div>
+          <div style="font-size: 13px; color: var(--muted)">From</div>
+          <div style="font-size: 13px; color: var(--muted)">Date Range</div>
+          <div style="font-size: 13px; color: var(--muted)">Draws</div>
+        </div>
+
+        <div class="date-controls" style="
+              display: flex;
+              flex-direction: column;
+              gap: 12px;
+              flex: 1;
+              min-width: 0;
+            ">
+          <div>
+            <select id="datePreset" style="width: auto">
+              <option value="since-2015-10-07" selected>From 10/07/2015</option>
+              <option value="1m">Last month</option>
+              <option value="3m">Last 3 months</option>
+              <option value="6m">Last 6 months</option>
+              <option value="1y">Last year</option>
+              <option value="2y">Last 2 years</option>
+              <option value="3y">Last 3 years</option>
+              <option value="all">All time</option>
+              <option value="custom">Custom dates</option>
+            </select>
+          </div>
+
+          <div style="display: flex; gap: 8px; align-items: center">
+            <input id="dateFromInput" type="date" style="width: auto" />
+            <div style="white-space: nowrap; color: var(--muted)">to</div>
+            <input id="dateToInput" type="date" style="width: auto" />
+          </div>
+
+          <div>
+            <div style="color: var(--muted)">
+              <strong id="dateFrom">——</strong> to
+              <strong id="dateTo">——</strong>
+            </div>
+          </div>
+
+          <div>
+            <div id="drawsInfo" class="meta date-range">
+              <strong id="drawsCount">—————</strong>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- Controls  -->
+    <section class="sectionPanelSettings" style="margin-bottom: 16px">
+      <div class="controls">
+        <div>
+          <div class="row">
+            <label for="hotPct">Hot threshold (top % by frequency)</label><span class="val" id="hotPctVal">10%</span>
+          </div>
+          <input id="hotPct" type="range" min="5" max="40" step="1" value="10" />
+        </div>
+        <div>
+          <div class="row">
+            <label for="coldPct">Cold threshold (bottom % by frequency)</label><span class="val"
+              id="coldPctVal">20%</span>
+          </div>
+          <input id="coldPct" type="range" min="5" max="40" step="1" value="20" />
+        </div>
+      </div>
+      <div class="meta" style="margin-top: 12px">
+        <span>Mode: <span class="badge">Percentile</span></span>
+        <span>White Balls:
+          <span class="badge" id="whiteClassSummary">—</span></span>
+        <span>Red Balls:
+          <span class="badge" id="redClassSummary">—</span></span>
+        <span id="datasetMeta">No data loaded yet.</span>
+      </div>
+    </section>
+
+
+    <!-- White Red Number  -->
+    <section class="grid g-2">
+      <div class="sectionPanelSettings">
+        <div style="
+              display: flex;
+              align-items: center;
+              justify-content: space-between;
+              margin-bottom: 8px;
+            ">
+          <h2 class="h2SectionStyle">(1–69)<br>White Numbers</h2>
+          <div class="legend">
+            <span><i class="dot" style="background: var(--hot)"></i>Hot</span>
+            <span><i class="dot" style="background: var(--natural)"></i>Natural</span>
+            <span><i class="dot" style="background: var(--cold)"></i>Cold</span>
+          </div>
+        </div>
+        <div id="whiteBoard" class="board" aria-live="polite"></div>
+      </div>
+
+      <div class="sectionPanelSettings">
+        <div style=" display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; ">
+          <h2 class="h2SectionStyle">(1–26)<br>Red Numbers</h2>
+          <div class="legend">
+            <span><i class="dot" style="background: var(--hot)"></i>Hot</span>
+            <span><i class="dot" style="background: var(--natural)"></i>Natural</span>
+            <span><i class="dot" style="background: var(--cold)"></i>Cold</span>
+          </div>
+        </div>
+        <div id="redBoard" class="board" aria-live="polite" style="grid-template-columns: repeat(10, 1fr)"></div>
+      </div>
+    </section>
+
+
+    <!-- Frequebcy Tables -->
+    <section class="sectionPanelSettings">
+      <h2 class="h2SectionStyle">Frequency Tables</h2>
+      <div class="tables">
+        <div>
+          <h3 class="freqWhiteNumbersHeader">
+            White
+          </h3>
+          <div class="freq-scroll freqTableNumberlist">
+            <div class="freq-header">
+              <div>#</div>
+              <div>Count</div>
+              <div>Class</div>
+            </div>
+            <div id="whiteList"></div>
+          </div>
+        </div>
+        <div>
+          <h3 class="freqWhiteNumbersHeader">
+            Red
+          </h3>
+          <div class="freq-scroll freqTableNumberlist">
+            <div class="freq-header">
+              <div>#</div>
+              <div>Count</div>
+              <div>Class</div>
+            </div>
+            <div id="redList"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- combination pattern -->
+    <section class="sectionPanelSettings" >
+      <h2 class="h2SectionStyle">Combination patterns</h2>
+      <div class="combo-scroll">
+        <div class="combo-header">
+          <div>Combination</div>
+          <div>Count</div>
+        </div>
+        <div id="comboList"></div>
+      </div>
+    </section>
+
+
+    <!-- Range Groups (N1&N2, N3&N4, N5) -->
+    <section id="rangeGroupsSection" class="sectionPanelSettings">
+      <h2 class="h2SectionStyle">Range Groups</h2>
+      <div class="tables">
+        <div>
+          <h3 class="freqWhiteNumbersHeader">Group 1: N1 & N2</h3>
+          <div class="freqTableNumberlist">
+            <div class="freq-header">
+              <div>Range</div>
+              <div>Count</div>
+              <div>%</div>
+            </div>
+            <div id="group1Ranges"></div>
+          </div>
+        </div>
+        <div>
+          <h3 class="freqWhiteNumbersHeader">Group 2: N3 & N4</h3>
+          <div class="freqTableNumberlist">
+            <div class="freq-header">
+              <div>Range</div>
+              <div>Count</div>
+              <div>%</div>
+            </div>
+            <div id="group2Ranges"></div>
+          </div>
+        </div>
+        <div style="padding: 10px 0 0 0;">
+          <h3 class="freqWhiteNumbersHeader">Group 3: N5</h3>
+          <div class="freqTableNumberlist">
+            <div class="freq-header">
+              <div>Range</div>
+              <div>Count</div>
+              <div>%</div>
+            </div>
+            <div id="group3Ranges"></div>
+          </div>
+        </div>
+        <div style="padding: 10px 0 0 0;">
+          <h3 class="freqWhiteNumbersHeader">Group 4: N4 & N5</h3>
+          <div class="freqTableNumberlist">
+            <div class="freq-header">
+              <div>Range</div>
+              <div>Count</div>
+              <div>%</div>
+            </div>
+            <div id="group4Ranges"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+    <!--Number Cruncher-->
+    <section class="sectionPanelSettings">
+      <h2 class="h2SectionStyle">Number Cruncher</h2>
+      <div class="meta" style="justify-content: space-between; align-items:center; margin-bottom: 8px;">
+        <span style="color: var(--muted)">Sorted by <strong>Qty</strong> • Show All enables sorting</em></span>
+        <div style="display:flex; gap:8px; align-items:center;">
+          <button id="crunchToggleBtn" type="button">Show All</button>
+          <button id="crunchSortBtn" type="button" disabled>Sort 1⬅69</button>
+          <button id="crunchSortPBBtn" type="button" disabled>Sort as PB</button>
+        </div>
+      </div>
+      <div id="crunchScrollWrap" class="crunch-scroll"
+        style="border: 1px solid rgba(255,255,255,0.06); border-radius:12px;">
+        <div class="crunch-header">
+          <div>#</div>
+          <div>Qty Drawn</div>
+          <div>% of total balls drawn</div>
+          <div>Last Drawn</div>
+          <div>Total as Powerball</div>
+          <div>% of total draws held</div>
+          <div>Last drawn as Powerball</div>
+        </div>
+        <div id="crunchList"></div>
+      </div>
+      <div style="color:var(--muted); font-size:12px; margin-top:8px; line-height:1.5;">
+        <div>White-ball % = (Qty Drawn ÷ (Draws × 5)) × 100</div>
+        <div>Powerball % = (Total as Powerball ÷ draws with a Powerball value) × 100</div>
+        <div>Dates reflect the current filter above.</div>
+      </div>
+    </section>
+
+    <!-- Winners Map -->
+    <section id="winnersMapSection" class="sectionPanelSettings">
+      <div style="margin-bottom:8px; text-align:center;">
+        <h2 class="h2SectionStyle">Winners Map</h2>
+        <p class="ticket-meta" style="margin-left:0; padding: 0 8px 8px;">
+          A map of the last 10 winning numbers within the selected date range.
+        </p>
+      </div>
+      <div class="tickets-grid" id="winnersMapList">
+        <!-- Winning numbers will be rendered here -->
+      </div>
+    </section>
+
+    <!-- Ultimate Smart Ticket -->
+    <section id="ultimateTicketSection" class="sectionPanelSettings">
+      <div style="margin-bottom:8px; text-align:center;">
+        <h2 class="h2SectionStyle">Ultimate Smart Ticket</h2>
+        <div style="margin:6px 0 8px 0;">
+          <button id="genUltimateBtn" type="button">Generate Ultimate Ticket</button>
+        </div>
+      </div>
+      <div class="tickets-grid" id="ultimateTicketList"></div>
+      <div class="ticket-meta" style="text-align:center; margin-left:0; padding: 8px;">Combines top historical pattern, highest range bins per group, and percentage weights.</div>
+    </section>
+
+
+    <!-- Number Appearance Checker -->
+    <section class="sectionPanelSettings">
+      <h2 class="h2SectionStyle" style="text-align:center;">Combination Appearance Checker</h2>
+      <div id="comboCheckResult" class="quality-result" style="padding-bottom: 12px;"></div>
+      <div class="quality-controls" style="justify-content:center; padding-bottom: 12px;">
+        <button id="checkComboBtn" type="button">Check Combination</button>
+      </div>
+      <div id="comboCheckControls" class="quality-controls quality-controls--inline" style="justify-content:center;">
+        <input class="ball-input combo-input" type="number" min="1" max="69" step="1" placeholder="N1" />
+        <input class="ball-input combo-input" type="number" min="1" max="69" step="1" placeholder="N2" />
+        <input class="ball-input combo-input" type="number" min="1" max="69" step="1" placeholder="N3" />
+        <input class="ball-input combo-input" type="number" min="1" max="69" step="1" placeholder="N4" />
+        <input class="ball-input combo-input" type="number" min="1" max="69" step="1" placeholder="N5" />
+        <input class="ball-input pball combo-input" type="number" min="1" max="26" step="1" placeholder="PB" />
+      </div>
+    </section>
+
+
+    <!-- Number Quality Checker -->
+    <section id="qualityCheckerSection" class="sectionPanelSettings">
+      <div class="quality-wrap">
+        <h2 class="h2SectionStyle" style="text-align:center;">Number Quality Checker</h2>
+        <!-- Single-number checker removed -->
+       <div id="ticketQualityResult" class="quality-result"></div>
+        <div class="quality-controls" style="justify-content:center; padding-bottom: 12px;">
+          <button id="ticketCheckBtn" type="button">Check Ticket</button>
+        </div>
+        <div id="ticketQualityControls" class="quality-controls quality-controls--inline">
+          <input id="tN1" class="ball-input" type="number" min="1" max="69" step="1" placeholder="N1" />
+          <input id="tN2" class="ball-input" type="number" min="1" max="69" step="1" placeholder="N2" />
+          <input id="tN3" class="ball-input" type="number" min="1" max="69" step="1" placeholder="N3" />
+          <input id="tN4" class="ball-input" type="number" min="1" max="69" step="1" placeholder="N4" />
+          <input id="tN5" class="ball-input" type="number" min="1" max="69" step="1" placeholder="N5" />
+          <input id="tPB" class="ball-input pball" type="number" min="1" max="26" step="1" placeholder="PB" />
+        </div>
+      </div>
+    </section>
+
+    <!-- ---------------- footer ----------- -->
+    <div class="footer">
+      <p> Plan Don't Play is copyrited <strong>&copy; 2025 Ahmed Zarour</strong>
+        <br /><strong>All rights reserved.</strong>
+      </p>
+    </div>
+
+  </div>
+
+  <!-- Charting removed -->
+
+  <script>
+    // --- Utilities ---
+    const WHITE_MAX = 69;
+    const RED_MAX = 26;
+
+    // --- Date helpers ---
+    function parseDateDMY(value) {
+      if (!value) return null;
+      const v = String(value).trim();
+      // ISO (YYYY-MM-DD)
+      if (/^\d{4}-\d{2}-\d{2}$/.test(v)) {
+        const d = new Date(v);
+        return isNaN(d) ? null : d;
+      }
+      // DMY with / or - separators (dd/mm/yyyy or d/m/yy)
+      const m = v.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{2,4})$/);
+      if (m) {
+        let dd = parseInt(m[1], 10);
+        let mm = parseInt(m[2], 10);
+        let yy = parseInt(m[3], 10);
+        if (yy < 100) yy += 2000;
+        const d = new Date(yy, mm - 1, dd);
+        return isNaN(d) ? null : d;
+      }
+      // Fallback (rare)
+      const p = Date.parse(v);
+      return isNaN(p) ? null : new Date(p);
+    }
+    function fmtISO(d) {
+      return d.toISOString().slice(0, 10);
+    }
+    function fmtDMY(d) {
+      const dd = String(d.getDate()).padStart(2, "0");
+      const mm = String(d.getMonth() + 1).padStart(2, "0");
+      const yy = d.getFullYear();
+      return `${dd}/${mm}/${yy}`;
+    }
+
+    function fmtMDY(d) {
+      const dd = String(d.getDate()).padStart(2, "0");
+      const mm = String(d.getMonth() + 1).padStart(2, "0");
+      const yy = d.getFullYear();
+      return `${mm}/${dd}/${yy}`;
+    }
+    function normalizeHeader(h) {
+      return h.trim().toLowerCase().replaceAll(/\s+|_/g, "");
+    }
+
+    function quickCSVParse(text) {
+      // Lightweight CSV parser: handles commas, quoted fields, newlines in quotes.
+      const rows = [];
+      let i = 0,
+        field = "",
+        row = [],
+        inQuotes = false;
+      while (i < text.length) {
+        const c = text[i];
+        if (inQuotes) {
+          if (c === '"') {
+            if (text[i + 1] === '"') {
+              field += '"';
+              i++;
+            } else {
+              inQuotes = false;
+            }
+          } else {
+            field += c;
+          }
+        } else {
+          if (c === '"') {
+            inQuotes = true;
+          } else if (c === ",") {
+            row.push(field);
+            field = "";
+          } else if (c === "\n") {
+            row.push(field);
+            rows.push(row);
+            row = [];
+            field = "";
+          } else if (c === "\r") {
+            /* ignore */
+          } else {
+            field += c;
+          }
+        }
+        i++;
+      }
+      if (field.length || row.length) {
+        row.push(field);
+        rows.push(row);
+      }
+      return rows;
+    }
+
+    function toObjects(rows) {
+      if (!rows.length) return [];
+      const header = rows[0].map(normalizeHeader);
+      return rows
+        .slice(1)
+        .filter((r) => r.length && r.some((x) => String(x).trim().length))
+        .map((r) => {
+          const o = {};
+          for (let i = 0; i < header.length; i++)
+            o[header[i]] = (r[i] ?? "").toString().trim();
+          return o;
+        });
+    }
+
+
+    // === Number Cruncher helpers ===
+    function extractWhitesRed(row) {
+      const keys = Object.keys(row);
+      const has = (k) => keys.includes(k);
+      const findKey = (...cands) => cands.find((k) => keys.includes(k));
+
+      // Try explicit columns (white1..white5, w1..w5, n1..n5, etc.)
+      const whiteCandidates = [];
+      for (let i = 1; i <= 7; i++) {
+        ["white" + i, "w" + i, "n" + i, "num" + i, "ball" + i, "wb" + i].forEach((k) => {
+          if (has(k)) whiteCandidates.push(k);
+        });
+      }
+      const redKey = findKey("powerball", "pb", "red", "r", "power", "pball");
+
+      // Or a combined column like "winningnumbers"
+      const combinedKey = findKey(
+        "winningnumbers", "winningnumber", "numbers", "winning", "results"
+      );
+
+      let whites = [], red = null;
+      if (whiteCandidates.length) {
+        for (const k of whiteCandidates) {
+          const v = row[k];
+          if (/^-?\d+$/.test(v)) {
+            const n = parseInt(v, 10);
+            if (n > 0) whites.push(n);
+          }
+        }
+        whites = whites.filter((n) => n >= 1 && n <= WHITE_MAX).slice(0, 5);
+        if (redKey && /^-?\d+$/.test(row[redKey])) red = parseInt(row[redKey], 10);
+      } else if (combinedKey && row[combinedKey]) {
+        const toks = row[combinedKey].split(/[\s,;-]+/).map((t) => t.trim()).filter(Boolean);
+        const nums = toks.filter((t) => /^\d+$/.test(t)).map((t) => parseInt(t, 10));
+        if (nums.length >= 6) {
+          whites = nums.slice(0, 5).filter((n) => n >= 1 && n <= WHITE_MAX);
+          red = nums[5];
+        } else if (nums.length >= 5) {
+          whites = nums.slice(0, 5);
+        }
+      }
+      return { whites, red: red >= 1 && red <= RED_MAX ? red : null };
+    }
+
+
+
+
+    function parseDraws(objs) {
+      // Attempt schema detection for whites (array of up to 5) + red (single)
+      const draws = [];
+      const keys = objs.length ? Object.keys(objs[0]) : [];
+      const has = (k) => keys.includes(k);
+      const findKey = (...cands) => cands.find((k) => keys.includes(k));
+
+      // Heuristics for explicit columns
+      const whiteCandidates = [];
+      for (let i = 1; i <= 7; i++) {
+        [
+          "white" + i,
+          "w" + i,
+          "n" + i,
+          "num" + i,
+          "ball" + i,
+          "wb" + i,
+        ].forEach((k) => {
+          if (has(k)) whiteCandidates.push(k);
+        });
+      }
+      const redKey = findKey("powerball", "pb", "red", "r", "power", "pball");
+
+      // Heuristic for combined string column like "winning_numbers"
+      const combinedKey = findKey(
+        "winningnumbers",
+        "winningnumber",
+        "numbers",
+        "winning",
+        "results"
+      );
+
+      for (const row of objs) {
+        let whites = [],
+          red = null;
+        if (whiteCandidates.length) {
+          for (const k of whiteCandidates) {
+            const v = row[k];
+            if (/^-?\d+$/.test(v)) {
+              const n = parseInt(v, 10);
+              if (n > 0) whites.push(n);
+            }
+          }
+          // keep first 5 ascending if too many
+          whites = whites.filter((n) => n >= 1 && n <= WHITE_MAX).slice(0, 5);
+          if (redKey && /^-?\d+$/.test(row[redKey])) {
+            red = parseInt(row[redKey], 10);
+          }
+        } else if (combinedKey && row[combinedKey]) {
+          // Split on spaces, commas, hyphens. Last token often the red ball
+          const toks = row[combinedKey]
+            .split(/[\s,;-]+/)
+            .map((t) => t.trim())
+            .filter(Boolean);
+          const nums = toks
+            .filter((t) => /^\d+$/.test(t))
+            .map((t) => parseInt(t, 10));
+          if (nums.length >= 6) {
+            whites = nums.slice(0, 5).filter((n) => n >= 1 && n <= WHITE_MAX);
+            red = nums[5];
+          } else if (nums.length === 6) {
+            /* same */
+          } else if (nums.length >= 1) {
+            // Some feeds have separate PB column and combined whites of 5 tokens
+            if (nums.length >= 5) whites = nums.slice(0, 5);
+          }
+        }
+        if (whites.length >= 5) {
+          if (!(red >= 1 && red <= RED_MAX)) {
+            // Try other red hints
+            const altRedKey = Object.keys(row).find((k) =>
+              /powerball|\bpb\b|red/.test(k)
+            );
+            if (altRedKey && /^\d+$/.test(row[altRedKey]))
+              red = parseInt(row[altRedKey], 10);
+          }
+          draws.push({
+            whites,
+            red: red >= 1 && red <= RED_MAX ? red : null,
+          });
+        }
+      }
+      return draws;
+    }
+
+    function tally(draws) {
+      const white = Array(WHITE_MAX + 1).fill(0);
+      const red = Array(RED_MAX + 1).fill(0);
+      for (const d of draws) {
+        for (const n of d.whites) {
+          if (n >= 1 && n <= WHITE_MAX) white[n]++;
+        }
+        if (d.red != null && d.red >= 1 && d.red <= RED_MAX) red[d.red]++; // allow null reds
+      }
+      return { white, red };
+    }
+
+    function classifyByPercentile(counts, topPct = 20, bottomPct = 20) {
+      const arr = counts.slice(1); // ignore index 0
+      const sorted = [...arr].sort((a, b) => a - b);
+      const n = sorted.length;
+      const q = (p) =>
+        sorted[Math.min(n - 1, Math.max(0, Math.round((p / 100) * (n - 1))))];
+      const coldMax = q(bottomPct);
+      const hotMin = q(100 - topPct);
+      const cls = counts.map((c, i) => {
+        if (i === 0) return "skip";
+        if (c <= coldMax) return "cold";
+        if (c >= hotMin) return "hot";
+        return "natural";
+      });
+      return { cls, coldMax, hotMin };
+    }
+
+    function renderBoard(el, max, counts, cls) {
+      el.innerHTML = "";
+      for (let i = 1; i <= max; i++) {
+        const div = document.createElement("div");
+        div.className = `cell ${cls[i]}`;
+        div.title = `#${i} • ${counts[i]} draws • ${cls[i]}`;
+        div.innerHTML = `<strong>${i}</strong><small>${counts[i]}</small>`;
+        el.appendChild(div);
+      }
+    }
+
+    function renderTable(container, max, counts, cls) {
+      // Build an array of items so we can sort/group them by class
+      container.innerHTML = "";
+      const items = [];
+      for (let i = 1; i <= max; i++) {
+        items.push({ num: i, count: counts[i], cls: cls[i] });
+      }
+
+      // Order classes to group them together in the list. Legend order: Hot, Natural, Cold
+      const classOrder = { hot: 0, natural: 1, cold: 2 };
+
+      // Sort by class group, then by count descending, then by number ascending
+      items.sort((a, b) => {
+        const ca = classOrder[a.cls] ?? 3;
+        const cb = classOrder[b.cls] ?? 3;
+        if (ca !== cb) return ca - cb;
+        if (b.count !== a.count) return b.count - a.count;
+        return a.num - b.num;
+      });
+
+      for (const it of items) {
+        const row = document.createElement("div");
+        row.className = "freq-row";
+        const color = it.cls === "hot" ? "var(--hot)" : it.cls === "cold" ? "var(--cold)" : "var(--natural)";
+        const cNum = document.createElement("div"); cNum.className = "freq-num"; cNum.textContent = `#${it.num}`;
+        const cCount = document.createElement("div"); cCount.className = "freq-count"; cCount.textContent = (it.count ?? 0).toLocaleString();
+        const cClass = document.createElement("div"); cClass.className = "freq-class"; cClass.innerHTML = `<span class=\"badge\" style=\"background:transparent;border:1px solid ${color}; color:${color}\">${it.cls}</span>`;
+        row.append(cNum, cCount, cClass);
+        container.appendChild(row);
+      }
+    }
+
+    // Charting removed: canvas elements and Chart.js usage deleted
+
+    function exportCSV(counts, classes) {
+      const rows = [["group", "number", "count", "class"]];
+      for (let i = 1; i <= WHITE_MAX; i++)
+        rows.push(["white", i, counts.white[i], classes.white.cls[i]]);
+      for (let i = 1; i <= RED_MAX; i++)
+        rows.push(["red", i, counts.red[i], classes.red.cls[i]]);
+      const csv = rows.map((r) => r.join(",")).join("\n");
+      const blob = new Blob([csv], { type: "text/csv" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "powerball_hot_cold_results.csv";
+      a.click();
+      setTimeout(() => URL.revokeObjectURL(url), 5000);
+    }
+
+    // --- App State ---
+    const state = {
+      draws: [],
+      counts: null,
+      classes: null,
+      hotPct: 10,
+      coldPct: 20,
+      crunchShowAll: false,
+      crunchSortByNumberAsc: false,
+      crunchSortByPB: false,
+    };
+
+    function updateClassification() {
+      if (!state.counts) return;
+      const whiteCls = classifyByPercentile(
+        state.counts.white,
+        state.hotPct,
+        state.coldPct
+      );
+      const redCls = classifyByPercentile(
+        state.counts.red,
+        state.hotPct,
+        state.coldPct
+      );
+      state.classes = { white: whiteCls, red: redCls };
+      document.getElementById("whiteClassSummary").textContent = `Hot ≥ ${
+        whiteCls.hotMin
+      } • Cold ≤ ${whiteCls.coldMax}`;
+      document.getElementById("redClassSummary").textContent = `Hot ≥ ${
+        redCls.hotMin
+      } • Cold ≤ ${redCls.coldMax}`;
+      renderBoard(
+        document.getElementById("whiteBoard"),
+        WHITE_MAX,
+        state.counts.white,
+        whiteCls.cls
+      );
+      renderBoard(
+        document.getElementById("redBoard"),
+        RED_MAX,
+        state.counts.red,
+        redCls.cls
+      );
+      renderTable(
+        document.querySelector("#whiteList"),
+        WHITE_MAX,
+        state.counts.white,
+        whiteCls.cls
+      );
+      renderTable(
+        document.querySelector("#redList"),
+        RED_MAX,
+        state.counts.red,
+        redCls.cls
+      );
+      // rebuildCharts(state.counts, state.classes);
+      renderCombinationTable();
+      renderRangeGroups();
+      const exportBtn = document.getElementById("exportBtn");
+      if (exportBtn) exportBtn.disabled = false;
+    }
+
+    function computeCombinationCounts() {
+      if (!state.draws || !state.classes) return new Map();
+      const combos = new Map();
+      for (const d of state.draws) {
+        const wcls = d.whites.map(
+          (n) => state.classes.white.cls[n] || "natural"
+        );
+        const counts = { hot: 0, cold: 0, natural: 0 };
+        for (const c of wcls) counts[c] = (counts[c] || 0) + 1;
+        const redClass = d.red
+          ? state.classes.red.cls[d.red] || "natural"
+          : "unknown";
+        const key = `${counts.hot} Hot, ${counts.natural} Natural, ${counts.cold} Cold | Red: ${redClass}`;
+        combos.set(key, (combos.get(key) || 0) + 1);
+      }
+      return combos;
+    }
+
+    function renderCombinationTable() {
+      const list = document.getElementById("comboList");
+      if (!list) return;
+      list.innerHTML = "";
+      const combos = computeCombinationCounts();
+      const rows = Array.from(combos.entries()).sort((a, b) => b[1] - a[1]);
+      for (const [k, v] of rows) {
+        const row = document.createElement("div");
+        row.className = "combo-row";
+        const key = document.createElement("div");
+        key.textContent = k;
+        const cnt = document.createElement("div");
+        cnt.className = "combo-count";
+        cnt.textContent = v.toLocaleString();
+        row.appendChild(key);
+        row.appendChild(cnt);
+        list.appendChild(row);
+      }
+      if (!rows.length) {
+        const empty = document.createElement("div");
+        empty.className = "combo-empty";
+        empty.textContent = "No combinations yet.";
+        list.appendChild(empty);
+      }
+    }
+
+
+    function renderCrunchTable() {
+      const list = document.getElementById('crunchList');
+      const wrap = document.getElementById('crunchScrollWrap');
+      const toggleBtn = document.getElementById('crunchToggleBtn');
+      if (!list || !state.counts || !state.draws) return;
+      list.innerHTML = '';
+
+      const totalDraws = state.draws.length;
+      const totalWhiteBalls = totalDraws * 5;
+      const totalRedsPresent = state.draws.reduce((acc, d) => acc + (d.red ? 1 : 0), 0);
+
+      // Track last-drawn dates per number
+      const lastWhite = Array(WHITE_MAX + 1).fill(null);
+      const lastRed = Array(RED_MAX + 1).fill(null);
+      for (const d of state.draws) {
+        const dt = d.date;
+        if (dt) {
+          for (const n of d.whites) {
+            if (!lastWhite[n] || dt > lastWhite[n]) lastWhite[n] = dt;
+          }
+          if (d.red) {
+            const r = d.red;
+            if (!lastRed[r] || dt > lastRed[r]) lastRed[r] = dt;
+          }
+        }
+      }
+
+      // Collect rows for all numbers
+      const rows = [];
+      for (let n = 1; n <= WHITE_MAX; n++) {
+        const qtyWhite = state.counts.white[n] || 0;
+        const pctWhite = totalWhiteBalls ? (qtyWhite / totalWhiteBalls) * 100 : 0;
+        const lastW = lastWhite[n] ? fmtDMY(lastWhite[n]) : '—';
+
+        const qtyRed = n <= RED_MAX ? (state.counts.red[n] || 0) : 0;
+        const pctRed = (n <= RED_MAX && totalRedsPresent) ? (qtyRed / totalRedsPresent) * 100 : 0;
+        const lastR = (n <= RED_MAX && lastRed[n]) ? fmtDMY(lastRed[n]) : '—';
+
+        rows.push({ n, qtyWhite, pctWhite, lastW, qtyRed, pctRed, lastR });
+      }
+
+      // Decide sorting (Show All enables sort options)
+      const sortByPB = state.crunchShowAll && state.crunchSortByPB;
+      const sortByNumber = state.crunchShowAll && state.crunchSortByNumberAsc;
+      if (sortByPB) {
+        rows.sort((a, b) => b.qtyRed - a.qtyRed || a.n - b.n);
+      } else if (sortByNumber) {
+        rows.sort((a, b) => a.n - b.n);
+      } else {
+        // default: sort by white quantity desc
+        rows.sort((a, b) => b.qtyWhite - a.qtyWhite || a.n - b.n);
+      }
+
+      // Decide how many to show
+      const visibleRows = state.crunchShowAll ? rows : rows.slice(0, 5);
+
+      // Keep same style class; only adjust max-height
+      if (wrap) {
+        if (!wrap.classList.contains('crunch-scroll')) wrap.classList.add('crunch-scroll');
+        wrap.style.maxHeight = state.crunchShowAll ? 'none' : '224px';
+      }
+      if (toggleBtn) toggleBtn.textContent = state.crunchShowAll ? 'Show Top 5' : 'Show All';
+
+      // Update sort button state
+      const sortBtn = document.getElementById('crunchSortBtn');
+      const sortPBBtn = document.getElementById('crunchSortPBBtn');
+      if (sortBtn) {
+        sortBtn.disabled = !state.crunchShowAll; // only active when showing all
+        // If PB sort is active, keep this showing the default option label
+        sortBtn.textContent = state.crunchSortByNumberAsc ? 'Sort by Qty' : 'Sort 1⬅69';
+      }
+      if (sortPBBtn) {
+        sortPBBtn.disabled = !state.crunchShowAll; // only active when showing all
+        sortPBBtn.textContent = state.crunchSortByPB ? 'Sort by Qty' : 'Sort as PB';
+      }
+
+      // Render
+      for (const r of visibleRows) {
+        const row = document.createElement('div');
+        row.className = 'crunch-row';
+        const c1 = document.createElement('div'); c1.textContent = r.n;
+        const c2 = document.createElement('div'); c2.textContent = r.qtyWhite.toLocaleString(); c2.className='text-right';
+        const c3 = document.createElement('div'); c3.textContent = r.pctWhite.toFixed(2) + '%'; c3.className='text-right';
+        const c4 = document.createElement('div'); c4.textContent = r.lastW;
+        const c5 = document.createElement('div'); c5.textContent = (r.qtyRed ? r.qtyRed.toLocaleString() : 0); c5.className='text-right';
+        const c6 = document.createElement('div'); c6.textContent = (r.qtyRed ? r.pctRed.toFixed(2) + '%' : '0%'); c6.className='text-right';
+        const c7 = document.createElement('div'); c7.textContent = r.lastR;
+        row.append(c1,c2,c3,c4,c5,c6,c7);
+        list.appendChild(row);
+      }
+    }
+
+
+
+    // We'll keep the original parsed objects so we can re-filter by date without reparsing the CSV
+    let _lastParsedObjects = null;
+
+    function applyDateFilterAndRecompute() {
+      if (!_lastParsedObjects) return;
+      // Determine date range from inputs; if preset 'all' then no filtering
+      const preset = document.getElementById("datePreset").value;
+      const fromInput = document.getElementById("dateFromInput").value;
+      const toInput = document.getElementById("dateToInput").value;
+      let from = null,
+        to = null;
+      const today = new Date();
+      const startOfDay = (d) => {
+        const x = new Date(d);
+        x.setHours(0, 0, 0, 0);
+        return x;
+      };
+      const endOfDay = (d) => {
+        const x = new Date(d);
+        x.setHours(23, 59, 59, 999);
+        return x;
+      };
+
+      if (preset && preset.startsWith("since-")) {
+        // presets of the form `since-YYYY-MM-DD` mean from that date up to today
+        const dateStr = preset.slice("since-".length);
+        // Add a 'T00:00:00' to ensure it's parsed as local time, not UTC
+        const parsed = new Date(dateStr + 'T00:00:00');
+        if (!isNaN(parsed)) {
+          from = startOfDay(parsed);
+          to = endOfDay(today);
+        }
+      } else if (preset !== "custom" && preset !== "all") {
+        // compute relative ranges (months/years)
+        const m = preset;
+        if (m.endsWith("m")) {
+          const months = parseInt(m.slice(0, -1), 10);
+          from = startOfDay(new Date(today.getFullYear(), today.getMonth() - months, 1));
+          to = endOfDay(today); // End date is today
+        } else if (m.endsWith("y")) {
+          const years = parseInt(m.slice(0, -1), 10);
+          // For "1y", start from Jan 1 of the previous year.
+          // For "2y", start from Jan 1 two years ago, etc.
+          const startYear = today.getFullYear() - years;
+          to = endOfDay(today);
+          from = startOfDay(
+            new Date(startYear, 0, 1)
+          );
+        }
+      } else if (preset === "custom") {
+        if (fromInput) from = startOfDay(new Date(fromInput));
+        if (toInput) to = endOfDay(new Date(toInput));
+      }
+
+
+      // Build list with date attached
+      const keys = Object.keys(_lastParsedObjects[0] || {});
+      const dateKey = keys.find((k) => /date|drawdate|draw_date|draw/.test(k)) || keys[0];
+
+      const dated = [];
+      for (const row of _lastParsedObjects) {
+        const parsedDate = (row[dateKey] || "").trim();
+        const dObj = parseDateDMY(parsedDate);
+        dated.push({ row, date: dObj });
+      }
+
+      const filtered = from || to
+        ? dated.filter((x) => {
+          if (!x.date) return false;
+          if (from && x.date < from) return false;
+          if (to && x.date > to) return false;
+          return true;
+        })
+        : dated;
+
+      const draws = [];
+      for (const { row, date } of filtered) {
+        const { whites, red } = extractWhitesRed(row);
+        if (whites && whites.length >= 5) {
+          draws.push({ whites, red, date });
+        }
+      }
+      state.draws = draws;
+      // counts only need numeric parts
+      state.counts = tally(draws.map(d => ({ whites: d.whites, red: d.red })));
+      // Build historical ticket set (sorted whites + red) to avoid exact matches
+      state.historicalTicketSet = buildHistoricalTicketSet(draws);
+
+
+      const totalDraws = draws.length;
+      const redsWithValue = draws.filter((d) => d.red != null).length;
+      document.getElementById(
+        "datasetMeta"
+      ).textContent = `Analyzing ${totalDraws.toLocaleString()} draws • Reds present in ${redsWithValue.toLocaleString()} rows`;
+      const drawsEl = document.getElementById("drawsCount");
+      if (drawsEl)
+        drawsEl.textContent = totalDraws ? totalDraws.toLocaleString() : "—";
+
+      // Update the date range display to reflect the dates used for this computation.
+      if (from && to) {
+        document.getElementById("dateFrom").textContent = fmtDMY(from);
+        document.getElementById("dateTo").textContent = fmtDMY(to);
+        // Also update the date input fields to match the computed range
+        const fi = document.getElementById("dateFromInput");
+        const ti = document.getElementById("dateToInput");
+        if (fi) fi.value = fmtISO(from);
+        if (ti) ti.value = fmtISO(to);
+
+      } else {
+        document.getElementById("dateFrom").textContent = "—";
+        document.getElementById("dateTo").textContent = "—";
+      }
+
+      updateClassification();
+      renderCrunchTable();
+      // Refresh Smart Tickets after data/filter change
+      generateAndRenderSmartTickets(5);
+      generateAndRenderRangeTickets(5);
+      generateAndRenderPatternTickets(5);
+      renderUltimateTicket();
+      renderWinnersMap();
+
+    }
+
+    function loadFromCSVText(text) {
+      const rows = quickCSVParse(text);
+      const objs = toObjects(rows);
+      _lastParsedObjects = objs; // store for filtering
+
+      // Extract date range from the loaded CSV
+      const dr = extractDateRange(objs);
+      const fi = document.getElementById("dateFromInput");
+      const ti = document.getElementById("dateToInput");
+      if (dr) {
+        // Don't set the display here; let applyDateFilterAndRecompute handle it based on the selected preset.
+        // Set date inputs to full range (ISO)
+        if (fi) fi.value = dr.fromISO;
+        if (ti) ti.value = dr.toISO;
+      } else {
+        document.getElementById("dateFrom").textContent = "—";
+        document.getElementById("dateTo").textContent = "—";
+        if (fi) fi.value = "";
+        if (ti) ti.value = "";
+      }
+
+      // Set preset to the default (or 'all' if none) and disable date inputs
+      const preset = document.getElementById("datePreset");
+      // This now respects the 'selected' attribute in the HTML
+      if (preset && !preset.value) preset.value = "all";
+      if (fi) fi.disabled = true;
+      if (ti) ti.disabled = true;
+
+      // Run analysis for the full range
+      applyDateFilterAndRecompute();
+    }
+
+    // --- Date range extraction ---
+    function extractDateRange(objs) {
+      if (!objs || !objs.length) return null;
+      const keys = Object.keys(objs[0]);
+      // Prefer obvious date-like keys
+      const dateKeyCandidates = keys.filter((k) =>
+        /date|drawdate|draw_date|draw/.test(k)
+      );
+      const scanKeys = dateKeyCandidates.length ? dateKeyCandidates : keys;
+
+      const dates = [];
+      for (const row of objs) {
+        for (const k of scanKeys) {
+          const v = (row[k] || "").trim();
+          if (!v) continue;
+          const d = parseDateDMY(v);
+          if (d) dates.push(d);
+        }
+      }
+      if (!dates.length) return null;
+      const min = new Date(Math.min(...dates));
+      const max = new Date(Math.max(...dates));
+      return {
+        from: fmtDMY(min),
+        to: fmtDMY(max),
+        fromISO: fmtISO(min),
+        toISO: fmtISO(max),
+      };
+    }
+
+    // --- Events ---
+    document.getElementById("hotPct").addEventListener("input", (e) => {
+      state.hotPct = parseInt(e.target.value, 10);
+      document.getElementById("hotPctVal").textContent = state.hotPct + "%";
+      updateClassification();
+    });
+
+    document.getElementById("coldPct").addEventListener("input", (e) => {
+      state.coldPct = parseInt(e.target.value, 10);
+      document.getElementById("coldPctVal").textContent = state.coldPct + "%";
+      updateClassification();
+    });
+
+    // Removed Export Results button and its event listener
+
+    // Initialize labels
+    document.getElementById("hotPctVal").textContent = state.hotPct + "%";
+    document.getElementById("coldPctVal").textContent = state.coldPct + "%";
+
+    // Date range control events
+    document.getElementById("datePreset").addEventListener("change", (e) => {
+      const v = e.target.value;
+      const fi = document.getElementById("dateFromInput");
+      const ti = document.getElementById("dateToInput");
+      if (v === "custom") {
+        fi.disabled = false;
+        ti.disabled = false;
+      } else {
+        fi.disabled = true;
+        ti.disabled = true;
+        // For convenience, when user picks a preset compute and populate inputs
+        const today = new Date();
+        if (v && v.startsWith("since-")) {
+          const dateStr = v.slice("since-".length);
+          const parsed = new Date(dateStr);
+          const from = new Date(parsed);
+          fi.value = from.toISOString().slice(0, 10);
+          ti.value = today.toISOString().slice(0, 10);
+          // Fall through to applyDateFilterAndRecompute at the end
+        }
+        if (v === "all") {
+          const dr = extractDateRange(_lastParsedObjects || []);
+          if (dr) {
+            fi.value = dr.fromISO;
+            ti.value = dr.toISO;
+          }
+        } else if (v === "1y") {
+          // "Last year" is from Jan 1 of the previous year to today
+          const today = new Date();
+          const lastYear = today.getFullYear() - 1;
+          const from = new Date(lastYear, 0, 1); // Jan 1 of previous year
+          fi.value = from.toISOString().slice(0, 10);
+          ti.value = today.toISOString().slice(0, 10);
+        } else if (v.endsWith("m")) {
+          const months = parseInt(v.slice(0, -1), 10);
+          const today = new Date();
+          // Start from the 1st day of the month, N months ago.
+          const from = new Date(today.getFullYear(), today.getMonth() - months, 1);
+          fi.value = from.toISOString().slice(0, 10);
+          ti.value = today.toISOString().slice(0, 10); // End date is today.
+        } else if (v.endsWith("y")) {
+          const years = parseInt(v.slice(0, -1), 10);
+          const to = new Date();
+          const from = new Date();
+          // Set 'from' date back by the specified number of years
+          from.setFullYear(from.getFullYear() - years);
+          fi.value = from.toISOString().slice(0, 10);
+          ti.value = to.toISOString().slice(0, 10);
+        }
+        // Centralize the call to recompute
+        applyDateFilterAndRecompute();
+      }
+    });
+
+    // Auto-apply when custom date inputs change
+    const _fi = document.getElementById("dateFromInput");
+    const _ti = document.getElementById("dateToInput");
+    if (_fi)
+      _fi.addEventListener("change", () => {
+        document.getElementById("datePreset").value = "custom";
+        applyDateFilterAndRecompute();
+      });
+    if (_ti)
+      _ti.addEventListener("change", () => {
+        document.getElementById("datePreset").value = "custom";
+        applyDateFilterAndRecompute();
+      });
+    // Toggle Show All / Top 5 for Number Cruncher
+    (function attachCrunchToggle() {
+      const crunchBtn = document.getElementById('crunchToggleBtn');
+      if (!crunchBtn) return;
+      crunchBtn.addEventListener('click', () => {
+        state.crunchShowAll = !state.crunchShowAll;
+        renderCrunchTable();
+      });
+    })();
+
+    // Toggle sort mode for Number Cruncher (only effective when Show All)
+    (function attachCrunchSort() {
+      const sortBtn = document.getElementById('crunchSortBtn');
+      if (!sortBtn) return;
+      sortBtn.addEventListener('click', () => {
+        state.crunchSortByNumberAsc = !state.crunchSortByNumberAsc;
+        if (state.crunchSortByNumberAsc) state.crunchSortByPB = false;
+        renderCrunchTable();
+      });
+    })();
+
+    // Toggle PB sort mode (only effective when Show All). Selecting PB sort clears number sort.
+    (function attachCrunchSortPB() {
+      const pbBtn = document.getElementById('crunchSortPBBtn');
+      if (!pbBtn) return;
+      pbBtn.addEventListener('click', () => {
+        state.crunchSortByPB = !state.crunchSortByPB;
+        if (state.crunchSortByPB) state.crunchSortByNumberAsc = false;
+        renderCrunchTable();
+      });
+    })();
+
+    // Auto-load default dataset on page load (keeps manual Load button)
+    (function autoLoadDefault() {
+      const DEFAULT_DATA_URL = 'https://ahzarour.github.io/PB-1998.txt';
+      try {
+        const metaEl = document.getElementById('datasetMeta');
+        if (metaEl) metaEl.textContent = 'Loading default dataset...';
+        fetch(DEFAULT_DATA_URL, { cache: 'no-cache', mode: 'cors' })
+          .then(res => {
+            if (!res.ok) throw new Error('Failed to fetch default dataset');
+            return res.text();
+          })
+          .then(txt => {
+            loadFromCSVText(txt);
+          })
+          .catch(err => {
+            console.error('Auto-load failed:', err);
+            if (metaEl) metaEl.textContent = 'Failed to load default dataset. Use the Load button to pick a file.';
+          });
+      } catch (e) {
+        console.error('Auto-load error:', e);
+      }
+    })();
+
+    // --- Smart Tickets ---
+    function ticketKey(whites, red) {
+      const w = (whites || []).slice(0,5).sort((a,b)=>a-b).join('-');
+      const r = (red != null) ? String(red) : 'null';
+      return `${w}|${r}`;
+    }
+
+    function buildHistoricalTicketSet(draws) {
+      const set = new Set();
+      if (!Array.isArray(draws)) return set;
+      for (const d of draws) {
+        if (d && d.red != null) {
+          set.add(ticketKey(d.whites, d.red));
+        }
+      }
+      return set;
+    }
+    function computeSmartWeights() {
+      const totalDraws = state.draws?.length || 0;
+      const totalWhiteBalls = totalDraws * 5;
+      const totalRedsPresent = state.draws?.reduce((acc, d) => acc + (d.red ? 1 : 0), 0) || 0;
+      const w = Array(WHITE_MAX + 1).fill(0);
+      const r = Array(RED_MAX + 1).fill(0);
+      if (!state.counts || !totalDraws) return { w, r };
+
+      for (let i = 1; i <= WHITE_MAX; i++) {
+        const cnt = state.counts.white[i] || 0;
+        const pct = totalWhiteBalls ? cnt / totalWhiteBalls : 0; // 0..1
+        let weight = pct;
+        const cls = state.classes?.white?.cls?.[i] || 'natural';
+        if (cls === 'hot') weight *= 1.20; else if (cls === 'natural') weight *= 1.05; else weight *= 0.90;
+        // Small floor to keep cold numbers possible
+        w[i] = Math.max(weight, 1e-6);
+      }
+      for (let i = 1; i <= RED_MAX; i++) {
+        const cnt = state.counts.red[i] || 0;
+        const pct = totalRedsPresent ? cnt / totalRedsPresent : 0; // 0..1
+        let weight = pct;
+        const cls = state.classes?.red?.cls?.[i] || 'natural';
+        if (cls === 'hot') weight *= 1.20; else if (cls === 'natural') weight *= 1.05; else weight *= 0.90;
+        r[i] = Math.max(weight, 1e-6);
+      }
+      return { w, r };
+    }
+
+    function weightedPick(weights) {
+      // weights: array indexed by number; index 0 unused
+      let sum = 0;
+      for (let i = 1; i < weights.length; i++) sum += weights[i];
+      if (sum <= 0) return null;
+      let t = Math.random() * sum;
+      for (let i = 1; i < weights.length; i++) {
+        t -= weights[i];
+        if (t <= 0) return i;
+      }
+      return weights.length - 1;
+    }
+
+    function weightedSampleWithoutReplacement(weights, k) {
+      const chosen = new Set();
+      const maxTries = 1000;
+      let tries = 0;
+      while (chosen.size < k && tries < maxTries) {
+        const pick = weightedPick(weights);
+        if (pick && pick >= 1 && !chosen.has(pick)) chosen.add(pick);
+        tries++;
+      }
+      return Array.from(chosen);
+    }
+
+    function generateSmartTicket() {
+      const { w, r } = computeSmartWeights();
+      const whites = weightedSampleWithoutReplacement(w, 5).sort((a,b)=>a-b);
+      const red = weightedPick(r);
+      return { whites, red };
+    }
+
+    function generateSmartTickets(n = 5) {
+      const tickets = [];
+      const seen = new Set();
+      const hist = state.historicalTicketSet || new Set();
+      let attempts = 0;
+      while (tickets.length < n && attempts < n * 20) {
+        const t = generateSmartTicket();
+        if (!t.whites || t.whites.length < 5 || !t.red) { attempts++; continue; }
+        const key = ticketKey(t.whites, t.red);
+        if (!seen.has(key) && !hist.has(key)) { seen.add(key); tickets.push(t); }
+        attempts++;
+      }
+      return tickets;
+    }
+
+    function renderSmartTickets(listEl, tickets) {
+      if (!listEl) return;
+      listEl.innerHTML = '';
+      if (!tickets || !tickets.length) {
+        const empty = document.createElement('div');
+        empty.className = 'ticket-meta';
+        empty.textContent = 'No tickets yet. Load data and click Generate.';
+        listEl.appendChild(empty);
+        return;
+      }
+      for (const t of tickets) {
+        const row = document.createElement('div');
+        row.className = 'ticket';
+        for (const n of t.whites) {
+          const b = document.createElement('div'); b.className = 'ball'; b.textContent = n;
+          row.appendChild(b);
+        }
+        const pb = document.createElement('div'); pb.className = 'ball pball'; pb.textContent = t.red;
+        row.appendChild(pb);
+        listEl.appendChild(row);
+      }
+    }
+
+    function generateAndRenderSmartTickets(n = 5) {
+      const list = document.getElementById('ticketsList');
+      const tickets = generateSmartTickets(n);
+      renderSmartTickets(list, tickets);
+    }
+
+    // Hook up Generate button
+    (function attachSmartTicketsBtn(){
+      const btn = document.getElementById('genTicketsBtn');
+      if (!btn) return;
+      btn.addEventListener('click', () => generateAndRenderSmartTickets(5));
+    })();
+
+    // --- Range‑Positioned Smart Tickets ---
+    function computeBinWeights(arr) {
+      const eps = 0.5; // smoothing
+      const w = arr.map((c) => (c || 0) + eps);
+      const sum = w.reduce((a,b)=>a+b,0);
+      return sum > 0 ? w : Array(arr.length).fill(1);
+    }
+
+    function weightedPickFromArray(w) {
+      let sum = 0; for (const x of w) sum += x;
+      if (sum <= 0) return 0;
+      let t = Math.random() * sum;
+      for (let i = 0; i < w.length; i++) { t -= w[i]; if (t <= 0) return i; }
+      return w.length - 1;
+    }
+
+    function numbersInBin(binIdx) {
+      const b = RANGE_BINS[binIdx];
+      if (!b) return [];
+      const out = [];
+      for (let n = b.min; n <= b.max; n++) out.push(n);
+      return out;
+    }
+
+    function weightedSampleWithinBin(weights, binIdx, k, excludeSet = new Set()) {
+      const candidates = numbersInBin(binIdx).filter(n => !excludeSet.has(n));
+      const picked = [];
+      const triesMax = 200;
+      let tries = 0;
+      while (picked.length < k && tries < triesMax && candidates.length) {
+        // Build weights for current candidates
+        const cw = candidates.map(n => Math.max(weights[n] || 0, 1e-6));
+        const idx = weightedPickFromArray(cw);
+        const choice = candidates[idx];
+        if (!excludeSet.has(choice)) {
+          picked.push(choice);
+          excludeSet.add(choice);
+        }
+        // remove from candidates
+        candidates.splice(idx, 1);
+        tries++;
+      }
+      return picked;
+    }
+
+    function generateRangePositionedTicket() {
+      const { w, r } = computeSmartWeights();
+      const stats = computeRangeGroups(state.draws || []);
+      const g1w = computeBinWeights(stats.g1 || Array(RANGE_BINS.length).fill(1));
+      const g2w = computeBinWeights(stats.g2 || Array(RANGE_BINS.length).fill(1));
+      const g3w = computeBinWeights(stats.g3 || Array(RANGE_BINS.length).fill(1));
+
+      const chosen = new Set();
+      // pick bin for N1&N2
+      const b12 = weightedPickFromArray(g1w);
+      const p12 = weightedSampleWithinBin(w, b12, 2, chosen);
+      // pick bin for N3&N4
+      const b34 = weightedPickFromArray(g2w);
+      const p34 = weightedSampleWithinBin(w, b34, 2, chosen);
+      // pick N5 bin and number
+      const b5 = weightedPickFromArray(g3w);
+      const p5 = weightedSampleWithinBin(w, b5, 1, chosen);
+
+      // if we didn't get enough due to exclusions, fill from global weights
+      const needed = 5 - (p12.length + p34.length + p5.length);
+      if (needed > 0) {
+        // create a temp weights array zeroing out chosen
+        const wtmp = w.slice();
+        for (const n of chosen) wtmp[n] = 0;
+        const fill = weightedSampleWithoutReplacement(wtmp, needed);
+        for (const n of fill) chosen.add(n);
+      }
+
+      const whites = Array.from(chosen).slice(0,5).sort((a,b)=>a-b);
+      const red = weightedPick(r);
+      return { whites, red };
+    }
+
+    function generateRangePositionedTickets(n = 5) {
+      const tickets = [];
+      const seen = new Set();
+      const hist = state.historicalTicketSet || new Set();
+      let attempts = 0;
+      while (tickets.length < n && attempts < n * 30) {
+        const t = generateRangePositionedTicket();
+        if (!t.whites || t.whites.length < 5 || !t.red) { attempts++; continue; }
+        const key = ticketKey(t.whites, t.red);
+        if (!seen.has(key) && !hist.has(key)) { seen.add(key); tickets.push(t); }
+        attempts++;
+      }
+      return tickets;
+    }
+
+    function generateAndRenderRangeTickets(n = 5) {
+      const list = document.getElementById('ticketsListRange');
+      const tickets = generateRangePositionedTickets(n);
+      renderSmartTickets(list, tickets);
+    }
+
+    // Button for Range‑Positioned tickets
+    (function attachRangeTicketsBtn(){
+      const btn = document.getElementById('genTicketsRangeBtn');
+      if (!btn) return;
+      btn.addEventListener('click', () => generateAndRenderRangeTickets(5));
+    })();
+
+    // --- Pattern‑Based Smart Tickets (highest combination pattern) ---
+    function parseCombinationKey(key) {
+      // Example: "2 Hot, 2 Natural, 1 Cold | Red: hot"
+      const out = { hot: 0, natural: 0, cold: 0, redClass: 'any' };
+      if (!key) return out;
+      const parts = String(key).split('|');
+      const left = parts[0] || '';
+      const right = (parts[1] || '').trim();
+      const mHot = left.match(/(\d+)\s*Hot/i); if (mHot) out.hot = parseInt(mHot[1],10);
+      const mNat = left.match(/(\d+)\s*Natural/i); if (mNat) out.natural = parseInt(mNat[1],10);
+      const mCold = left.match(/(\d+)\s*Cold/i); if (mCold) out.cold = parseInt(mCold[1],10);
+      const mRed = right.match(/Red:\s*(\w+)/i); if (mRed) out.redClass = mRed[1].toLowerCase();
+      return out;
+    }
+
+    function buildNumbersByClass() {
+      const byClass = { hot: [], natural: [], cold: [] };
+      for (let n = 1; n <= WHITE_MAX; n++) {
+        const c = state.classes?.white?.cls?.[n] || 'natural';
+        if (byClass[c]) byClass[c].push(n);
+      }
+      return byClass;
+    }
+
+    function weightedSampleFromSet(weights, arr, k, exclude = new Set()) {
+      const picked = [];
+      const candidates = arr.filter(n => !exclude.has(n));
+      let tries = 0;
+      while (picked.length < k && candidates.length && tries < 500) {
+        const wArr = candidates.map(n => Math.max(weights[n] || 0, 1e-6));
+        const idx = weightedPickFromArray(wArr);
+        const val = candidates[idx];
+        if (!exclude.has(val)) {
+          picked.push(val);
+          exclude.add(val);
+        }
+        candidates.splice(idx, 1);
+        tries++;
+      }
+      return picked;
+    }
+
+    function generatePatternBasedTicket() {
+      const combos = computeCombinationCounts();
+      const items = Array.from(combos.entries());
+      if (!items.length) return generateSmartTicket();
+      // Weight by frequency so the highest pattern is most likely
+      items.sort((a,b) => b[1]-a[1]);
+      const topK = items.slice(0, Math.min(3, items.length));
+      const weights = topK.map(x => x[1]);
+      const pickIdx = weightedPickFromArray(weights);
+      const pickedKey = topK[pickIdx][0];
+      const spec = parseCombinationKey(pickedKey);
+
+      const { w, r } = computeSmartWeights();
+      const byClass = buildNumbersByClass();
+      const chosen = new Set();
+      const whites = [];
+      whites.push(...weightedSampleFromSet(w, byClass.hot, spec.hot, chosen));
+      whites.push(...weightedSampleFromSet(w, byClass.natural, spec.natural, chosen));
+      whites.push(...weightedSampleFromSet(w, byClass.cold, spec.cold, chosen));
+      // Fill if short
+      if (whites.length < 5) {
+        const wtmp = w.slice();
+        for (const n of chosen) wtmp[n] = 0;
+        const fill = weightedSampleWithoutReplacement(wtmp, 5 - whites.length);
+        whites.push(...fill);
+      }
+      const whitesSorted = Array.from(new Set(whites)).slice(0,5).sort((a,b)=>a-b);
+
+      let red;
+      if (['hot','natural','cold'].includes(spec.redClass)) {
+        // build red candidates by class
+        const redByClass = { hot: [], natural: [], cold: [] };
+        for (let n = 1; n <= RED_MAX; n++) {
+          const c = state.classes?.red?.cls?.[n] || 'natural';
+          if (redByClass[c]) redByClass[c].push(n);
+        }
+        const rcands = redByClass[spec.redClass];
+        if (rcands && rcands.length) {
+          const wArr = rcands.map(n => Math.max(r[n] || 0, 1e-6));
+          const idx = weightedPickFromArray(wArr);
+          red = rcands[idx];
+        } else {
+          red = weightedPick(r);
+        }
+      } else {
+        red = weightedPick(r);
+      }
+      return { whites: whitesSorted, red };
+    }
+
+    function generatePatternBasedTickets(n = 5) {
+      const tickets = [];
+      const seen = new Set();
+      const hist = state.historicalTicketSet || new Set();
+      let attempts = 0;
+      while (tickets.length < n && attempts < n * 30) {
+        const t = generatePatternBasedTicket();
+        if (!t.whites || t.whites.length < 5 || !t.red) { attempts++; continue; }
+        const key = ticketKey(t.whites, t.red);
+        if (!seen.has(key) && !hist.has(key)) { seen.add(key); tickets.push(t); }
+        attempts++;
+      }
+      return tickets;
+    }
+
+    function generateAndRenderPatternTickets(n = 5) {
+      const list = document.getElementById('ticketsListPattern');
+      const tickets = generatePatternBasedTickets(n);
+      renderSmartTickets(list, tickets);
+    }
+
+    // Button for Pattern‑Based tickets
+    (function attachPatternTicketsBtn(){
+      const btn = document.getElementById('genTicketsPatternBtn');
+      if (!btn) return;
+      btn.addEventListener('click', () => generateAndRenderPatternTickets(5));
+    })();
+
+    // --- Ultimate Smart Ticket ---
+    function argMax(arr) {
+      let idx = 0, best = -Infinity;
+      for (let i = 0; i < arr.length; i++) { if ((arr[i]||0) > best) { best = arr[i]||0; idx = i; } }
+      return idx;
+    }
+
+    function numbersInBinByClass(binIdx) {
+      const b = RANGE_BINS[binIdx];
+      const out = { hot: [], natural: [], cold: [] };
+      if (!b || !state.classes?.white?.cls) return out;
+      for (let n = b.min; n <= b.max; n++) {
+        const c = state.classes.white.cls[n] || 'natural';
+        if (out[c]) out[c].push(n);
+      }
+      return out;
+    }
+
+    function pickFromBinByClass(weights, binIdx, className, excludeSet) {
+      const byClass = numbersInBinByClass(binIdx);
+      const cands = (byClass[className] || []).filter(n => !excludeSet.has(n));
+      if (cands.length) {
+        const wArr = cands.map(n => Math.max(weights[n] || 0, 1e-6));
+        const i = weightedPickFromArray(wArr); return cands[i];
+      }
+      // fallback within bin ignoring class
+      const all = numbersInBin(binIdx).filter(n => !excludeSet.has(n));
+      if (!all.length) return null;
+      const wArr = all.map(n => Math.max(weights[n] || 0, 1e-6));
+      const i = weightedPickFromArray(wArr); return all[i];
+    }
+
+    function getTopPatternSpec() {
+      const combos = computeCombinationCounts();
+      const items = Array.from(combos.entries());
+      if (!items.length) return { hot: 2, natural: 2, cold: 1, redClass: 'any' };
+      items.sort((a,b)=>b[1]-a[1]);
+      return parseCombinationKey(items[0][0]);
+    }
+
+    function generateUltimateTicketOnce() {
+      const stats = computeRangeGroups(state.draws || []);
+      const b12 = argMax(stats.g1 || []);
+      const b34 = argMax(stats.g2 || []);
+      const b5  = argMax(stats.g3 || []);
+      const { w, r } = computeSmartWeights();
+      const spec = getTopPatternSpec();
+
+      const need = { hot: spec.hot||0, natural: spec.natural||0, cold: spec.cold||0 };
+      const chosen = new Set();
+      const whites = [];
+
+      function pickForGroup(binIdx, picks) {
+        for (let i = 0; i < picks; i++) {
+          let cls = null;
+          if (need.hot > 0) cls = 'hot';
+          else if (need.natural > 0) cls = 'natural';
+          else if (need.cold > 0) cls = 'cold';
+          const n = pickFromBinByClass(w, binIdx, cls || 'natural', chosen);
+          if (n != null) {
+            whites.push(n); chosen.add(n);
+            const c = state.classes?.white?.cls?.[n] || 'natural';
+            if (need[c] > 0) need[c]--;
+          }
+        }
+      }
+
+      // Enforce bins for groups as requested
+      pickForGroup(b12, 2);
+      pickForGroup(b34, 2);
+      pickForGroup(b5, 1);
+
+      // If underfilled due to constraints, try to fill from those bins again
+      while (whites.length < 5) {
+        const binsCycle = [b12, b34, b5];
+        let added = false;
+        for (const b of binsCycle) {
+          const n = pickFromBinByClass(w, b, (need.hot>0?'hot':need.natural>0?'natural':need.cold>0?'cold':'natural'), chosen);
+          if (n != null) { whites.push(n); chosen.add(n); const c = state.classes?.white?.cls?.[n]||'natural'; if (need[c]>0) need[c]--; added = true; break; }
+        }
+        if (!added) break;
+      }
+
+      const whitesSorted = Array.from(new Set(whites)).slice(0,5).sort((a,b)=>a-b);
+
+      let red;
+      if (['hot','natural','cold'].includes(spec.redClass)) {
+        const redByClass = { hot: [], natural: [], cold: [] };
+        for (let n = 1; n <= RED_MAX; n++) {
+          const c = state.classes?.red?.cls?.[n] || 'natural';
+          if (redByClass[c]) redByClass[c].push(n);
+        }
+        const rcands = redByClass[spec.redClass];
+        if (rcands && rcands.length) {
+          const wArr = rcands.map(n => Math.max(r[n] || 0, 1e-6));
+          red = rcands[weightedPickFromArray(wArr)];
+        } else red = weightedPick(r);
+      } else red = weightedPick(r);
+
+      return { whites: whitesSorted, red };
+    }
+
+    function generateUltimateTicket() {
+      const hist = state.historicalTicketSet || new Set();
+      let attempts = 0;
+      while (attempts < 50) {
+        const t = generateUltimateTicketOnce();
+        if (t.whites && t.whites.length === 5 && t.red) {
+          const key = ticketKey(t.whites, t.red);
+          if (!hist.has(key)) return t;
+        }
+        attempts++;
+      }
+      return generateSmartTicket();
+    }
+
+    function renderUltimateTicket() {
+      const list = document.getElementById('ultimateTicketList');
+      const t = generateUltimateTicket();
+      renderSmartTickets(list, t ? [t] : []);
+    }
+
+    // Button
+    (function attachUltimateBtn(){
+      const btn = document.getElementById('genUltimateBtn');
+      if (!btn) return;
+      btn.addEventListener('click', renderUltimateTicket);
+    })();
+
+    // --- Number Quality Checker ---
+    function percentileOfCount(counts, n) {
+      const arr = counts.slice(1); // ignore index 0
+      const sorted = [...arr].sort((a,b)=>a-b);
+      const val = counts[n] || 0;
+      // find last index of val in sorted to give best-case percentile for ties
+      let idx = -1;
+      for (let i = sorted.length - 1; i >= 0; i--) { if (sorted[i] <= val) { idx = i; break; } }
+      if (idx < 0) idx = 0;
+      const p = (idx / Math.max(1, sorted.length - 1)) * 100;
+      return p;
+    }
+
+    // Single-number checker removed
+
+    // Ticket grading
+    function gradeFromScore(score) {
+      // score 0..100
+      let idx = 0; // Very Weak
+      if (score >= 92) idx = 5;
+      else if (score >= 80) idx = 4;
+      else if (score >= 65) idx = 3;
+      else if (score >= 45) idx = 2;
+      else if (score >= 25) idx = 1;
+      const labels = ['Very Weak','Weak','Moderate','Strong','Excellent','Ultimate'];
+      const classes = ['q-veryweak','q-weak','q-moderate','q-strong','q-excellent','q-ultimate'];
+      return { label: labels[idx], cls: classes[idx] };
+    }
+
+    function evaluateTicketQuality(n1,n2,n3,n4,n5,pb) {
+      if (!state.counts || !state.classes || !state.draws) return null;
+      const whites = [n1,n2,n3,n4,n5].map(x=>parseInt(x,10));
+      const red = parseInt(pb,10);
+      if (whites.some(n => !(n>=1 && n<=WHITE_MAX)) || !(red>=1 && red<=RED_MAX)) return null;
+      // whites must be distinct
+      const uniq = new Set(whites);
+      if (uniq.size !== 5) return { error: 'White numbers must be distinct.' };
+
+      // Percentiles
+      const totalDraws = state.draws.length;
+      const denomW = totalDraws * 5;
+      const pctlW = whites.map(n => percentileOfCount(state.counts.white, n));
+      const avgW = pctlW.reduce((a,b)=>a+b,0)/pctlW.length;
+      const pctlPB = percentileOfCount(state.counts.red, red);
+
+      // Pattern match
+      const spec = getTopPatternSpec();
+      const wc = { hot:0, natural:0, cold:0 };
+      whites.forEach(n => { const c = state.classes.white.cls[n] || 'natural'; wc[c] = (wc[c]||0)+1; });
+      const diff = Math.abs((wc.hot||0)-(spec.hot||0)) + Math.abs((wc.natural||0)-(spec.natural||0)) + Math.abs((wc.cold||0)-(spec.cold||0));
+      const patternScore = Math.max(0, (5 - diff)) / 5; // 0..1
+
+      // Range alignment
+      const stats = computeRangeGroups(state.draws || []);
+      const top12 = (stats.g1||[]).reduce((m, v, i) => v>(stats.g1[m]||0)?i:m, 0);
+      const top34 = (stats.g2||[]).reduce((m, v, i) => v>(stats.g2[m]||0)?i:m, 0);
+      const top5  = (stats.g3||[]).reduce((m, v, i) => v>(stats.g3[m]||0)?i:m, 0);
+      const b = (x)=> binIndex(x);
+      const ok12 = (b(n1)===top12 && b(n2)===top12) ? 1 : 0;
+      const ok34 = (b(n3)===top34 && b(n4)===top34) ? 1 : 0;
+      const ok5  = (b(n5)===top5) ? 1 : 0;
+      const rangeScore = (ok12 + ok34 + ok5) / 3; // 0..1
+
+      // Aggregate score
+      const score = (
+        (avgW * 0.50) +           // average white percentile (0..100)
+        (pctlPB * 0.10) +         // PB percentile
+        (patternScore * 100 * 0.20) +
+        (rangeScore * 100 * 0.20)
+      );
+      const grade = gradeFromScore(score);
+
+      return {
+        whites, red,
+        avgWhitePercentile: avgW,
+        powerballPercentile: pctlPB,
+        pattern: { target: spec, actual: wc, score: patternScore },
+        ranges: { top12, top34, top5, ok12, ok34, ok5, score: rangeScore },
+        score,
+        grade
+      };
+    }
+
+    function renderTicketQualityResult(res) {
+      const el = document.getElementById('ticketQualityResult');
+      // If the element doesn't exist in the HTML, we can't proceed.
+      if (!el) return;
+
+      el.innerHTML = '';
+      if (!res) { el.textContent = 'Enter 5 white numbers and Powerball, then Check.'; return; }
+      if (res.error) { el.textContent = res.error; return; }
+      // badge
+      const badge = document.createElement('div');
+      badge.className = `quality-badge ${res.grade.cls}`;
+      badge.textContent = `${res.grade.label} (${res.score.toFixed(1)})`;
+      el.appendChild(badge);
+      // details
+      const details = document.createElement('div');
+      details.style.color = 'var(--muted)';
+      details.style.fontSize = '12px';
+      const rangesLbl = (idx)=> RANGE_BINS[idx]?.label || '?';
+      details.innerHTML = `
+        Whites: ${res.whites.join(', ')} • PB: ${res.red}<br>
+        Avg white percentile: ${res.avgWhitePercentile.toFixed(1)} • PB percentile: ${res.powerballPercentile.toFixed(1)}<br>
+        Pattern target: ${res.pattern.target.hot}H/${res.pattern.target.natural}N/${res.pattern.target.cold}C • Actual: ${res.pattern.actual.hot||0}H/${res.pattern.actual.natural||0}N/${res.pattern.actual.cold||0}C<br>
+        Range groups OK: G1 ${res.ranges.ok12? '✔':'✖'} (${rangesLbl(res.ranges.top12)}), G2 ${res.ranges.ok34? '✔':'✖'} (${rangesLbl(res.ranges.top34)}), G3 ${res.ranges.ok5? '✔':'✖'} (${rangesLbl(res.ranges.top5)})
+      `;
+      el.appendChild(details);
+    }
+
+    (function attachTicketChecker(){
+      const btn = document.getElementById('ticketCheckBtn');
+      if (!btn) return;
+      btn.addEventListener('click', () => {
+        const n1 = document.getElementById('tN1').value;
+        const n2 = document.getElementById('tN2').value;
+        const n3 = document.getElementById('tN3').value;
+        const n4 = document.getElementById('tN4').value;
+        const n5 = document.getElementById('tN5').value;
+        const pb = document.getElementById('tPB').value;
+        const res = evaluateTicketQuality(n1,n2,n3,n4,n5,pb);
+        renderTicketQualityResult(res);
+      });
+    })();
+    // --- Range Groups computation & rendering ---
+    const RANGE_BINS = [
+      { min: 1, max: 10, label: '1–10' },
+      { min: 11, max: 20, label: '11–20' },
+      { min: 21, max: 29, label: '21–29' },
+      { min: 30, max: 39, label: '30–39' },
+      { min: 40, max: 49, label: '40–49' },
+      { min: 50, max: 59, label: '50–59' },
+      { min: 60, max: 69, label: '60–69' },
+    ];
+
+    function binIndex(n) {
+      for (let i = 0; i < RANGE_BINS.length; i++) {
+        const b = RANGE_BINS[i];
+        if (n >= b.min && n <= b.max) return i;
+      }
+      return -1;
+    }
+
+    function computeRangeGroups(draws) {
+      const total = draws?.length || 0;
+      const g1 = Array(RANGE_BINS.length).fill(0);
+      const g2 = Array(RANGE_BINS.length).fill(0);
+      const g3 = Array(RANGE_BINS.length).fill(0);
+      const g4 = Array(RANGE_BINS.length).fill(0);
+      if (!total) return { total, g1, g2, g3, g4 };
+
+      for (const d of draws) {
+        const w = d.whites || [];
+        if (w.length >= 2) {
+          const i1 = binIndex(w[0]);
+          const i2 = binIndex(w[1]);
+          if (i1 >= 0 && i1 === i2) g1[i1]++;
+        }
+        if (w.length >= 4) {
+          const i3 = binIndex(w[2]);
+          const i4 = binIndex(w[3]);
+          if (i3 >= 0 && i3 === i4) g2[i3]++;
+        }
+        if (w.length >= 5) {
+          const i5 = binIndex(w[4]);
+          if (i5 >= 0) g3[i5]++;
+          // New group: N4 & N5
+          const i4 = binIndex(w[3]);
+          if (i4 >= 0 && i4 === i5) g4[i4]++;
+        }
+      }
+      return { total, g1, g2, g3, g4 };
+    }
+
+    function renderRangeGroupList(container, counts, total) {
+      if (!container) return;
+      container.innerHTML = '';
+      for (let i = 0; i < RANGE_BINS.length; i++) {
+        const row = document.createElement('div');
+        row.className = 'freq-row';
+        const cRange = document.createElement('div'); cRange.textContent = RANGE_BINS[i].label;
+        const cCount = document.createElement('div'); cCount.textContent = (counts[i] || 0).toLocaleString();
+        const pct = total ? ((counts[i] || 0) / total) * 100 : 0;
+        const cPct = document.createElement('div'); cPct.textContent = pct.toFixed(2) + '%';
+        row.append(cRange, cCount, cPct);
+        container.appendChild(row);
+      }
+    }
+
+    function renderRangeGroups() {
+      const stats = computeRangeGroups(state.draws || []);
+      renderRangeGroupList(document.getElementById('group1Ranges'), stats.g1, stats.total);
+      renderRangeGroupList(document.getElementById('group2Ranges'), stats.g2, stats.total);
+      renderRangeGroupList(document.getElementById('group3Ranges'), stats.g3, stats.total);
+      renderRangeGroupList(document.getElementById('group4Ranges'), stats.g4, stats.total);
+    }
+
+    // --- Winners Map ---
+    function renderWinnersMap() {
+      const listEl = document.getElementById('winnersMapList');
+      if (!listEl) return;
+
+      listEl.innerHTML = '';
+      const last10Draws = (state.draws || []).slice(0, 10);
+
+      if (!last10Draws.length) {
+        const empty = document.createElement('div');
+        empty.className = 'ticket-meta';
+        empty.textContent = 'No draws to display in the selected range.';
+        listEl.appendChild(empty);
+        return;
+      }
+
+      for (const draw of last10Draws) {
+        const row = document.createElement('div');
+        row.className = 'ticket';
+        for (const n of draw.whites) {
+          const b = document.createElement('div'); b.className = 'ball'; b.textContent = n;
+          row.appendChild(b);
+        }
+        const pb = document.createElement('div'); pb.className = 'ball pball'; pb.textContent = draw.red;
+        row.appendChild(pb);
+        listEl.appendChild(row);
+      }
+    }
+    // --- Number Appearance Checker ---
+    (function attachCombinationChecker() {
+      const btn = document.getElementById('checkComboBtn');
+      const resultEl = document.getElementById('comboCheckResult');
+      const inputs = Array.from(document.querySelectorAll('#comboCheckControls .combo-input'));
+
+      if (!btn || !resultEl || !inputs.length) return;
+
+      btn.addEventListener('click', () => {
+        const numbers = inputs.map(el => parseInt(el.value, 10));
+        const whites = numbers.slice(0, 5);
+        const red = numbers[5];
+
+        resultEl.innerHTML = ''; // Clear previous results
+
+        if (whites.some(isNaN) || isNaN(red)) {
+          resultEl.innerHTML = `<div class="combo-empty">Please enter 5 white numbers and 1 Powerball.</div>`;
+          return;
+        }
+
+        const uniqueWhites = new Set(whites);
+        if (uniqueWhites.size !== 5) {
+          resultEl.innerHTML = `<div class="combo-empty">White numbers must be unique.</div>`;
+          return;
+        }
+
+        if (!state.draws || state.draws.length === 0) {
+          resultEl.innerHTML = `<div class="combo-empty">No draw data is loaded.</div>`;
+          return;
+        }
+
+        // Sort user's white numbers to match the stored format
+        whites.sort((a, b) => a - b);
+
+        // 1. Check for exact matches
+        let matchCount = 0;
+        const matchCounts = {};
+        const detailedMatches = [];
+
+        for (const draw of state.draws) {
+          // Ensure draw.whites is sorted
+          const sortedDrawWhites = (draw.whites || []).slice().sort((a, b) => a - b);
+          const whitesMatch = sortedDrawWhites.length === whites.length && sortedDrawWhites.every((val, index) => val === whites[index]);
+          const redMatch = draw.red === red;
+
+          if (whitesMatch && redMatch) matchCount++;
+
+          // 2. Check for partial matches
+          const drawWhites = new Set(draw.whites || []);
+          const matchingWhiteNumbers = whites.filter(n => drawWhites.has(n));
+          const whiteMatchesCount = matchingWhiteNumbers.length;
+          const pbMatch = draw.red === red; // Use the same red ball from input
+
+          if (whiteMatchesCount >= 2) {
+            const key = `${whiteMatchesCount} Numbers ${pbMatch ? '+ PB' : ''}`;
+            matchCounts[key] = (matchCounts[key] || 0) + 1;
+            detailedMatches.push({
+              date: draw.date,
+              drawWhites: draw.whites,
+              drawRed: draw.red,
+              matchedWhites: matchingWhiteNumbers,
+              pbMatch: pbMatch,
+              matchKey: key
+            });
+          }
+        }
+
+        // Build the result HTML
+        let html = `<div class="ticket-meta" style="padding-bottom:12px;">This exact combination has appeared <strong>${matchCount}</strong> time(s).</div>`;
+
+        // Now add the partial match table
+        html += `<div class="freq-scroll" style="max-height: 260px; border: 1px solid rgba(255,255,255,0.06); border-radius:12px;">`;
+        html += `<div class="combo-header" style="grid-template-columns: 1fr 1fr;">
+                    <div>Match Type</div>
+                    <div>Count</div>
+                 </div>`;
+        html += `<div id="comboMatchSummaryList">`;
+
+        const sortedKeys = Object.keys(matchCounts).sort((a, b) => {
+          const aParts = a.match(/(\d+)/);
+          const bParts = b.match(/(\d+)/);
+          const aNum = aParts ? parseInt(aParts[1], 10) : 0;
+          const bNum = bParts ? parseInt(bParts[1], 10) : 0;
+          if (bNum !== aNum) return bNum - aNum;
+          // If number of matches is the same, put "+ PB" first
+          return b.includes('+ PB') - a.includes('+ PB');
+        });
+
+        if (sortedKeys.length === 0) {
+          html += `<div class="combo-empty">No partial matches of 2 or more numbers found.</div>`;
+        } else {
+          for (const key of sortedKeys) {
+            html += `<div class="combo-row"><div class="combo-name">${key}</div><div class="combo-count">${matchCounts[key].toLocaleString()}</div></div>`;
+          }
+        }
+
+        html += `</div></div>`; // Close list and scroll container
+
+        // 3. Add detailed matches list
+        if (detailedMatches.length > 0) {
+          html += `<div class="ticket-meta" style="padding:16px 0 8px 0;">Details of matching draws:</div>`;
+          html += `<div class="freq-scroll" style="max-height: 260px; border: 1px solid rgba(255,255,255,0.06); border-radius:12px;">`;
+          html += `<div class="combo-header" style="grid-template-columns: 2fr 1fr;">
+                      <div>Draw Date & Numbers</div>
+                      <div>Matches</div>
+                   </div>`;
+          html += `<div id="comboMatchDetailList">`;
+
+          // Sort detailed matches by date descending
+          detailedMatches.sort((a, b) => b.date - a.date);
+
+          for (const match of detailedMatches) {
+            const drawDate = match.date ? fmtMDY(match.date) : 'N/A';
+            const drawTicketHTML = `<div class="ticket-meta">${drawDate}</div><div class="ticket">${match.drawWhites.map(n => `<div class="ball" style="width:24px;height:24px;font-size:11px;">${n}</div>`).join('')}<div class="ball pball" style="width:24px;height:24px;font-size:11px;">${match.drawRed}</div></div>`;
+            
+            let matchDetailsHTML = `<div>${match.matchedWhites.join(', ')}</div>`;
+            if (match.pbMatch) {
+              matchDetailsHTML += `<div style="color:var(--hot)">+ PB</div>`;
+            }
+
+            html += `<div class="match-detail-row"><div class="match-detail-ticket">${drawTicketHTML}</div><div class="match-detail-matches">${matchDetailsHTML}</div></div>`;
+          }
+
+          html += `</div></div>`;
+        }
+        resultEl.innerHTML = html;
+      });
+    })();
+  </script>
+
+</body>
+
+</html>
