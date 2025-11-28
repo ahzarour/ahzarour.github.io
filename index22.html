@@ -2554,7 +2554,7 @@
           html += `<div class="combo-empty">No partial matches of 2 or more numbers found.</div>`;
         } else {
           for (const key of sortedKeys) {
-            html += `<div class="combo-row"><div class="combo-name">${key}</div><div class="combo-count">${matchCounts[key].toLocaleString()}</div></div>`;
+            html += `<div class="combo-row" data-match-key="${key}" style="cursor: pointer;" title="Click to see details"><div class="combo-name">${key}</div><div class="combo-count">${matchCounts[key].toLocaleString()}</div></div>`;
           }
         }
 
@@ -2562,32 +2562,43 @@
 
         // 3. Add detailed matches list
         if (detailedMatches.length > 0) {
-          html += `<div class="ticket-meta" style="padding:16px 0 8px 0;">Details of matching draws:</div>`;
-          html += `<div class="freq-scroll" style="max-height: 260px; border: 1px solid rgba(255,255,255,0.06); border-radius:12px;">`;
-          html += `<div class="combo-header" style="grid-template-columns: 2fr 1fr;">
-                      <div>Draw Date & Numbers</div>
-                      <div>Matches</div>
-                   </div>`;
-          html += `<div id="comboMatchDetailList">`;
-
-          // Sort detailed matches by date descending
-          detailedMatches.sort((a, b) => b.date - a.date);
-
-          for (const match of detailedMatches) {
-            const drawDate = match.date ? fmtMDY(match.date) : 'N/A';
-            const drawTicketHTML = `<div class="ticket-meta">${drawDate}</div><div class="ticket">${match.drawWhites.map(n => `<div class="ball" style="width:24px;height:24px;font-size:11px;">${n}</div>`).join('')}<div class="ball pball" style="width:24px;height:24px;font-size:11px;">${match.drawRed}</div></div>`;
-            
-            let matchDetailsHTML = `<div>${match.matchedWhites.join(', ')}</div>`;
-            if (match.pbMatch) {
-              matchDetailsHTML += `<div style="color:var(--hot)">+ PB</div>`;
-            }
-
-            html += `<div class="match-detail-row"><div class="match-detail-ticket">${drawTicketHTML}</div><div class="match-detail-matches">${matchDetailsHTML}</div></div>`;
-          }
-
-          html += `</div></div>`;
+          // Add a container for the details, which will be populated on click
+          html += `<div id="comboMatchDetailContainer" style="padding-top: 16px;"></div>`;
         }
         resultEl.innerHTML = html;
+
+        // 4. Add event listener for the summary rows
+        const summaryList = resultEl.querySelector('#comboMatchSummaryList');
+        if (summaryList) {
+          summaryList.addEventListener('click', (e) => {
+            const summaryRow = e.target.closest('.combo-row[data-match-key]');
+            if (!summaryRow) return;
+
+            const matchKey = summaryRow.dataset.matchKey;
+            const detailContainer = resultEl.querySelector('#comboMatchDetailContainer');
+            if (!detailContainer) return;
+
+            const relevantMatches = detailedMatches.filter(m => m.matchKey === matchKey).sort((a, b) => b.date - a.date);
+
+            let detailHtml = `<div class="ticket-meta" style="padding:0 0 8px 0;">Details for matches of type: <strong>${matchKey}</strong></div>`;
+            detailHtml += `<div class="freq-scroll" style="max-height: 260px; border: 1px solid rgba(255,255,255,0.06); border-radius:12px;">`;
+            detailHtml += `<div class="combo-header" style="grid-template-columns: 2fr 1fr;"><div>Draw Date & Numbers</div><div>Matches</div></div>`;
+            detailHtml += `<div id="comboMatchDetailList">`;
+
+            for (const match of relevantMatches) {
+              const drawDate = match.date ? fmtMDY(match.date) : 'N/A';
+              const drawTicketHTML = `<div class="ticket-meta">${drawDate}</div><div class="ticket">${match.drawWhites.map(n => `<div class="ball" style="width:24px;height:24px;font-size:11px;">${n}</div>`).join('')}<div class="ball pball" style="width:24px;height:24px;font-size:11px;">${match.drawRed}</div></div>`;
+              let matchDetailsHTML = `<div>${match.matchedWhites.join(', ')}</div>`;
+              if (match.pbMatch) {
+                matchDetailsHTML += `<div style="color:var(--hot)">+ PB</div>`;
+              }
+              detailHtml += `<div class="match-detail-row"><div class="match-detail-ticket">${drawTicketHTML}</div><div class="match-detail-matches">${matchDetailsHTML}</div></div>`;
+            }
+
+            detailHtml += `</div></div>`;
+            detailContainer.innerHTML = detailHtml;
+          });
+        }
       });
     })();
   </script>
