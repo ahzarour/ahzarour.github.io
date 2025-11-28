@@ -342,7 +342,7 @@
     .combo-header,
     .combo-row {
       display: grid;
-      grid-template-columns: 1fr auto;
+      grid-template-columns: 2fr 1fr;
       gap: 8px;
       padding: 8px 10px;
       border-bottom: 1px solid rgba(255, 255, 255, 0.08);
@@ -516,7 +516,7 @@
     .quality-controls { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; justify-content: center; }
     .quality-controls--inline { flex-wrap: nowrap; gap: 8px; overflow-x: auto; }
     .quality-controls input[type="number"]:not(.ball-input) { width: 120px; }
-    .quality-result { display: grid; gap: 8px; justify-items: center; text-align: center; }
+    .quality-result { display: grid; gap: 8px; justify-items: center; text-align: left; }
     .quality-badge { display: inline-block; padding: 8px 12px; border-radius: 999px; font-weight: 700; }
     .q-ultimate { background: #1f3a5f; border: 1px solid rgba(255,255,255,0.12); }
     .q-excellent { background: #1f4f3a; border: 1px solid rgba(255,255,255,0.12); }
@@ -2534,7 +2534,7 @@
 
         // Now add the partial match table
         html += `<div class="freq-scroll" style="max-height: 260px; border: 1px solid rgba(255,255,255,0.06); border-radius:12px;">`;
-        html += `<div class="combo-header" style="grid-template-columns: 1fr 1fr;">
+        html += `<div class="combo-header" style="grid-template-columns: 2fr 1fr;">
                     <div>Match Type</div>
                     <div>Count</div>
                  </div>`;
