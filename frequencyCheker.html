@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Universal Lottery Analyzer</title>
+    <style>
+        :root {
+            --bg-color: #f4f7f6;
+            --card-bg: #ffffff;
+            --primary: #2c3e50;
+            --accent: #2980b9;
+            --text: #333;
+            --border: #e0e0e0;
+            --highlight: #e7f4fd;
+            --error: #e74c3c;
+            --success: #27ae60;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text);
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .card {
+            background: var(--card-bg);
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            margin-bottom: 20px;
+        }
+
+        h1 { margin-top: 0; color: var(--primary); font-size: 24px; }
+        .subtitle { color: #7f8c8d; font-size: 14px; margin-bottom: 20px; }
+
+        /* Status Bar */
+        #status-bar {
+            padding: 15px;
+            background: #f8f9fa;
+            border-left: 5px solid #bdc3c7;
+            border-radius: 4px;
+            font-weight: 500;
+        }
+        .status-error { border-left-color: var(--error) !important; color: var(--error); background: #fdf0ed !important; }
+        .status-success { border-left-color: var(--success) !important; color: var(--success); background: #eafaf1 !important; }
+
+        /* Fallback Controls */
+        #manual-upload {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #eee;
+        }
+        
+        .upload-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        /* Stats Dashboard */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-box {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            border-bottom: 3px solid var(--accent);
+        }
+
+        .stat-number { font-size: 28px; font-weight: bold; color: var(--primary); }
+        .stat-label { font-size: 12px; color: #7f8c8d; text-transform: uppercase; letter-spacing: 1px; margin-top: 5px; }
+
+        /* Table Styles */
+        .table-container {
+            overflow-x: auto;
+            max-height: 650px;
+            overflow-y: auto;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+
+        th {
+            background-color: var(--primary);
+            color: white;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            padding: 12px 10px;
+            text-align: left;
+        }
+
+        td {
+            padding: 8px 10px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        tr:nth-child(even) { background-color: #fafafa; }
+        tr:hover { background-color: #f1f1f1; }
+
+        .ball {
+            display: inline-block;
+            width: 24px;
+            height: 24px;
+            line-height: 24px;
+            border-radius: 50%;
+            background: #ecf0f1;
+            color: #2c3e50;
+            text-align: center;
+            font-size: 11px;
+            font-weight: bold;
+            margin-right: 3px;
+            border: 1px solid #bdc3c7;
+        }
+        
+        .ball.pb {
+            background: #e74c3c;
+            color: white;
+            border-color: #c0392b;
+        }
+
+        /* Match indicators */
+        .match-cell { font-weight: bold; text-align: center; }
+        .match-exact { color: #fff; background-color: #27ae60; }
+        .match-high { color: #c0392b; background-color: rgba(231, 76, 60, 0.15); }
+        .match-med { color: #d35400; background-color: rgba(230, 126, 34, 0.1); }
+        .match-low { color: #2980b9; background-color: rgba(52, 152, 219, 0.1); }
+        .zero-count { color: #ccc; font-weight: normal; }
+
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    
+    <div class="card">
+        <h1>Lottery Data Analyzer</h1>
+        <div class="subtitle">Processing data from: <strong>ahzarour.github.io/PB-1998.txt</strong></div>
+        
+        <div id="status-bar">Initializing...</div>
+        
+        <div id="manual-upload" class="hidden">
+            <span class="upload-label">⚠️ Automatic download failed (likely blocked by browser security). Please download the file manually and select it here:</span>
+            <input type="file" id="fileInput" accept=".txt,.csv,.log">
+        </div>
+    </div>
+
+    <div id="dashboard" class="hidden">
+        <div class="stats-grid">
+            <div class="stat-box">
+                <div class="stat-number" id="totalRows">0</div>
+                <div class="stat-label">Total Draws</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-number" id="totalExact">0</div>
+                <div class="stat-label">Exact Duplicates</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-number" id="totalHighMatches">0</div>
+                <div class="stat-label">4+ Number Matches</div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>Detailed Matrix Comparison</h2>
+            <div class="table-container">
+                <table id="dataTable">
+                    <thead>
+                        <tr>
+                            <th style="width: 50px;">#</th>
+                            <th style="width: 100px;">Date</th>
+                            <th>Combination (White + PB)</th>
+                            <th title="5 White + PB Match">Exact Match</th>
+                            <th title="5 White Match (Jackpot excluding PB)">5# Match</th>
+                            <th title="4 White Match">4# Match</th>
+                            <th title="3 White Match">3# Match</th>
+                            <th title="2 White Match">2# Match</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const DATA_URL = "https://ahzarour.github.io/PB-1998.txt";
+    
+    // UI Elements
+    const statusBar = document.getElementById('status-bar');
+    const manualUploadDiv = document.getElementById('manual-upload');
+    const fileInput = document.getElementById('fileInput');
+    const dashboard = document.getElementById('dashboard');
+    const tbody = document.querySelector('#dataTable tbody');
+
+    // 1. Try Auto-Load on startup
+    window.addEventListener('DOMContentLoaded', () => {
+        loadDataFromUrl();
+    });
+
+    // 2. Manual Upload Handler (Backup)
+    fileInput.addEventListener('change', function(e) {
+        if (e.target.files.length > 0) {
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                analyzeData(event.target.result);
+            };
+            reader.readAsText(e.target.files[0]);
+        }
+    });
+
+    async function loadDataFromUrl() {
+        setStatus("Attempting to download data...", "normal");
+        try {
+            const response = await fetch(DATA_URL);
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
+            const text = await response.text();
+            analyzeData(text);
+        } catch (error) {
+            console.error(error);
+            setStatus(`Auto-load failed: ${error.message}`, "error");
+            manualUploadDiv.classList.remove('hidden');
+        }
+    }
+
+    function setStatus(msg, type) {
+        statusBar.textContent = msg;
+        statusBar.className = ''; // reset
+        if (type === 'error') statusBar.classList.add('status-error');
+        if (type === 'success') statusBar.classList.add('status-success');
+    }
+
+    function parseLine(line, index) {
+        // Cleanup whitespace
+        line = line.trim();
+        if (!line) return null;
+
+        let dateStr = "";
+        let numberString = "";
+        let id = index + 1;
+
+        // PATTERN A: "Date,Numbers"
+        const matchSource = line.match(/^\\s*([^,]+),(.+)$/);
+        
+        // PATTERN B: "Date,Numbers" (Standard CSV)
+        // Regex looks for Date at start (DD/MM/YYYY or similar), followed by comma
+        const matchCSV = line.match(/^(\d{1,2}[\/\-\.]\d{1,2}[\/\-\.]\d{2,4}),(.+)$/);
+
+        if (matchSource) {
+            id = parseInt(matchSource[1]);
+            dateStr = matchSource[2].trim();
+            numberString = matchSource[3];
+        } else if (matchCSV) {
+            dateStr = matchCSV[1].trim();
+            numberString = matchCSV[2];
+        } else {
+            // Header row or garbage?
+            return null; 
+        }
+
+        // Robust number extraction: extract all digit sequences
+        const allNumbers = numberString.split(/[^0-9]+/).filter(n => n.trim() !== '').map(Number);
+
+        // Filter valid rows: Must have at least 5 white + 1 PB = 6 numbers
+        if (allNumbers.length < 6) return null;
+
+        // Assume last number is PB
+        const pb = allNumbers[allNumbers.length - 1];
+        const whites = allNumbers.slice(0, allNumbers.length - 1);
+        
+        // Ensure whites are sorted for consistent display
+        whites.sort((a, b) => a - b);
+
+        return { id, date: dateStr, whites, pb };
+    }
+
+    function analyzeData(content) {
+        setStatus("Parsing data...", "normal");
+        
+        const lines = content.split(/\r?\n/);
+        const data = [];
+
+        for (let i = 0; i < lines.length; i++) {
+            const parsed = parseLine(lines[i], i);
+            if (parsed) data.push(parsed);
+        }
+
+        if (data.length === 0) {
+            setStatus("File loaded, but no valid lottery rows were found. Check file format.", "error");
+            manualUploadDiv.classList.remove('hidden');
+            return;
+        }
+
+        // Initialize Stats objects
+        data.forEach(row => {
+            row.stats = { exact: 0, match5: 0, match4: 0, match3: 0, match2: 0 };
+        });
+
+        let totalExact = 0;
+        let totalHigh = 0; 
+
+        // Perform Comparison (O(n^2))
+        // We compare every row against every other row
+        for (let i = 0; i < data.length; i++) {
+            const target = data[i];
+            const targetSet = new Set(target.whites);
+
+            for (let j = 0; j < data.length; j++) {
+                if (i === j) continue; // Don't compare with self
+
+                const compare = data[j];
+                
+                // Count White Ball Matches
+                let whiteMatches = 0;
+                for (let num of compare.whites) {
+                    if (targetSet.has(num)) whiteMatches++;
+                }
+
+                // Check PB Match
+                const pbMatch = (target.pb === compare.pb);
+
+                // Tally Results
+                if (whiteMatches === 5 && pbMatch) {
+                    target.stats.exact++;
+                    totalExact++; 
+                } else if (whiteMatches === 5) {
+                    target.stats.match5++;
+                    totalHigh++;
+                } else if (whiteMatches === 4) {
+                    target.stats.match4++;
+                    totalHigh++;
+                } else if (whiteMatches === 3) {
+                    target.stats.match3++;
+                } else if (whiteMatches === 2) {
+                    target.stats.match2++;
+                }
+            }
+        }
+
+        setStatus(`Success! Analyzed ${data.length} draws.`, "success");
+        renderResults(data, totalExact, totalHigh);
+    }
+
+    function renderResults(data, totalExact, totalHigh) {
+        tbody.innerHTML = '';
+        
+        document.getElementById('totalRows').textContent = data.length.toLocaleString();
+        document.getElementById('totalExact').textContent = Math.floor(totalExact / 2);
+        document.getElementById('totalHighMatches').textContent = Math.floor(totalHigh / 2);
+
+        // Use DocumentFragment for performance
+        const fragment = document.createDocumentFragment();
+
+        data.forEach(row => {
+            const tr = document.createElement('tr');
+            
+            // Build Ball HTML
+            const ballsHtml = row.whites.map(n => `<span class="ball">${n}</span>`).join('') + 
+                              `<span class="ball pb">${row.pb}</span>`;
+            
+            // Styling Logic
+            const getStyleClass = (count, thresholdHigh, thresholdMed) => {
+                if (count === 0) return 'match-cell zero-count';
+                if (count >= thresholdHigh) return 'match-cell match-high';
+                if (count >= thresholdMed) return 'match-cell match-med';
+                return 'match-cell match-low';
+            };
+
+            const exactClass = row.stats.exact > 0 ? 'match-cell match-exact' : 'match-cell zero-count';
+
+            tr.innerHTML = `
+                <td style="color:#95a5a6;">${row.id}</td>
+                <td>${row.date}</td>
+                <td>${ballsHtml}</td>
+                <td class="${exactClass}">${row.stats.exact || '-'}</td>
+                <td class="${getStyleClass(row.stats.match5, 1, 1)}">${row.stats.match5 || '-'}</td>
+                <td class="${getStyleClass(row.stats.match4, 1, 1)}">${row.stats.match4 || '-'}</td>
+                <td class="${getStyleClass(row.stats.match3, 3, 1)}">${row.stats.match3 || '-'}</td>
+                <td class="${getStyleClass(row.stats.match2, 10, 5)}">${row.stats.match2 || '-'}</td>
+            `;
+            fragment.appendChild(tr);
+        });
+
+        tbody.appendChild(fragment);
+        dashboard.classList.remove('hidden');
+    }
+</script>
+
+</body>
+</html>
