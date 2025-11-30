@@ -109,6 +109,21 @@
             z-index: 10;
             padding: 12px 10px;
             text-align: left;
+            cursor: pointer; /* Add pointer cursor on hover */
+            transition: background-color 0.3s; /* Add transition for smooth color change */
+        }
+
+        th:hover {
+            background-color: var(--accent); /* Change background on hover */
+        }
+
+        /* Styles for sorted columns */
+        .sorted-asc::after {
+            content: ' ▲';
+        }
+
+        .sorted-desc::after {
+            content: ' ▼';
         }
 
         td {
@@ -189,14 +204,14 @@
                 <table id="dataTable">
                     <thead>
                         <tr>
-                            <th style="width: 50px;">#</th>
-                            <th style="width: 100px;">Date</th>
-                            <th>Combination (White + PB)</th>
-                            <th title="5 White + PB Match">Exact Match</th>
-                            <th title="5 White Match (Jackpot excluding PB)">5# Match</th>
-                            <th title="4 White Match">4# Match</th>
-                            <th title="3 White Match">3# Match</th>
-                            <th title="2 White Match">2# Match</th>
+                            <th style="width: 50px;" data-column-index="0">#</th>
+                            <th style="width: 100px;" data-column-index="1">Date</th>
+                            <th data-column-index="2">Combination (White + PB)</th>
+                            <th title="5 White + PB Match" data-column-index="3">Exact Match</th>
+                            <th title="5 White Match (Jackpot excluding PB)" data-column-index="4">5# Match</th>
+                            <th title="4 White Match" data-column-index="5">4# Match</th>
+                            <th title="3 White Match" data-column-index="6">3# Match</th>
+                            <th title="2 White Match" data-column-index="7">2# Match</th>
                         </tr>
                     </thead>
                     <tbody></tbody>
@@ -407,6 +422,69 @@
         tbody.appendChild(fragment);
         dashboard.classList.remove('hidden');
     }
+</script>
+<script>
+    // --- Table Sorting Logic ---
+    document.addEventListener('DOMContentLoaded', () => {
+        const table = document.getElementById('dataTable');
+        if (!table) return;
+
+        const headers = table.querySelectorAll('th');
+        const tbody = table.querySelector('tbody');
+        const sortDirections = Array.from(headers).map(() => null);
+
+        headers.forEach(header => {
+            header.addEventListener('click', () => {
+                const columnIndex = parseInt(header.dataset.columnIndex, 10);
+                if (isNaN(columnIndex)) return;
+
+                const currentDirection = sortDirections[columnIndex];
+                const direction = currentDirection === 'desc' ? 'asc' : 'desc';
+
+                // Reset sort indicators for other columns
+                headers.forEach((h, i) => {
+                    h.classList.remove('sorted-asc', 'sorted-desc');
+                    if (i !== columnIndex) {
+                        sortDirections[i] = null;
+                    }
+                });
+
+                // Update current column's direction and indicator
+                sortDirections[columnIndex] = direction;
+                header.classList.add(direction === 'asc' ? 'sorted-asc' : 'sorted-desc');
+
+                // Sort the table rows
+                const rows = Array.from(tbody.querySelectorAll('tr'));
+                rows.sort((rowA, rowB) => {
+                    const cellA = rowA.cells[columnIndex].textContent.trim();
+                    const cellB = rowB.cells[columnIndex].textContent.trim();
+
+                    let valA, valB;
+
+                    if (columnIndex >= 3) { // Numeric match columns
+                        valA = parseInt(cellA.replace('-', '0'), 10);
+                        valB = parseInt(cellB.replace('-', '0'), 10);
+                    } else if (columnIndex === 1) { // Date column
+                        // Assuming DD/MM/YYYY format
+                        const partsA = cellA.split('/');
+                        const partsB = cellB.split('/');
+                        valA = new Date(`${partsA[2]}-${partsA[1]}-${partsA[0]}`);
+                        valB = new Date(`${partsB[2]}-${partsB[1]}-${partsB[0]}`);
+                    } else { // Default numeric/alphabetic sort for ID or other columns
+                        valA = isNaN(cellA) ? cellA : Number(cellA);
+                        valB = isNaN(cellB) ? cellB : Number(cellB);
+                    }
+
+                    if (valA < valB) return direction === 'asc' ? -1 : 1;
+                    if (valA > valB) return direction === 'asc' ? 1 : -1;
+                    return 0;
+                });
+
+                // Re-append sorted rows to the table body
+                rows.forEach(row => tbody.appendChild(row));
+            });
+        });
+    });
 </script>
 
 </body>
