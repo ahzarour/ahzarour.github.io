@@ -232,16 +232,37 @@
             overflow-y: auto;
             font-size: 14px;
         }
+
+        #refreshBtn {
+            float: right;
+            padding: 8px 15px;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            background-color: #fff;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--primary);
+            transition: all 0.2s ease;
+        }
+        #refreshBtn:hover {
+            background-color: var(--bg-color);
+            border-color: #cdd5db;
+        }
+        #refreshBtn:active {
+            background-color: #e1e5e8;
+            transform: translateY(1px);
+        }
     </style>
 </head>
 <body>
 
 <div class="container">
     
-    <div class="card">
-        <h1>Frequency Data Analyzer</h1>
-        <div class="subtitle">Processing data from: <strong>ahzarour.github.io/PB-1998.txt</strong></div>
-        
+            <div class="card">
+                <button id="refreshBtn" title="Force a re-download and analysis of the source file.">Force Refresh</button>
+                <h1>Frequency Data Analyzer</h1>
+                <div class="subtitle">Processing data from: <strong>ahzarour.github.io/PB-1998.txt</strong></div>        
         <div id="status-bar">Initializing...</div>
         
         <div id="manual-upload" class="hidden">
@@ -314,6 +335,15 @@
             };
             reader.readAsText(e.target.files[0]);
         }
+    });
+
+    // 3. Add listener for the refresh button
+    document.getElementById('refreshBtn').addEventListener('click', () => {
+        // Hide dashboard and clear table to give visual feedback
+        dashboard.classList.add('hidden');
+        tbody.innerHTML = '';
+        // Re-trigger the data load process
+        loadDataFromUrl();
     });
 
     async function loadDataFromUrl() {
