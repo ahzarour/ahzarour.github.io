@@ -102,7 +102,7 @@
         }
 
         th {
-            background-color: var(--primary);
+            background-color: navy;
             color: white;
             position: sticky;
             top: 0;
@@ -163,7 +163,75 @@
         .match-low { color: #2980b9; background-color: rgba(52, 152, 219, 0.1); }
         .zero-count { color: #ccc; font-weight: normal; }
 
+        /* Make clickable cells stand out */
+        .match-cell[onclick] {
+            cursor: pointer;
+            transition: background-color 0.2s, box-shadow 0.2s;
+        }
+        .match-cell[onclick]:hover {
+            background-color: #eafaf1;
+            box-shadow: inset 0 0 5px rgba(0,0,0,0.1);
+        }
+
         .hidden { display: none !important; }
+
+        /* --- Modal Styles --- */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.6);
+            display: none; /* Initially hidden */
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 80vh;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+        }
+
+        .modal-header h2 {
+            margin: 0;
+            font-size: 18px;
+            color: var(--primary);
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #95a5a6;
+            transition: color 0.2s;
+        }
+        .modal-close:hover {
+            color: var(--primary);
+        }
+
+        .modal-body {
+            overflow-y: auto;
+            font-size: 14px;
+        }
     </style>
 </head>
 <body>
@@ -230,6 +298,7 @@
     const fileInput = document.getElementById('fileInput');
     const dashboard = document.getElementById('dashboard');
     const tbody = document.querySelector('#dataTable tbody');
+    let fullDataSet = []; // To hold all data for the details modal
 
     // 1. Try Auto-Load on startup
     window.addEventListener('DOMContentLoaded', () => {
@@ -331,7 +400,7 @@
 
         // Initialize Stats objects
         data.forEach(row => {
-            row.stats = { exact: 0, match5: 0, match4: 0, match3: 0, match2: 0 };
+            row.stats = { exact: [], match5: [], match4: [], match3: [], match2: [] };
         });
 
         let totalExact = 0;
@@ -359,23 +428,24 @@
 
                 // Tally Results
                 if (whiteMatches === 5 && pbMatch) {
-                    target.stats.exact++;
+                    target.stats.exact.push(compare.id);
                     totalExact++; 
                 } else if (whiteMatches === 5) {
-                    target.stats.match5++;
+                    target.stats.match5.push(compare.id);
                     totalHigh++;
                 } else if (whiteMatches === 4) {
-                    target.stats.match4++;
+                    target.stats.match4.push(compare.id);
                     totalHigh++;
                 } else if (whiteMatches === 3) {
-                    target.stats.match3++;
+                    target.stats.match3.push(compare.id);
                 } else if (whiteMatches === 2) {
-                    target.stats.match2++;
+                    target.stats.match2.push(compare.id);
                 }
             }
         }
 
         setStatus(`Success! Analyzed ${data.length} draws.`, "success");
+        fullDataSet = data; // Make data globally available for the modal
         renderResults(data, totalExact, totalHigh);
     }
 
@@ -396,7 +466,6 @@
             const ballsHtml = row.whites.map(n => `<span class="ball">${n}</span>`).join('') + 
                               `<span class="ball pb">${row.pb}</span>`;
             
-            // Styling Logic
             const getStyleClass = (count, thresholdHigh, thresholdMed) => {
                 if (count === 0) return 'match-cell zero-count';
                 if (count >= thresholdHigh) return 'match-cell match-high';
@@ -404,17 +473,31 @@
                 return 'match-cell match-low';
             };
 
-            const exactClass = row.stats.exact > 0 ? 'match-cell match-exact' : 'match-cell zero-count';
+            const exactCount = row.stats.exact.length;
+            const exactClass = exactCount > 0 ? 'match-cell match-exact' : 'match-cell zero-count';
+            const exactIds = JSON.stringify(row.stats.exact);
+
+            const match5Count = row.stats.match5.length;
+            const match5Ids = JSON.stringify(row.stats.match5);
+
+            const match4Count = row.stats.match4.length;
+            const match4Ids = JSON.stringify(row.stats.match4);
+            
+            const match3Count = row.stats.match3.length;
+            const match3Ids = JSON.stringify(row.stats.match3);
+
+            const match2Count = row.stats.match2.length;
+            const match2Ids = JSON.stringify(row.stats.match2);
 
             tr.innerHTML = `
                 <td style="color:#95a5a6;">${row.id}</td>
                 <td>${row.date}</td>
                 <td>${ballsHtml}</td>
-                <td class="${exactClass}">${row.stats.exact || '-'}</td>
-                <td class="${getStyleClass(row.stats.match5, 1, 1)}">${row.stats.match5 || '-'}</td>
-                <td class="${getStyleClass(row.stats.match4, 1, 1)}">${row.stats.match4 || '-'}</td>
-                <td class="${getStyleClass(row.stats.match3, 3, 1)}">${row.stats.match3 || '-'}</td>
-                <td class="${getStyleClass(row.stats.match2, 10, 5)}">${row.stats.match2 || '-'}</td>
+                <td class="${exactClass}" ${exactCount > 0 ? `onclick="showDetails('Exact Match', '${exactIds}', ${row.id})"` : ''}>${exactCount || '-'}</td>
+                <td class="${getStyleClass(match5Count, 1, 1)}" ${match5Count > 0 ? `onclick="showDetails('5# Match', '${match5Ids}', ${row.id})"` : ''}>${match5Count || '-'}</td>
+                <td class="${getStyleClass(match4Count, 1, 1)}" ${match4Count > 0 ? `onclick="showDetails('4# Match', '${match4Ids}', ${row.id})"` : ''}>${match4Count || '-'}</td>
+                <td class="${getStyleClass(match3Count, 3, 1)}" ${match3Count > 0 ? `onclick="showDetails('3# Match', '${match3Ids}', ${row.id})"` : ''}>${match3Count || '-'}</td>
+                <td class="${getStyleClass(match2Count, 10, 5)}" ${match2Count > 0 ? `onclick="showDetails('2# Match', '${match2Ids}', ${row.id})"` : ''}>${match2Count || '-'}</td>
             `;
             fragment.appendChild(tr);
         });
@@ -423,7 +506,96 @@
         dashboard.classList.remove('hidden');
     }
 </script>
+
+<!-- Modal for showing details -->
+<div id="detailsModal" class="modal-overlay">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 id="modalTitle">Match Details</h2>
+            <button id="modalCloseBtn" class="modal-close">&times;</button>
+        </div>
+        <div id="modalBody" class="modal-body">
+            <!-- Details will be injected here -->
+        </div>
+    </div>
+</div>
+
 <script>
+    // --- Modal Logic ---
+    const modal = document.getElementById('detailsModal');
+    const modalTitle = document.getElementById('modalTitle');
+    const modalBody = document.getElementById('modalBody');
+    const modalCloseBtn = document.getElementById('modalCloseBtn');
+
+    function showDetails(matchType, matchingIdsJSON, sourceId) {
+        const matchingIds = JSON.parse(matchingIdsJSON);
+        if (!matchingIds || matchingIds.length === 0) return;
+
+        // Find the source draw to display its numbers
+        const sourceDraw = fullDataSet.find(d => d.id === sourceId);
+        const sourceWhitesSet = new Set(sourceDraw.whites);
+        const sourceBalls = sourceDraw.whites.map(n => `<span class="ball">${n}</span>`).join('') + 
+                            `<span class="ball pb">${sourceDraw.pb}</span>`;
+
+        modalTitle.innerHTML = `${matchType} for Draw #${sourceId} <div style="font-size:12px; font-weight:normal; margin-top:5px;">${sourceBalls}</div>`;
+
+        let detailsHtml = '<p>Found <strong>' + matchingIds.length + '</strong> matching draw(s):</p>';
+        detailsHtml += '<table style="width: 100%;">';
+        detailsHtml += `
+            <thead>
+                <tr>
+                    <th style="text-align: left; padding: 8px; background-color: navy; color: white; border-bottom: 1px solid var(--border);">#</th>
+                    <th style="text-align: left; padding: 8px; background-color: navy; color: white; border-bottom: 1px solid var(--border);">Date</th>
+                    <th style="text-align: left; padding: 8px; background-color: navy; color: white; border-bottom: 1px solid var(--border);">Combination</th>
+                    <th style="text-align: left; padding: 8px; background-color: navy; color: white; border-bottom: 1px solid var(--border);">Matching Numbers</th>
+                </tr>
+            </thead>
+            <tbody>
+        `;
+        
+        matchingIds.forEach(id => {
+            const match = fullDataSet.find(d => d.id === id);
+            if (match) {
+                const ballsHtml = match.whites.map(n => `<span class="ball">${n}</span>`).join('') + 
+                                  `<span class="ball pb">${match.pb}</span>`;
+
+                // Find matching numbers
+                const commonWhites = match.whites.filter(num => sourceWhitesSet.has(num));
+                const pbMatch = sourceDraw.pb === match.pb;
+                
+                let matchingBallsHtml = commonWhites.map(n => `<span class="ball">${n}</span>`).join('');
+                if (pbMatch) {
+                    matchingBallsHtml += `<span class="ball pb">${match.pb}</span>`;
+                }
+
+                detailsHtml += `
+                    <tr>
+                        <td style="padding: 8px; color: #95a5a6; border-bottom: 1px solid var(--border);">${match.id}</td>
+                        <td style="padding: 8px; border-bottom: 1px solid var(--border);">${match.date}</td>
+                        <td style="padding: 8px; border-bottom: 1px solid var(--border);">${ballsHtml}</td>
+                        <td style="padding: 8px; border-bottom: 1px solid var(--border);">${matchingBallsHtml}</td>
+                    </tr>
+                `;
+            }
+        });
+
+        detailsHtml += '</tbody></table>';
+        modalBody.innerHTML = detailsHtml;
+        modal.style.display = 'flex';
+    }
+
+    function closeModal() {
+        modal.style.display = 'none';
+    }
+
+    // Event listeners to close the modal
+    modalCloseBtn.addEventListener('click', closeModal);
+    modal.addEventListener('click', (event) => {
+        if (event.target === modal) { // Only close if overlay is clicked directly
+            closeModal();
+        }
+    });
+
     // --- Table Sorting Logic ---
     document.addEventListener('DOMContentLoaded', () => {
         const table = document.getElementById('dataTable');
