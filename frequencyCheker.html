@@ -1,0 +1,1096 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Frequency Analyzer</title>
+    <style>
+        :root {
+            --bg-color: #f4f7f6;
+            --card-bg: #ffffff;
+            --primary: #2c3e50;
+            --accent: #2980b9;
+            --text: #333;
+            --border: #e0e0e0;
+            --highlight: #e7f4fd;
+            --error: #e74c3c;
+            --success: #27ae60;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text);
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .card {
+            background: var(--card-bg);
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            margin-bottom: 20px;
+        }
+
+        h1 { margin-top: 0; color: var(--primary); font-size: 24px; }
+        .subtitle { color: #7f8c8d; font-size: 14px; margin-bottom: 20px; }
+
+        /* Status Bar */
+        #status-bar {
+            padding: 15px;
+            background: #f8f9fa;
+            border-left: 5px solid #bdc3c7;
+            border-radius: 4px;
+            font-weight: 500;
+        }
+        .status-error { border-left-color: var(--error) !important; color: var(--error); background: #fdf0ed !important; }
+        .status-success { border-left-color: var(--success) !important; color: var(--success); background: #eafaf1 !important; }
+
+        /* Fallback Controls */
+        #manual-upload {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #eee;
+        }
+        
+        .upload-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        /* Stats Dashboard */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-box {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            border-bottom: 3px solid var(--accent);
+        }
+
+        .stat-number { font-size: 28px; font-weight: bold; color: var(--primary); }
+        .stat-label { font-size: 12px; color: #7f8c8d; text-transform: uppercase; letter-spacing: 1px; margin-top: 5px; }
+
+        /* Table Styles */
+        .table-container {
+            overflow-x: auto;
+            max-height: 650px;
+            overflow-y: auto;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+
+        th {
+            background-color: navy;
+            color: white;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            padding: 12px 10px;
+            text-align: left;
+            cursor: pointer; /* Add pointer cursor on hover */
+            transition: background-color 0.3s; /* Add transition for smooth color change */
+        }
+
+        th:hover {
+            background-color: var(--accent); /* Change background on hover */
+        }
+
+        /* Styles for sorted columns */
+        .sorted-asc::after {
+            content: ' ▲';
+        }
+
+        .sorted-desc::after {
+            content: ' ▼';
+        }
+
+        td {
+            padding: 8px 10px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        tr:nth-child(even) { background-color: #fafafa; }
+        tr:hover { background-color: #f1f1f1; }
+
+        .ball {
+            display: inline-block;
+            width: 24px;
+            height: 24px;
+            line-height: 24px;
+            border-radius: 50%;
+            background: #ecf0f1;
+            color: #2c3e50;
+            text-align: center;
+            font-size: 11px;
+            font-weight: bold;
+            margin-right: 3px;
+            border: 1px solid #bdc3c7;
+        }
+        
+        .ball.pb {
+            background: #e74c3c;
+            color: white;
+            border-color: #c0392b;
+        }
+
+        /* Match indicators */
+        .match-cell { font-weight: bold; text-align: center; }
+        .match-exact { color: #fff; background-color: #27ae60; }
+        .match-high { color: #c0392b; background-color: rgba(231, 76, 60, 0.15); }
+        .match-med { color: #d35400; background-color: rgba(230, 126, 34, 0.1); }
+        .match-low { color: #2980b9; background-color: rgba(52, 152, 219, 0.1); }
+        .zero-count { color: #ccc; font-weight: normal; }
+
+        /* Make clickable cells stand out */
+        .match-cell[onclick] {
+            cursor: pointer;
+            transition: background-color 0.2s, box-shadow 0.2s;
+        }
+        .match-cell[onclick]:hover {
+            background-color: #eafaf1;
+            box-shadow: inset 0 0 5px rgba(0,0,0,0.1);
+        }
+
+        /* Manual Checker Inputs */
+        .ball-input {
+            width: 40px; height: 40px; 
+            text-align: center; 
+            border-radius: 50%; 
+            border: 1px solid #bdc3c7; 
+            font-weight: bold;
+            font-size: 14px;
+            outline: none;
+        }
+        .ball-input:focus { border-color: var(--accent); box-shadow: 0 0 0 2px rgba(41, 128, 185, 0.2); }
+        .ball-input.pb-input { border-color: #e74c3c; color: #c0392b; }
+        .ball-input::-webkit-outer-spin-button, .ball-input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+        
+        .check-btn {
+            padding: 10px 20px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .check-btn:hover { background: #34495e; }
+
+        .result-tag {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-right: 5px;
+            margin-bottom: 5px;
+            cursor: pointer;
+        }
+
+        .hidden { display: none !important; }
+
+        /* --- Modal Styles --- */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.6);
+            display: none; /* Initially hidden */
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 80vh;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+        }
+
+        .modal-header h2 {
+            margin: 0;
+            font-size: 18px;
+            color: var(--primary);
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #95a5a6;
+            transition: color 0.2s;
+        }
+        .modal-close:hover {
+            color: var(--primary);
+        }
+
+        .modal-body {
+            overflow-y: auto;
+            font-size: 14px;
+        }
+
+        #refreshBtn {
+            float: right;
+            padding: 8px 15px;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            background-color: #fff;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--primary);
+            transition: all 0.2s ease;
+        }
+        #refreshBtn:hover {
+            background-color: var(--bg-color);
+            border-color: #cdd5db;
+        }
+        #refreshBtn:active {
+            background-color: #e1e5e8;
+            transform: translateY(1px);
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    
+            <div class="card">
+                <button id="refreshBtn" title="Force a re-download and analysis of the source file.">Force Refresh</button>
+                <h1>Frequency Data Analyzer</h1>
+                <div class="subtitle">
+                    <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+                        <label for="datePreset"><strong>Date Range:</strong></label>
+                        <select id="datePreset" style="padding: 5px; border-radius: 4px; border: 1px solid #ccc;">
+                            <option value="since-2015-10-07" selected>From 10/07/2015</option>
+                            <option value="1m">Last month</option>
+                            <option value="3m">Last 3 months</option>
+                            <option value="6m">Last 6 months</option>
+                            <option value="1y">Last year</option>
+                            <option value="2y">Last 2 years</option>
+                            <option value="3y">Last 3 years</option>
+                            <option value="all">All time</option>
+                            <option value="custom">Custom dates</option>
+                        </select>
+                        
+                        <div id="customDateControls" style="display: flex; align-items: center; gap: 5px;">
+                            <input type="date" id="dateFromInput" disabled style="padding: 4px; border: 1px solid #ccc; border-radius: 4px;">
+                            <span>to</span>
+                            <input type="date" id="dateToInput" disabled style="padding: 4px; border: 1px solid #ccc; border-radius: 4px;">
+                        </div>
+                    </div>
+                </div>
+        <div id="status-bar">Initializing...</div>
+        
+        <div id="manual-upload" class="hidden">
+            <span class="upload-label">⚠️ Automatic download failed (likely blocked by browser security). Please download the file manually and select it here:</span>
+            <input type="file" id="fileInput" accept=".txt,.csv,.log">
+        </div>
+    </div>
+
+    <div id="dashboard" class="hidden">
+        <div class="stats-grid">
+            <div class="stat-box">
+                <div class="stat-number" id="totalRows">0</div>
+                <div class="stat-label">Total Draws</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-number" id="totalExact">0</div>
+                <div class="stat-label">Exact Matches</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-number" id="totalMatch5">0</div>
+                <div class="stat-label">5# Matches</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-number" id="totalMatch4">0</div>
+                <div class="stat-label">4# Matches</div>
+            </div>
+        </div>
+
+        <!-- Manual Checker -->
+        <div class="card">
+            <h2>Check Your Numbers</h2>
+            <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin-bottom:15px;">
+                <input type="number" class="ball-input" id="chkN1" placeholder="1">
+                <input type="number" class="ball-input" id="chkN2" placeholder="2">
+                <input type="number" class="ball-input" id="chkN3" placeholder="3">
+                <input type="number" class="ball-input" id="chkN4" placeholder="4">
+                <input type="number" class="ball-input" id="chkN5" placeholder="5">
+                <span style="font-weight:bold; color:#ccc;">+</span>
+                <input type="number" class="ball-input pb-input" id="chkPB" placeholder="PB">
+                <button id="btnCheckManual" class="check-btn">Check Matches</button>
+            </div>
+            <div id="manualResults"></div>
+        </div>
+
+        <div class="card">
+            <h2>Detailed Matrix Comparison</h2>
+            <div class="table-container">
+                <table id="dataTable">
+                    <thead>
+                        <tr>
+                            <th style="width: 50px;" data-column-index="0">#</th>
+                            <th style="width: 100px;" data-column-index="1">Date</th>
+                            <th data-column-index="2">Combination (White + PB)</th>
+                            <th title="5 White + PB Match" data-column-index="3">Exact Match</th>
+                            <th title="5 White Match" data-column-index="4">5# Match</th>
+                            <th title="4 White Match" data-column-index="5">4# Match</th>
+                            <th title="3 White Match" data-column-index="6">3# Match</th>
+                            <th title="2 White Match" data-column-index="7">2# Match</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Historical Data Viewer -->
+        <div class="card">
+            <button id="btnShowHistory" class="check-btn" style="width: 100%; background-color: #7f8c8d;">Show Historical Data</button>
+            <div id="historyContainer" class="hidden" style="margin-top: 20px;">
+                <h3>Historical Data (Filtered Range)</h3>
+                <div class="table-container">
+                    <table id="historyTable">
+                        <thead>
+                            <tr>
+                                <th style="width: 120px;">Date</th>
+                                <th>Winning Numbers</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const DATA_URL = "https://ahzarour.github.io/PB-1998.txt";
+    
+    // UI Elements
+    const statusBar = document.getElementById('status-bar');
+    const manualUploadDiv = document.getElementById('manual-upload');
+    const fileInput = document.getElementById('fileInput');
+    const dashboard = document.getElementById('dashboard');
+    const tbody = document.querySelector('#dataTable tbody');
+    let fullDataSet = []; // To hold all data for the details modal
+    let allDrawsRaw = []; // Holds all parsed draws before filtering
+    let currentManualInput = null; // Store manual input for modal
+
+    // 1. Try Auto-Load on startup
+    window.addEventListener('DOMContentLoaded', () => {
+        loadDataFromUrl();
+    });
+
+    // 2. Manual Upload Handler (Backup)
+    fileInput.addEventListener('change', function(e) {
+        if (e.target.files.length > 0) {
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                analyzeData(event.target.result);
+            };
+            reader.readAsText(e.target.files[0]);
+        }
+    });
+
+    // 3. Add listener for the refresh button
+    document.getElementById('refreshBtn').addEventListener('click', () => {
+        // Hide dashboard and clear table to give visual feedback
+        dashboard.classList.add('hidden');
+        tbody.innerHTML = '';
+        // Re-trigger the data load process
+        loadDataFromUrl();
+    });
+
+    // 4. Date Range Logic
+    const datePreset = document.getElementById('datePreset');
+    const dateFromInput = document.getElementById('dateFromInput');
+    const dateToInput = document.getElementById('dateToInput');
+
+    // Helper to format date as YYYY-MM-DD (Local)
+    function toLocalYMD(date) {
+        if (!date) return '';
+        const y = date.getFullYear();
+        const m = String(date.getMonth() + 1).padStart(2, '0');
+        const d = String(date.getDate()).padStart(2, '0');
+        return `${y}-${m}-${d}`;
+    }
+
+    datePreset.addEventListener('change', () => {
+        const val = datePreset.value;
+        const today = new Date();
+        let fromDate = null;
+        let toDate = today;
+
+        dateFromInput.disabled = true;
+        dateToInput.disabled = true;
+
+        if (val === 'custom') {
+            dateFromInput.disabled = false;
+            dateToInput.disabled = false;
+            // Don't auto-filter on switch to custom, wait for input
+            return;
+        } else if (val === 'all') {
+            if (allDrawsRaw.length > 0) {
+                let minT = Infinity;
+                let maxT = -Infinity;
+                for (const row of allDrawsRaw) {
+                    if (row.dateObj) {
+                        const t = row.dateObj.getTime();
+                        if (t < minT) minT = t;
+                        if (t > maxT) maxT = t;
+                    }
+                }
+                if (minT !== Infinity) fromDate = new Date(minT);
+                if (maxT !== -Infinity) toDate = new Date(maxT);
+            }
+        } else if (val.startsWith('since-')) {
+            fromDate = new Date(val.replace('since-', ''));
+        } else if (val.endsWith('m')) {
+            const m = parseInt(val);
+            fromDate = new Date();
+            fromDate.setMonth(today.getMonth() - m);
+        } else if (val.endsWith('y')) {
+            const y = parseInt(val);
+            fromDate = new Date();
+            fromDate.setFullYear(today.getFullYear() - y);
+        }
+
+        if (fromDate) {
+            dateFromInput.value = toLocalYMD(fromDate);
+        } else {
+            dateFromInput.value = '';
+        }
+        dateToInput.value = toLocalYMD(toDate);
+
+        processFilteredData();
+    });
+
+    [dateFromInput, dateToInput].forEach(input => {
+        input.addEventListener('change', () => {
+            if (datePreset.value === 'custom') processFilteredData();
+        });
+    });
+
+    async function loadDataFromUrl() {
+        setStatus("Attempting to download data...", "normal");
+        try {
+            const response = await fetch(DATA_URL);
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
+            const text = await response.text();
+            analyzeData(text);
+        } catch (error) {
+            console.error(error);
+            setStatus(`Auto-load failed: ${error.message}`, "error");
+            manualUploadDiv.classList.remove('hidden');
+        }
+    }
+
+    function setStatus(msg, type) {
+        statusBar.textContent = msg;
+        statusBar.className = ''; // reset
+        if (type === 'error') statusBar.classList.add('status-error');
+        if (type === 'success') statusBar.classList.add('status-success');
+    }
+
+    function parseLine(line, index) {
+        // Cleanup whitespace
+        line = line.trim();
+        if (!line) return null;
+
+        let dateStr = "";
+        let numberString = "";
+        let dateObj = null;
+        let id = index + 1;
+
+        // PATTERN A: "Date,Numbers"
+        const matchSource = line.match(/^\\s*([^,]+),(.+)$/);
+        
+        // PATTERN B: "Date,Numbers" (Standard CSV)
+        // Regex looks for Date at start (DD/MM/YYYY or similar), followed by comma
+        const matchCSV = line.match(/^(\d{1,2}[\/\-\.]\d{1,2}[\/\-\.]\d{2,4}),(.+)$/);
+
+        if (matchSource) {
+            id = parseInt(matchSource[1]);
+            dateStr = matchSource[2].trim();
+            numberString = matchSource[3];
+        } else if (matchCSV) {
+            dateStr = matchCSV[1].trim();
+            numberString = matchCSV[2];
+        } else {
+            // Header row or garbage?
+            return null; 
+        }
+
+        // Parse Date Object (DD/MM/YYYY or similar)
+        const dParts = dateStr.split(/[\/\-\.]/);
+        if (dParts.length === 3) {
+            // Assuming DD/MM/YYYY
+            dateObj = new Date(dParts[2], dParts[1] - 1, dParts[0]);
+        }
+
+        // Robust number extraction: extract all digit sequences
+        const allNumbers = numberString.split(/[^0-9]+/).filter(n => n.trim() !== '').map(Number);
+
+        // Filter valid rows: Must have at least 5 white + 1 PB = 6 numbers
+        if (allNumbers.length < 6) return null;
+
+        // Assume last number is PB
+        const pb = allNumbers[allNumbers.length - 1];
+        const whites = allNumbers.slice(0, allNumbers.length - 1);
+        
+        // Ensure whites are sorted for consistent display
+        whites.sort((a, b) => a - b);
+
+        return { id, date: dateStr, dateObj, whites, pb };
+    }
+
+    function analyzeData(content) {
+        setStatus("Parsing data...", "normal");
+        
+        const lines = content.split(/\r?\n/);
+        allDrawsRaw = [];
+
+        for (let i = 0; i < lines.length; i++) {
+            const parsed = parseLine(lines[i], i);
+            if (parsed) allDrawsRaw.push(parsed);
+        }
+
+        if (allDrawsRaw.length === 0) {
+            setStatus("File loaded, but no valid lottery rows were found. Check file format.", "error");
+            manualUploadDiv.classList.remove('hidden');
+            return;
+        }
+
+        // Trigger the preset change to set initial dates and process
+        datePreset.dispatchEvent(new Event('change'));
+    }
+
+    function processFilteredData() {
+        if (allDrawsRaw.length === 0) return;
+
+        setStatus("Processing data...", "normal");
+
+        // Filter
+        let data = allDrawsRaw;
+        const fromVal = dateFromInput.value;
+        const toVal = dateToInput.value;
+
+        if (fromVal || toVal) {
+            // Parse inputs as local dates to avoid timezone issues
+            const parseYMD = (str) => {
+                if (!str) return null;
+                const [y, m, d] = str.split('-').map(Number);
+                return new Date(y, m - 1, d);
+            };
+
+            const fromDate = fromVal ? parseYMD(fromVal) : new Date(1900, 0, 1);
+            const toDate = toVal ? parseYMD(toVal) : new Date();
+            // Set to end of day
+            toDate.setHours(23, 59, 59, 999);
+
+            data = allDrawsRaw.filter(row => {
+                if (!row.dateObj) return true; 
+                return row.dateObj >= fromDate && row.dateObj <= toDate;
+            });
+        }
+
+        if (data.length === 0) {
+            setStatus("No draws found in the selected date range.", "error");
+            tbody.innerHTML = '';
+            return;
+        }
+
+        // Initialize Stats objects
+        // Create working set with fresh stats containers
+        const workingData = data.map(d => ({
+            ...d, 
+            stats: { exact: [], match5: [], match4: [], match3: [], match2: [] }
+        }));
+
+        let totalExact = 0;
+        let totalMatch5 = 0;
+        let totalMatch4 = 0;
+
+        // Perform Comparison (O(n^2))
+        // We compare every row against every other row
+        for (let i = 0; i < workingData.length; i++) {
+            const target = workingData[i];
+            const targetSet = new Set(target.whites);
+
+            for (let j = 0; j < workingData.length; j++) {
+                if (i === j) continue; // Don't compare with self
+
+                const compare = workingData[j];
+                
+                // Count White Ball Matches
+                let whiteMatches = 0;
+                for (let num of compare.whites) {
+                    if (targetSet.has(num)) whiteMatches++;
+                }
+
+                // Check PB Match
+                const pbMatch = (target.pb === compare.pb);
+
+                // Tally Results
+                if (whiteMatches === 5 && pbMatch) {
+                    target.stats.exact.push(compare.id);
+                    totalExact++;
+                }
+
+                if (whiteMatches >= 5) {
+                    target.stats.match5.push(compare.id);
+                    totalMatch5++;
+                }
+                if (whiteMatches >= 4) {
+                    target.stats.match4.push(compare.id);
+                    totalMatch4++;
+                }
+                if (whiteMatches >= 3) {
+                    target.stats.match3.push(compare.id);
+                }
+                if (whiteMatches >= 2) {
+                    target.stats.match2.push(compare.id);
+                }
+            }
+        }
+
+        setStatus(`Success! Analyzed ${workingData.length} draws.`, "success");
+        fullDataSet = workingData; // Make data globally available for the modal
+        renderResults(workingData, totalExact, totalMatch5, totalMatch4);
+    }
+
+    function renderResults(data, totalExact, totalMatch5, totalMatch4) {
+        tbody.innerHTML = '';
+        
+        document.getElementById('totalRows').textContent = data.length.toLocaleString();
+        document.getElementById('totalExact').textContent = Math.floor(totalExact / 2);
+        document.getElementById('totalMatch5').textContent = Math.floor(totalMatch5 / 2);
+        document.getElementById('totalMatch4').textContent = Math.floor(totalMatch4 / 2);
+
+        // Use DocumentFragment for performance
+        const fragment = document.createDocumentFragment();
+
+        data.forEach(row => {
+            const tr = document.createElement('tr');
+            
+            // Build Ball HTML
+            const ballsHtml = row.whites.map(n => `<span class="ball">${n}</span>`).join('') + 
+                              `<span class="ball pb">${row.pb}</span>`;
+            
+            const getStyleClass = (count, thresholdHigh, thresholdMed) => {
+                if (count === 0) return 'match-cell zero-count';
+                if (count >= thresholdHigh) return 'match-cell match-high';
+                if (count >= thresholdMed) return 'match-cell match-med';
+                return 'match-cell match-low';
+            };
+
+            const exactCount = row.stats.exact.length;
+            const exactClass = exactCount > 0 ? 'match-cell match-exact' : 'match-cell zero-count';
+            const exactIds = JSON.stringify(row.stats.exact);
+
+            const match5Count = row.stats.match5.length;
+            const match5Ids = JSON.stringify(row.stats.match5);
+
+            const match4Count = row.stats.match4.length;
+            const match4Ids = JSON.stringify(row.stats.match4);
+            
+            const match3Count = row.stats.match3.length;
+            const match3Ids = JSON.stringify(row.stats.match3);
+
+            const match2Count = row.stats.match2.length;
+            const match2Ids = JSON.stringify(row.stats.match2);
+
+            tr.innerHTML = `
+                <td style="color:#95a5a6;">${row.id}</td>
+                <td>${row.date}</td>
+                <td>${ballsHtml}</td>
+                <td class="${exactClass}" ${exactCount > 0 ? `onclick="showDetails('Exact Match', '${exactIds}', ${row.id})"` : ''}>${exactCount || '-'}</td>
+                <td class="${getStyleClass(match5Count, 1, 1)}" ${match5Count > 0 ? `onclick="showDetails('5# Match', '${match5Ids}', ${row.id})"` : ''}>${match5Count || '-'}</td>
+                <td class="${getStyleClass(match4Count, 1, 1)}" ${match4Count > 0 ? `onclick="showDetails('4# Match', '${match4Ids}', ${row.id})"` : ''}>${match4Count || '-'}</td>
+                <td class="${getStyleClass(match3Count, 3, 1)}" ${match3Count > 0 ? `onclick="showDetails('3# Match', '${match3Ids}', ${row.id})"` : ''}>${match3Count || '-'}</td>
+                <td class="${getStyleClass(match2Count, 10, 5)}" ${match2Count > 0 ? `onclick="showDetails('2# Match', '${match2Ids}', ${row.id})"` : ''}>${match2Count || '-'}</td>
+            `;
+            fragment.appendChild(tr);
+        });
+
+        tbody.appendChild(fragment);
+        dashboard.classList.remove('hidden');
+    }
+
+    // --- Manual Checker Logic ---
+    document.getElementById('btnCheckManual').addEventListener('click', () => {
+        const inputs = [
+            document.getElementById('chkN1'),
+            document.getElementById('chkN2'),
+            document.getElementById('chkN3'),
+            document.getElementById('chkN4'),
+            document.getElementById('chkN5')
+        ];
+        const pbInput = document.getElementById('chkPB');
+        const resultDiv = document.getElementById('manualResults');
+
+        const whites = inputs.map(i => parseInt(i.value)).filter(n => !isNaN(n));
+        const pb = parseInt(pbInput.value);
+
+        if (whites.length !== 5 || isNaN(pb)) {
+            resultDiv.innerHTML = '<span style="color:var(--error)">Please enter 5 unique white numbers and 1 Powerball.</span>';
+            return;
+        }
+        
+        if (new Set(whites).size !== 5) {
+             resultDiv.innerHTML = '<span style="color:var(--error)">White numbers must be unique.</span>';
+             return;
+        }
+
+        // Store for modal
+        currentManualInput = { whites: whites.sort((a,b)=>a-b), pb: pb, id: 'Manual Input' };
+
+        const targetSet = new Set(whites);
+        const stats = { exact: [], match5: [], match4: [], match3: [], match2: [] };
+
+        fullDataSet.forEach(row => {
+            let wMatches = 0;
+            row.whites.forEach(n => { if (targetSet.has(n)) wMatches++; });
+            const pbMatch = (row.pb === pb);
+
+            if (wMatches === 5 && pbMatch) stats.exact.push(row.id);
+            
+            if (wMatches >= 5) stats.match5.push(row.id);
+            if (wMatches >= 4) stats.match4.push(row.id);
+            if (wMatches >= 3) stats.match3.push(row.id);
+            if (wMatches >= 2) stats.match2.push(row.id);
+        });
+
+        const mkTag = (lbl, ids, cls) => {
+            const count = ids.length;
+            const style = count > 0 ? cls : 'background:#eee; color:#999;';
+            const click = count > 0 ? `onclick="showDetails('${lbl}', '${JSON.stringify(ids)}', 'manual')"` : '';
+            return `<span class="result-tag" style="${style}" ${click}>${lbl}: ${count}</span>`;
+        };
+
+        resultDiv.innerHTML = `
+            ${mkTag('Exact Match', stats.exact, 'background:#27ae60; color:white;')}
+            ${mkTag('5# Match', stats.match5, 'background:var(--primary); color:white;')}
+            ${mkTag('4# Match', stats.match4, 'background:rgba(231, 76, 60, 0.2); color:#c0392b;')}
+            ${mkTag('3# Match', stats.match3, 'background:rgba(230, 126, 34, 0.2); color:#d35400;')}
+            ${mkTag('2# Match', stats.match2, 'background:rgba(52, 152, 219, 0.2); color:#2980b9;')}
+        `;
+    });
+
+    // --- Historical Data Viewer Logic ---
+    document.getElementById('btnShowHistory').addEventListener('click', () => {
+        const container = document.getElementById('historyContainer');
+        const btn = document.getElementById('btnShowHistory');
+        const tbody = document.querySelector('#historyTable tbody');
+        
+        if (container.classList.contains('hidden')) {
+            // Show
+            container.classList.remove('hidden');
+            btn.textContent = "Hide Historical Data";
+            
+            tbody.innerHTML = '';
+            
+            const fragment = document.createDocumentFragment();
+            fullDataSet.forEach(row => {
+                const tr = document.createElement('tr');
+                const balls = row.whites.map(n => `<span class="ball">${n}</span>`).join('') + 
+                              `<span class="ball pb">${row.pb}</span>`;
+                tr.innerHTML = `
+                    <td>${row.date}</td>
+                    <td>${balls}</td>
+                `;
+                fragment.appendChild(tr);
+            });
+            tbody.appendChild(fragment);
+        } else {
+            // Hide
+            container.classList.add('hidden');
+            btn.textContent = "Show Historical Data";
+        }
+    });
+</script>
+
+<!-- Modal for showing details -->
+<div id="detailsModal" class="modal-overlay">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 id="modalTitle">Match Details</h2>
+            <button id="modalCloseBtn" class="modal-close">&times;</button>
+        </div>
+        <div id="modalBody" class="modal-body">
+            <!-- Details will be injected here -->
+        </div>
+    </div>
+</div>
+
+<script>
+    // --- Modal Logic ---
+    const modal = document.getElementById('detailsModal');
+    const modalTitle = document.getElementById('modalTitle');
+    const modalBody = document.getElementById('modalBody');
+    const modalCloseBtn = document.getElementById('modalCloseBtn');
+    
+    // State for modal sorting
+    let currentModalData = [];
+    let currentModalSort = { column: 'date', direction: 'desc' };
+    let currentModalMatchN = 0;
+
+    function showDetails(matchType, matchingIdsJSON, sourceId) {
+        const matchingIds = JSON.parse(matchingIdsJSON);
+        if (!matchingIds || matchingIds.length === 0) return;
+
+        // Find the source draw to display its numbers
+        let sourceDraw;
+        if (sourceId === 'manual') {
+            sourceDraw = currentManualInput;
+        } else {
+            sourceDraw = fullDataSet.find(d => d.id === sourceId);
+        }
+        
+        const sourceWhitesSet = new Set(sourceDraw.whites);
+        const sourceBalls = sourceDraw.whites.map(n => `<span class="ball">${n}</span>`).join('') + 
+                            `<span class="ball pb">${sourceDraw.pb}</span>`;
+
+        modalTitle.innerHTML = `${matchType} for Draw #${sourceId} <div style="font-size:12px; font-weight:normal; margin-top:5px;">${sourceBalls}</div>`;
+        
+        // Extract N from "N# Match" to calculate combinations (e.g. "2# Match" -> 2)
+        const nMatch = matchType.match(/(\d+)/);
+        currentModalMatchN = nMatch ? parseInt(nMatch[1], 10) : 0;
+
+        // Prepare data for rendering
+        currentModalData = [];
+        
+        matchingIds.forEach(id => {
+            const match = fullDataSet.find(d => d.id === id);
+            if (match) {
+                const ballsHtml = match.whites.map(n => `<span class="ball">${n}</span>`).join('') + 
+                                  `<span class="ball pb">${match.pb}</span>`;
+
+                // Find matching numbers
+                const commonWhites = match.whites.filter(num => sourceWhitesSet.has(num));
+                const whiteMatchCount = commonWhites.length;
+                const pbMatch = sourceDraw.pb === match.pb;
+                
+                let matchingBallsHtml = commonWhites.map(n => `<span class="ball">${n}</span>`).join('');
+                if (pbMatch) {
+                    matchingBallsHtml += `<span class="ball pb">${match.pb}</span>`;
+                }
+
+                // Parse date for sorting (DD/MM/YYYY)
+                const parts = match.date.split('/');
+                const dateObj = new Date(`${parts[2]}-${parts[1]}-${parts[0]}`);
+                
+                // First white ball for combination sorting
+                const firstWhite = match.whites.length > 0 ? match.whites[0] : 0;
+                const matchCount = commonWhites.length + (pbMatch ? 1 : 0);
+
+                currentModalData.push({
+                    id: match.id,
+                    date: match.date,
+                    dateObj: dateObj,
+                    ballsHtml: ballsHtml,
+                    matchingBallsHtml: matchingBallsHtml,
+                    firstWhite: firstWhite,
+                    matchCount: matchCount,
+                    whiteMatchCount: whiteMatchCount
+                });
+            }
+        });
+
+        // Default sort: Date Descending
+        currentModalSort = { column: 'date', direction: 'desc' };
+        renderModalTable();
+        
+        modal.style.display = 'flex';
+    }
+
+    function getCombinationsCount(n, k) {
+        if (k < 0 || k > n) return 0;
+        if (k === 0 || k === n) return 1;
+        if (k > n / 2) k = n - k;
+        let res = 1;
+        for (let i = 1; i <= k; i++) {
+            res = res * (n - i + 1) / i;
+        }
+        return res;
+    }
+    
+    function renderModalTable() {
+        // Sort data
+        currentModalData.sort((a, b) => {
+            const dir = currentModalSort.direction === 'asc' ? 1 : -1;
+            switch (currentModalSort.column) {
+                case 'id': return (a.id - b.id) * dir;
+                case 'date': return (a.dateObj - b.dateObj) * dir;
+                case 'combination': return (a.firstWhite - b.firstWhite) * dir;
+                case 'matches': 
+                    if (a.matchCount !== b.matchCount) return (a.matchCount - b.matchCount) * dir;
+                    return (a.id - b.id) * dir;
+                default: return 0;
+            }
+        });
+
+        const getArrow = (col) => currentModalSort.column === col ? (currentModalSort.direction === 'asc' ? ' ▲' : ' ▼') : '';
+        const thStyle = "text-align: left; padding: 8px; background-color: navy; color: white; border-bottom: 1px solid var(--border); cursor: pointer;";
+
+        let totalCombos = 0;
+        if (currentModalMatchN > 0) {
+            currentModalData.forEach(row => {
+                totalCombos += getCombinationsCount(row.whiteMatchCount, currentModalMatchN);
+            });
+        }
+
+        let html = `<p>Found <strong>${currentModalData.length}</strong> matching draw(s)`;
+        if (totalCombos > 0 && totalCombos !== currentModalData.length) html += ` containing <strong>${totalCombos}</strong> combinations of ${currentModalMatchN}`;
+        html += `:</p>`;
+
+        html += '<table style="width: 100%; border-collapse: collapse;"><thead><tr>';
+        html += `<th style="${thStyle}" onclick="handleModalSort('id')">#${getArrow('id')}</th>`;
+        html += `<th style="${thStyle}" onclick="handleModalSort('date')">Date${getArrow('date')}</th>`;
+        html += `<th style="${thStyle}" onclick="handleModalSort('combination')">Combination${getArrow('combination')}</th>`;
+        html += `<th style="${thStyle}" onclick="handleModalSort('matches')">Matching Numbers${getArrow('matches')}</th>`;
+        html += '</tr></thead><tbody>';
+
+        currentModalData.forEach(row => {
+            html += `<tr>
+                <td style="padding: 8px; color: #95a5a6; border-bottom: 1px solid var(--border);">${row.id}</td>
+                <td style="padding: 8px; border-bottom: 1px solid var(--border);">${row.date}</td>
+                <td style="padding: 8px; border-bottom: 1px solid var(--border);">${row.ballsHtml}</td>
+                <td style="padding: 8px; border-bottom: 1px solid var(--border);">${row.matchingBallsHtml}</td>
+            </tr>`;
+        });
+        html += '</tbody></table>';
+        modalBody.innerHTML = html;
+    }
+
+    // Make this globally available for onclick handlers
+    window.handleModalSort = function(column) {
+        if (currentModalSort.column === column) {
+            currentModalSort.direction = currentModalSort.direction === 'asc' ? 'desc' : 'asc';
+        } else {
+            currentModalSort.column = column;
+            currentModalSort.direction = 'desc';
+        }
+        renderModalTable();
+    };
+
+    function closeModal() {
+        modal.style.display = 'none';
+    }
+
+    // Event listeners to close the modal
+    modalCloseBtn.addEventListener('click', closeModal);
+    modal.addEventListener('click', (event) => {
+        if (event.target === modal) { // Only close if overlay is clicked directly
+            closeModal();
+        }
+    });
+
+    // --- Table Sorting Logic ---
+    document.addEventListener('DOMContentLoaded', () => {
+        const table = document.getElementById('dataTable');
+        if (!table) return;
+
+        const headers = table.querySelectorAll('th');
+        const tbody = table.querySelector('tbody');
+        const sortDirections = Array.from(headers).map(() => null);
+
+        headers.forEach(header => {
+            header.addEventListener('click', () => {
+                const columnIndex = parseInt(header.dataset.columnIndex, 10);
+                if (isNaN(columnIndex)) return;
+
+                const currentDirection = sortDirections[columnIndex];
+                const direction = currentDirection === 'desc' ? 'asc' : 'desc';
+
+                // Reset sort indicators for other columns
+                headers.forEach((h, i) => {
+                    h.classList.remove('sorted-asc', 'sorted-desc');
+                    if (i !== columnIndex) {
+                        sortDirections[i] = null;
+                    }
+                });
+
+                // Update current column's direction and indicator
+                sortDirections[columnIndex] = direction;
+                header.classList.add(direction === 'asc' ? 'sorted-asc' : 'sorted-desc');
+
+                // Sort the table rows
+                const rows = Array.from(tbody.querySelectorAll('tr'));
+                rows.sort((rowA, rowB) => {
+                    const cellA = rowA.cells[columnIndex].textContent.trim();
+                    const cellB = rowB.cells[columnIndex].textContent.trim();
+
+                    let valA, valB;
+
+                    if (columnIndex >= 3) { // Numeric match columns
+                        valA = parseInt(cellA.replace('-', '0'), 10);
+                        valB = parseInt(cellB.replace('-', '0'), 10);
+                    } else if (columnIndex === 1) { // Date column
+                        // Assuming DD/MM/YYYY format
+                        const partsA = cellA.split('/');
+                        const partsB = cellB.split('/');
+                        valA = new Date(`${partsA[2]}-${partsA[1]}-${partsA[0]}`);
+                        valB = new Date(`${partsB[2]}-${partsB[1]}-${partsB[0]}`);
+                    } else { // Default numeric/alphabetic sort for ID or other columns
+                        valA = isNaN(cellA) ? cellA : Number(cellA);
+                        valB = isNaN(cellB) ? cellB : Number(cellB);
+                    }
+
+                    if (valA < valB) return direction === 'asc' ? -1 : 1;
+                    if (valA > valB) return direction === 'asc' ? 1 : -1;
+                    return 0;
+                });
+
+                // Re-append sorted rows to the table body
+                rows.forEach(row => tbody.appendChild(row));
+            });
+        });
+    });
+</script>
+
+</body>
+</html>
