@@ -532,8 +532,8 @@
     .quality-controls { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; justify-content: center; }
     .quality-controls--inline { flex-wrap: nowrap; gap: 8px; overflow-x: auto; }
     .quality-controls input[type="number"]:not(.ball-input) { width: 120px; }
-    .quality-result { display: grid; gap: 8px; text-align: left; }
-    .quality-badge { display: inline-block; padding: 8px 12px; border-radius: 999px; font-weight: 700; }
+    .quality-result { display: flex; flex-direction: column; gap: 12px; text-align: center; align-items: center; }
+    .quality-badge { display: inline-block; max-width: fit-content; padding: 8px 12px; border-radius: 999px; font-weight: 700;  }
     .q-ultimate { background: #1f3a5f; border: 1px solid rgba(255,255,255,0.12); }
     .q-excellent { background: #1f4f3a; border: 1px solid rgba(255,255,255,0.12); }
     .q-strong { background: #2a3a1f; border: 1px solid rgba(255,255,255,0.12); }
@@ -848,7 +848,7 @@
         <!-- Number Appearance Checker -->
     <section class="sectionPanelSettings">
       <h2 class="h2SectionStyle" style="text-align:center;">Combination Appearance Checker</h2>
-      <div id="comboCheckResult" class="quality-result" style="padding-bottom: 12px;"></div>
+      <div id="comboCheckResult" style="padding-bottom: 12px;"></div>
       <div class="quality-controls" style="justify-content:center; padding-bottom: 12px;">
         <button id="checkComboBtn" type="button">Check Combination</button>
       </div>
@@ -888,11 +888,10 @@
     <section id="qualityCheckerSection" class="sectionPanelSettings">
       <div class="quality-wrap">
         <h2 class="h2SectionStyle" style="text-align:center;">Number Quality Checker</h2>
-        <!-- Single-number checker removed -->
-       <div id="ticketQualityResult" class="quality-result"></div>
         <div class="quality-controls" style="justify-content:center; padding-bottom: 12px;">
           <button id="ticketCheckBtn" type="button">Check Ticket</button>
         </div>
+        
         <div id="ticketQualityControls" class="quality-controls quality-controls--inline">
           <input id="tN1" class="ball-input" type="number" min="1" max="69" step="1" placeholder="N1" />
           <input id="tN2" class="ball-input" type="number" min="1" max="69" step="1" placeholder="N2" />
@@ -901,6 +900,10 @@
           <input id="tN5" class="ball-input" type="number" min="1" max="69" step="1" placeholder="N5" />
           <input id="tPB" class="ball-input pball" type="number" min="1" max="26" step="1" placeholder="PB" />
         </div>
+
+       <!-- Result -->
+       <div id="ticketQualityResult" class="quality-result" style="padding-top: 12px;"></div>
+
       </div>
     </section>
 
