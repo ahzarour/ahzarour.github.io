@@ -851,6 +851,8 @@
       <div id="comboCheckResult" style="padding-bottom: 12px;"></div>
       <div class="quality-controls" style="justify-content:center; padding-bottom: 12px;">
         <button id="checkComboBtn" type="button">Check Combination</button>
+        <button id="pasteComboBtn" type="button">Paste</button>
+        <button id="copyComboBtn" type="button">Copy</button>
       </div>
       <div id="comboCheckControls" class="quality-controls quality-controls--inline" style="justify-content:center;">
         <input class="ball-input combo-input" type="number" min="1" max="69" step="1" placeholder="N1" />
@@ -890,6 +892,8 @@
         <h2 class="h2SectionStyle" style="text-align:center;">Number Quality Checker</h2>
         <div class="quality-controls" style="justify-content:center; padding-bottom: 12px;">
           <button id="ticketCheckBtn" type="button">Check Ticket</button>
+          <button id="pasteTicketBtn" type="button">Paste</button>
+          <button id="copyTicketBtn" type="button">Copy</button>
         </div>
         
         <div id="ticketQualityControls" class="quality-controls quality-controls--inline">
@@ -2292,6 +2296,22 @@
           list.innerHTML = '<div class="ticket-meta">No ticket found matching criteria.</div>';
         } else {
           renderSmartTickets(list, [t]);
+
+          const btnWrap = document.createElement('div');
+          btnWrap.style.textAlign = 'center';
+          btnWrap.style.marginTop = '10px';
+          const copyBtn = document.createElement('button');
+          copyBtn.type = 'button';
+          copyBtn.textContent = 'Copy';
+          copyBtn.style.fontSize = '12px';
+          copyBtn.style.padding = '4px 10px';
+          copyBtn.addEventListener('click', () => {
+            navigator.clipboard.writeText(`${t.whites.join(' ')} ${t.red}`);
+            copyBtn.textContent = 'Copied!';
+            setTimeout(() => copyBtn.textContent = 'Copy', 1500);
+          });
+          btnWrap.appendChild(copyBtn);
+          list.appendChild(btnWrap);
         }
       }, 10);
     }
@@ -2427,6 +2447,57 @@
         renderTicketQualityResult(res);
       });
     })();
+
+    // --- Paste Functionality ---
+    async function pasteToInputs(inputs) {
+      try {
+        const text = await navigator.clipboard.readText();
+        // Extract numbers (space, comma, or newline separated)
+        const nums = text.match(/\d+/g);
+        if (nums && nums.length >= inputs.length) {
+          inputs.forEach((inp, i) => {
+            if (nums[i] !== undefined) inp.value = nums[i];
+          });
+        } else {
+          alert('Clipboard does not contain enough numbers.');
+        }
+      } catch (err) {
+        console.error('Failed to read clipboard:', err);
+      }
+    }
+
+    document.getElementById('pasteComboBtn')?.addEventListener('click', () => {
+      const inputs = document.querySelectorAll('#comboCheckControls .combo-input');
+      pasteToInputs(inputs);
+    });
+
+    document.getElementById('pasteTicketBtn')?.addEventListener('click', () => {
+      const ids = ['tN1', 'tN2', 'tN3', 'tN4', 'tN5', 'tPB'];
+      const inputs = ids.map(id => document.getElementById(id));
+      pasteToInputs(inputs);
+    });
+
+    // --- Copy Functionality (Manual Inputs) ---
+    function copyFromInputs(inputs, btn) {
+      const values = Array.from(inputs).map(i => i.value).filter(v => v.trim() !== '');
+      if (values.length === 0) return;
+      navigator.clipboard.writeText(values.join(' '));
+      const originalText = btn.textContent;
+      btn.textContent = 'Copied!';
+      setTimeout(() => btn.textContent = originalText, 1500);
+    }
+
+    document.getElementById('copyComboBtn')?.addEventListener('click', (e) => {
+      const inputs = document.querySelectorAll('#comboCheckControls .combo-input');
+      copyFromInputs(inputs, e.target);
+    });
+
+    document.getElementById('copyTicketBtn')?.addEventListener('click', (e) => {
+      const ids = ['tN1', 'tN2', 'tN3', 'tN4', 'tN5', 'tPB'];
+      const inputs = ids.map(id => document.getElementById(id));
+      copyFromInputs(inputs, e.target);
+    });
+
     // --- Range Groups computation & rendering ---
     const RANGE_BINS = [
       { min: 1, max: 10, label: '1–10' },
@@ -2517,6 +2588,11 @@
       }
 
       for (const draw of last10Draws) {
+        const wrapper = document.createElement('div');
+        wrapper.style.display = 'flex';
+        wrapper.style.alignItems = 'center';
+        wrapper.style.gap = '10px';
+
         const row = document.createElement('div');
         row.className = 'ticket';
         for (const n of draw.whites) {
@@ -2525,7 +2601,22 @@
         }
         const pb = document.createElement('div'); pb.className = 'ball pball'; pb.textContent = draw.red;
         row.appendChild(pb);
-        listEl.appendChild(row);
+        wrapper.appendChild(row);
+
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.textContent = 'Copy';
+        btn.style.fontSize = '11px';
+        btn.style.padding = '4px 8px';
+        btn.style.margin = '0';
+        btn.addEventListener('click', () => {
+          navigator.clipboard.writeText(`${draw.whites.join(' ')} ${draw.red}`);
+          btn.textContent = 'Copied!';
+          setTimeout(() => btn.textContent = 'Copy', 1500);
+        });
+        wrapper.appendChild(btn);
+
+        listEl.appendChild(wrapper);
       }
     }
     // --- Number Appearance Checker ---
