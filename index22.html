@@ -880,6 +880,7 @@
         </div>
         <div style="margin:6px 0 8px 0;">
           <button id="genUltimateBtn" type="button">Generate Ultimate Ticket</button>
+          <button id="clearUltimateInputsBtn" type="button" style="margin-left: 8px;">Clear</button>
         </div>
       </div>
       <div class="tickets-grid" id="ultimateTicketList"></div>
@@ -2311,6 +2312,51 @@
             setTimeout(() => copyBtn.textContent = 'Copy', 1500);
           });
           btnWrap.appendChild(copyBtn);
+
+          // Copy to Quality Checker
+          const toQualityBtn = document.createElement('button');
+          toQualityBtn.type = 'button';
+          toQualityBtn.textContent = 'To Quality Checker';
+          toQualityBtn.style.fontSize = '12px';
+          toQualityBtn.style.padding = '4px 10px';
+          toQualityBtn.style.marginLeft = '6px';
+          toQualityBtn.addEventListener('click', () => {
+            document.getElementById('tN1').value = t.whites[0];
+            document.getElementById('tN2').value = t.whites[1];
+            document.getElementById('tN3').value = t.whites[2];
+            document.getElementById('tN4').value = t.whites[3];
+            document.getElementById('tN5').value = t.whites[4];
+            document.getElementById('tPB').value = t.red;
+            const sec = document.getElementById('qualityCheckerSection');
+            if (sec) sec.scrollIntoView({ behavior: 'smooth' });
+          });
+          btnWrap.appendChild(toQualityBtn);
+
+          // Copy to Appearance Checker
+          const toComboBtn = document.createElement('button');
+          toComboBtn.type = 'button';
+          toComboBtn.textContent = 'To Appearance Checker';
+          toComboBtn.style.fontSize = '12px';
+          toComboBtn.style.padding = '4px 10px';
+          toComboBtn.style.marginLeft = '6px';
+          toComboBtn.addEventListener('click', () => {
+            const inputs = document.querySelectorAll('#comboCheckControls .combo-input');
+            if (inputs.length >= 6) {
+              inputs[0].value = t.whites[0];
+              inputs[1].value = t.whites[1];
+              inputs[2].value = t.whites[2];
+              inputs[3].value = t.whites[3];
+              inputs[4].value = t.whites[4];
+              inputs[5].value = t.red;
+            }
+            const controls = document.getElementById('comboCheckControls');
+            if (controls) {
+                const sec = controls.closest('section');
+                if (sec) sec.scrollIntoView({ behavior: 'smooth' });
+            }
+          });
+          btnWrap.appendChild(toComboBtn);
+
           list.appendChild(btnWrap);
         }
       }, 10);
@@ -2319,8 +2365,16 @@
     // Button
     (function attachUltimateBtn(){
       const btn = document.getElementById('genUltimateBtn');
-      if (!btn) return;
-      btn.addEventListener('click', renderUltimateTicket);
+      if (btn) btn.addEventListener('click', renderUltimateTicket);
+
+      const clearBtn = document.getElementById('clearUltimateInputsBtn');
+      if (clearBtn) {
+        clearBtn.addEventListener('click', () => {
+          document.getElementById('ultimateFreqX').value = '';
+          document.getElementById('ultimateFreqY').value = '';
+          document.getElementById('ultimateFreqZ').value = '';
+        });
+      }
     })();
 
     // --- Number Quality Checker ---
