@@ -564,6 +564,11 @@
     @media (max-width: 420px) {
       .ball-input { width: 30px; height: 30px; font-size: 12px; }
     }
+
+    .btnRow{
+      display: flex;
+      flex-wrap: nowrap;
+    }
   </style>
 </head>
 
@@ -2298,14 +2303,19 @@
         } else {
           renderSmartTickets(list, [t]);
 
+          // Copy buttons Div
           const btnWrap = document.createElement('div');
+          btnWrap.className = 'btnRow';
           btnWrap.style.textAlign = 'center';
           btnWrap.style.marginTop = '10px';
+
+
+          //Copy button
           const copyBtn = document.createElement('button');
           copyBtn.type = 'button';
           copyBtn.textContent = 'Copy';
           copyBtn.style.fontSize = '12px';
-          copyBtn.style.padding = '4px 10px';
+          // copyBtn.style.padding = '4px 10px';
           copyBtn.addEventListener('click', () => {
             navigator.clipboard.writeText(`${t.whites.join(' ')} ${t.red}`);
             copyBtn.textContent = 'Copied!';
@@ -2318,7 +2328,7 @@
           toQualityBtn.type = 'button';
           toQualityBtn.textContent = 'To Quality Checker';
           toQualityBtn.style.fontSize = '12px';
-          toQualityBtn.style.padding = '4px 10px';
+          // toQualityBtn.style.padding = '4px 10px';
           toQualityBtn.style.marginLeft = '6px';
           toQualityBtn.addEventListener('click', () => {
             document.getElementById('tN1').value = t.whites[0];
@@ -2337,7 +2347,7 @@
           toComboBtn.type = 'button';
           toComboBtn.textContent = 'To Appearance Checker';
           toComboBtn.style.fontSize = '12px';
-          toComboBtn.style.padding = '4px 10px';
+          // toComboBtn.style.padding = '4px 10px';
           toComboBtn.style.marginLeft = '6px';
           toComboBtn.addEventListener('click', () => {
             const inputs = document.querySelectorAll('#comboCheckControls .combo-input');
