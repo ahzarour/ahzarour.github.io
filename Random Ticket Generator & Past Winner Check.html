@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Powerball Ticket Generator</title>
+    <style>
+        /* General Setup */
+        :root {
+            --hot: #e34c26; /* Used for success/high counts */
+            --accent: #f7a000; /* Used for failure/low counts */
+        }
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #333;
+            color: #eee;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 20px;
+        }
+        .container {
+            background-color: #444;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.6);
+            width: 100%;
+            max-width: 650px;
+        }
+
+        /* Section Styling */
+        .h2SectionStyle {
+            color: #f9f9f9;
+            text-align: center;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #a00;
+            margin-top: 0;
+            margin-bottom: 20px;
+        }
+        .sectionPanelSettings {
+            background-color: #383838;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        /* Input and Button Controls */
+        .quality-controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        .quality-controls--inline {
+            align-items: center;
+            justify-content: center;
+        }
+        .ball-input {
+            width: 60px;
+            padding: 8px;
+            border-radius: 5px;
+            border: 1px solid #666;
+            background-color: #555;
+            color: #eee;
+            text-align: center;
+            box-sizing: border-box;
+            font-size: 1em;
+        }
+        button {
+            background-color: #a00;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 100%;
+            font-size: 1.1em;
+            transition: background-color 0.2s;
+        }
+        button:hover:not(:disabled) {
+            background-color: #c00;
+        }
+        button:disabled {
+            background-color: #666;
+            cursor: not-allowed;
+        }
+
+        /* Result Display */
+        .quality-result {
+            padding: 15px;
+            border-radius: 5px;
+            min-height: 50px;
+            background-color: #2a2a2a;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        .ticket-meta {
+            font-size: 1.1em;
+        }
+        .loading {
+            color: yellow;
+            font-weight: bold;
+        }
+        .ball-display {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            line-height: 40px;
+            border-radius: 50%;
+            background-color: #fff;
+            color: #333;
+            font-weight: bold;
+            text-align: center;
+            margin: 0 5px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        .powerball-display {
+            background-color: var(--hot);
+            color: #fff;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+
+        <div id="statusOutput" class="quality-result">
+            <p class="loading">⏳ Loading historical data...</p>
+        </div>
+
+        <section class="sectionPanelSettings">
+            <h2 class="h2SectionStyle">Random Ticket Generator & Past Winner Check</h2>
+            <div id="randomTicketResult" class="quality-result" style="padding-bottom: 12px;">Click the button to generate a random ticket.</div>
+            <div class="quality-controls" style="justify-content:center; padding-bottom: 12px;">
+                <button id="generateTicketBtn" type="button">Generate Random Ticket</button>
+            </div>
+        </section>
+
+        <section class="sectionPanelSettings">
+            <h2 class="h2SectionStyle">Historical Data</h2>
+            <div class="quality-controls" style="justify-content:center; padding-bottom: 12px;">
+                <button id="toggleDataBtn" type="button">Show Historical Data</button>
+            </div>
+            <div id="historicalDataContainer" class="quality-result" style="display: none; max-height: 300px; overflow-y: auto; text-align: left; white-space: pre-wrap; font-family: monospace;">
+                <!-- Data will be loaded here -->
+            </div>
+        </section>
+
+    </div>
+
+    <script>
+        // --- GLOBAL STATE AND CONSTANTS ---
+        const DATA_URL = 'https://ahzarour.github.io/PB-1998.txt';
+        const WHITE_MAX = 69;
+        const RED_MAX = 26;
+
+        let state = {
+            dataLoaded: false,
+            historicalDraws: new Set(), // Stores past winning numbers for quick lookup
+            historicalDataText: '',     // Stores the raw text of the historical data
+            draws: [],                  // Stores full draw objects { whiteBalls, powerball, date }
+            pairCounts: {} // Stores pair frequencies (e.g., {"1-2": 5, "10-69": 2})
+        };
+
+        // --- UI ELEMENTS ---
+        const statusOutput = document.getElementById('statusOutput');
+        const generateTicketBtn = document.getElementById('generateTicketBtn');
+        const randomTicketResultEl = document.getElementById('randomTicketResult');
+        const toggleDataBtn = document.getElementById('toggleDataBtn');
+        const historicalDataContainer = document.getElementById('historicalDataContainer');
+
+        // --- DATA LOADING LOGIC ---
+
+        /**
+         * Fetches data, parses lines, calculates pair frequencies, and stores all historical draws.
+         */
+        async function loadHistoricalData() {
+            statusOutput.innerHTML = '<p class="loading">⏳ Loading historical data...</p>';
+            generateTicketBtn.disabled = true;
+            toggleDataBtn.disabled = true;
+
+            try {
+                const response = await fetch(DATA_URL);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const historicalDataText = await response.text();
+                state.historicalDataText = historicalDataText;
+
+                const lines = historicalDataText.trim().split('\n').slice(1); // Skip header row
+                let localHistoricalDraws = new Set();
+                let localDraws = [];
+                let localPairCounts = {};
+                
+                lines.forEach(line => {
+                    // Robust parsing for "Date,Numbers" format
+                    const parts = line.trim().split(/,(.*)/s);
+                    if (parts.length < 2) return; // Skip malformed lines
+
+                    const date = parts[0];
+                    // Extract all numbers from the second part of the split
+                    const allNumbers = (parts[1] || '').match(/\d+/g)?.map(Number);
+
+                    if (!allNumbers || allNumbers.length < 6) return; // Skip if not enough numbers
+
+                    const powerball = allNumbers.pop(); // Last number is the Powerball
+                    const whiteBalls = allNumbers.slice(0, 5).sort((a, b) => a - b);
+
+                    const finalPowerball = (powerball > RED_MAX || powerball < 1) ? null : powerball;
+
+                    if (whiteBalls.length !== 5 || whiteBalls.some(isNaN)) {
+                        return; // Skip invalid lines
+                    }
+
+                    // Store the full draw for checking later
+                    const drawKey = `${whiteBalls.join('-')}_${finalPowerball}`;
+                    localHistoricalDraws.add(drawKey);
+                    localDraws.push({ whiteBalls, powerball: finalPowerball, date });
+
+                    // Generate all 10 unique pairs for this draw
+                    for (let i = 0; i < 4; i++) {
+                        for (let j = i + 1; j < 5; j++) {
+                            const pairKey = `${whiteBalls[i]}-${whiteBalls[j]}`;
+                            localPairCounts[pairKey] = (localPairCounts[pairKey] || 0) + 1;
+                        }
+                    }
+                });
+
+                state.historicalDraws = localHistoricalDraws;
+                state.draws = localDraws;
+                state.pairCounts = localPairCounts;
+                state.dataLoaded = true;
+                generateTicketBtn.disabled = false;
+                toggleDataBtn.disabled = false;
+                statusOutput.innerHTML = '<p style="color: lightgreen;">✅ Historical Data Loaded. Ready to generate tickets.</p>';
+                console.log("Total historical draws stored:", localHistoricalDraws.size);
+                console.log("Historical Data Processed. Total unique pairs tracked:", Object.keys(localPairCounts).length);
+
+
+            } catch (error) {
+                console.error("Error loading historical data:", error);
+                statusOutput.innerHTML = `<p style="color:red;"><strong>ERROR:</strong> Could not load data from URL. Check console for details.</p>`;
+            }
+        }
+
+
+        // --- RANDOM TICKET GENERATOR LOGIC ---
+        (function attachRandomTicketGenerator() {
+
+            function checkAllPairsOnTicket(whiteBalls) {
+                let results = [];
+                for (let i = 0; i < 4; i++) {
+                    for (let j = i + 1; j < 5; j++) {
+                        const n1 = whiteBalls[i];
+                        const n2 = whiteBalls[j];
+                        const pairKey = `${n1}-${n2}`;
+                        const historicalCount = state.pairCounts[pairKey] || 0;
+                        results.push({
+                            n1: n1,
+                            n2: n2,
+                            count: historicalCount,
+                        });
+                    }
+                }
+                return results;
+            }
+
+            function generateRandomTicket() {
+                if (!state.dataLoaded) {
+                    randomTicketResultEl.innerHTML = '<div class="ticket-meta" style="color:red;">Data not loaded. Please wait or check status above.</div>';
+                    return;
+                }
+
+                const whiteBalls = new Set();
+                while (whiteBalls.size < 5) {
+                    whiteBalls.add(Math.floor(Math.random() * WHITE_MAX) + 1);
+                }
+
+                const powerball = Math.floor(Math.random() * RED_MAX) + 1;
+
+                const sortedWhiteBalls = Array.from(whiteBalls).sort((a, b) => a - b);
+
+                const drawKey = `${sortedWhiteBalls.join('-')}_${powerball}`;
+                const isPastWinner = state.historicalDraws.has(drawKey);
+
+                let whiteBallsHtml = sortedWhiteBalls.map(ball => `<span class="ball-display">${ball}</span>`).join(' ');
+                
+                let pastWinnerHtml = '';
+                if (isPastWinner) {
+                    pastWinnerHtml = `<div class="ticket-meta" style="text-align:center; color:var(--hot); font-weight:bold; margin-top:10px;">This combination is a past winner!</div>`;
+                } else {
+                    pastWinnerHtml = `<div class="ticket-meta" style="text-align:center; color:lightgreen; font-weight:bold; margin-top:10px;">This combination has not won before.</div>`;
+                }
+
+                const pairResults = checkAllPairsOnTicket(sortedWhiteBalls);
+                const totalPairsAppeared = pairResults.reduce((sum, result) => sum + result.count, 0);
+                
+                //------ Pair Frequency Results -------------
+                let pairResultsHtml = '<div style="margin-top: 20px; text-align: left; border-top: 1px solid #555; padding-top: 15px;">';
+                pairResultsHtml += `<h4 style="text-align: center; margin-top: 0; margin-bottom: 10px; color: #f9f9f9;">Pair Frequency Results</h4>`;
+                
+                pairResults.forEach(result => {
+                    const countColor = result.count > 0 ? 'lightgreen' : 'var(--accent)';
+                    // Make the div clickable and add data attributes for the pair
+                    pairResultsHtml += `<div class="pair-row" onclick="showMatchingDraws(${result.n1}, ${result.n2})" style="margin-bottom: 5px; cursor: pointer; padding: 4px; border-radius: 4px; transition: background-color 0.2s;" onmouseover="this.style.backgroundColor='#555'" onmouseout="this.style.backgroundColor='transparent'">`;
+                    pairResultsHtml += `Pair (<strong>${result.n1}</strong>, <strong>${result.n2}</strong>) | Appeared: <strong style="color:${countColor};">${result.count}</strong> time(s)`;
+                    pairResultsHtml += `</div>`;
+                });
+
+                // ------- Total Pairs Appeared -------------
+                pairResultsHtml += `<div style="text-align: center; margin-top: 15px; padding-top: 10px; border-top: 1px solid #555;"><strong>Total Pairs Appeared: ${totalPairsAppeared}</strong></div>`;
+                pairResultsHtml += '</div>';
+                pairResultsHtml += `<div id="pairMatchDetails" style="margin-top: 15px;"></div>`; // Placeholder for details
+
+
+                randomTicketResultEl.innerHTML = `
+                    <div class="ticket-meta" style="text-align:center; font-size: 1.2em;">
+                        <div style="margin-bottom: 10px;">${whiteBallsHtml}</div>
+                        <div><span class="ball-display powerball-display">${powerball}</span></div>
+                    </div>
+                    ${pastWinnerHtml}
+                    ${pairResultsHtml}
+                `;
+            }
+
+            if (generateTicketBtn) {
+                generateTicketBtn.addEventListener('click', generateRandomTicket);
+            }
+        })();
+
+        /**
+         * Finds and displays historical draws containing a specific pair of numbers.
+         * This function is called from the `onclick` attribute of a pair row.
+         * @param {number} n1 - The first number in the pair.
+         * @param {number} n2 - The second number in the pair.
+         */
+        function showMatchingDraws(n1, n2) {
+            const detailContainer = document.getElementById('pairMatchDetails');
+            if (!detailContainer) return;
+
+            const matchingDraws = state.draws.filter(draw => {
+                const whiteBallSet = new Set(draw.whiteBalls);
+                return whiteBallSet.has(n1) && whiteBallSet.has(n2);
+            });
+
+            let detailsHtml = `<h4 style="text-align: center; margin-top: 0; margin-bottom: 10px; color: #f9f9f9;">Draws Containing the Pair (${n1}, ${n2})</h4>`;
+            
+            if (matchingDraws.length === 0) {
+                detailsHtml += `<p style="text-align:center; color: var(--accent);">No historical draws found with this pair.</p>`;
+            } else {
+                detailsHtml += `<div style="max-height: 200px; overflow-y: auto; background-color: #2a2a2a; padding: 10px; border-radius: 5px;">`;
+                matchingDraws.forEach(draw => {
+                    const whiteBallsHtml = draw.whiteBalls.map(ball => {
+                        // Highlight the matching pair numbers
+                        const isMatch = (ball === n1 || ball === n2);
+                        return `<span class="ball-display" style="background-color: ${isMatch ? 'var(--hot)' : '#fff'}; color: ${isMatch ? '#fff' : '#333'};">${ball}</span>`;
+                    }).join(' ');
+
+                    detailsHtml += `
+                        <div style="display: flex; align-items: center; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #444; ${!draw.powerball ? 'opacity: 0.6;' : ''}">
+                            <span style="font-family: monospace;">${draw.date}</span>
+                            <div>${whiteBallsHtml} <span class="ball-display powerball-display">${draw.powerball ?? 'N/A'}</span></div>
+                        </div>`;
+                });
+                detailsHtml += `</div>`;
+            }
+            detailContainer.innerHTML = detailsHtml;
+        }
+
+        // --- HISTORICAL DATA DISPLAY LOGIC ---
+        (function attachDataToggler() {
+            if (toggleDataBtn) {
+                toggleDataBtn.addEventListener('click', () => {
+                    const isVisible = historicalDataContainer.style.display !== 'none';
+                    if (isVisible) {
+                        historicalDataContainer.style.display = 'none';
+                        toggleDataBtn.textContent = 'Show Historical Data';
+                    } else {
+                        historicalDataContainer.textContent = state.historicalDataText;
+                        historicalDataContainer.style.display = 'block';
+                        toggleDataBtn.textContent = 'Hide Historical Data';
+                    }
+                });
+            }
+        })();
+
+
+        // --- INITIALIZATION ---
+        window.onload = loadHistoricalData;
+    </script>
+</body>
+</html>
