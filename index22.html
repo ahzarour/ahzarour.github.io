@@ -600,7 +600,6 @@
         <div class="date-labels" style="display: flex; flex-direction: column; gap: 14px">
           <div style="font-size: 13px; color: var(--muted)">Quick range:</div>
           <div style="font-size: 13px; color: var(--muted)">From</div>
-          <div style="font-size: 13px; color: var(--muted)">Date Range</div>
           <div style="font-size: 13px; color: var(--muted)">Draws</div>
         </div>
 
@@ -629,13 +628,6 @@
             <input id="dateFromInput" type="date" style="width: auto" />
             <div style="white-space: nowrap; color: var(--muted)">to</div>
             <input id="dateToInput" type="date" style="width: auto" />
-          </div>
-
-          <div>
-            <div style="color: var(--muted)">
-              <strong id="dateFrom">——</strong> to
-              <strong id="dateTo">——</strong>
-            </div>
           </div>
 
           <div>
@@ -875,6 +867,46 @@
     <section id="ultimateTicketSection" class="sectionPanelSettings">
       <div style="margin-bottom:8px; text-align:center;">
         <h2 class="h2SectionStyle">Ultimate Smart Ticket</h2>
+        
+        <!-- Duplicated Date Range Selector for Ultimate Ticket -->
+        <div id="dateRange2" class="meta date-range" style="
+            display: flex;
+            gap: 16px;
+            align-items: flex-start;
+            flex-wrap: nowrap;
+            overflow-x: auto;
+            justify-content: center;
+            margin-bottom: 12px;
+            text-align: left;
+          ">
+          <div class="date-labels" style="display: flex; flex-direction: column; gap: 14px">
+            <div style="font-size: 13px; color: var(--muted)">Quick range:</div>
+            <div style="font-size: 13px; color: var(--muted)">From</div>
+            <div style="font-size: 13px; color: var(--muted)">Draws</div>
+          </div>
+          <div class="date-controls" style="display: flex; flex-direction: column; gap: 12px; min-width: 0;">
+            <div>
+              <select id="datePreset2" style="width: auto">
+                <option value="since-2015-10-07" selected>From 10/07/2015</option>
+                <option value="1m">Last month</option>
+                <option value="3m">Last 3 months</option>
+                <option value="6m">Last 6 months</option>
+                <option value="1y">Last year</option>
+                <option value="2y">Last 2 years</option>
+                <option value="3y">Last 3 years</option>
+                <option value="all">All time</option>
+                <option value="custom">Custom dates</option>
+              </select>
+            </div>
+            <div style="display: flex; gap: 8px; align-items: center">
+              <input id="dateFromInput2" type="date" style="width: auto" />
+              <div style="white-space: nowrap; color: var(--muted)">to</div>
+              <input id="dateToInput2" type="date" style="width: auto" />
+            </div>
+            <div><div id="drawsInfo2" class="meta date-range"><strong id="drawsCount2">—————</strong></div></div>
+          </div>
+        </div>
+
         <div style="margin-bottom: 8px; display: flex; justify-content: center; gap: 8px; align-items: center;">
              <label for="ultimateFreqX" style="color:var(--muted); font-size:13px;">Sum of Pairs (X):</label>
              <input id="ultimateFreqX" type="number" min="0" step="1" placeholder="Any" style="width: 60px; padding: 4px; border-radius: 4px; border: 1px solid rgba(255,255,255,0.2); background: var(--chip); color: var(--text); text-align: center;">
@@ -957,7 +989,10 @@
       return isNaN(p) ? null : new Date(p);
     }
     function fmtISO(d) {
-      return d.toISOString().slice(0, 10);
+      const yy = d.getFullYear();
+      const mm = String(d.getMonth() + 1).padStart(2, '0');
+      const dd = String(d.getDate()).padStart(2, '0');
+      return `${yy}-${mm}-${dd}`;
     }
     function fmtDMY(d) {
       const dd = String(d.getDate()).padStart(2, "0");
@@ -1477,6 +1512,11 @@
 
     function applyDateFilterAndRecompute() {
       if (!_lastParsedObjects) return;
+      
+      // Determine the latest date in the dataset to use as the upper bound for "since-" presets
+      const drFull = extractDateRange(_lastParsedObjects);
+      const latestDate = (drFull && drFull.maxDate) ? drFull.maxDate : new Date();
+
       // Determine date range from inputs; if preset 'all' then no filtering
       const preset = document.getElementById("datePreset").value;
       const fromInput = document.getElementById("dateFromInput").value;
@@ -1502,21 +1542,21 @@
         const parsed = new Date(dateStr + 'T00:00:00');
         if (!isNaN(parsed)) {
           from = startOfDay(parsed);
-          to = endOfDay(today);
+          to = endOfDay(latestDate);
         }
       } else if (preset !== "custom" && preset !== "all") {
         // compute relative ranges (months/years)
         const m = preset;
         if (m.endsWith("m")) {
           const months = parseInt(m.slice(0, -1), 10);
-          from = startOfDay(new Date(today.getFullYear(), today.getMonth() - months, 1));
-          to = endOfDay(today); // End date is today
+          from = startOfDay(new Date(latestDate.getFullYear(), latestDate.getMonth() - months, 1));
+          to = endOfDay(latestDate);
         } else if (m.endsWith("y")) {
           const years = parseInt(m.slice(0, -1), 10);
           // For "1y", start from Jan 1 of the previous year.
           // For "2y", start from Jan 1 two years ago, etc.
-          const startYear = today.getFullYear() - years;
-          to = endOfDay(today);
+          const startYear = latestDate.getFullYear() - years;
+          to = endOfDay(latestDate);
           from = startOfDay(
             new Date(startYear, 0, 1)
           );
@@ -1567,22 +1607,25 @@
         "datasetMeta"
       ).textContent = `Analyzing ${totalDraws.toLocaleString()} draws • Reds present in ${redsWithValue.toLocaleString()} rows`;
       const drawsEl = document.getElementById("drawsCount");
+      const drawsEl2 = document.getElementById("drawsCount2");
       if (drawsEl)
         drawsEl.textContent = totalDraws ? totalDraws.toLocaleString() : "—";
+      if (drawsEl2)
+        drawsEl2.textContent = totalDraws ? totalDraws.toLocaleString() : "—";
 
       // Update the date range display to reflect the dates used for this computation.
       if (from && to) {
-        document.getElementById("dateFrom").textContent = fmtDMY(from);
-        document.getElementById("dateTo").textContent = fmtDMY(to);
+
         // Also update the date input fields to match the computed range
         const fi = document.getElementById("dateFromInput");
         const ti = document.getElementById("dateToInput");
+        const fi2 = document.getElementById("dateFromInput2");
+        const ti2 = document.getElementById("dateToInput2");
         if (fi) fi.value = fmtISO(from);
         if (ti) ti.value = fmtISO(to);
+        if (fi2) fi2.value = fmtISO(from);
+        if (ti2) ti2.value = fmtISO(to);
 
-      } else {
-        document.getElementById("dateFrom").textContent = "—";
-        document.getElementById("dateTo").textContent = "—";
       }
 
       updateClassification();
@@ -1605,24 +1648,32 @@
       const dr = extractDateRange(objs);
       const fi = document.getElementById("dateFromInput");
       const ti = document.getElementById("dateToInput");
+      const fi2 = document.getElementById("dateFromInput2");
+      const ti2 = document.getElementById("dateToInput2");
       if (dr) {
         // Don't set the display here; let applyDateFilterAndRecompute handle it based on the selected preset.
         // Set date inputs to full range (ISO)
         if (fi) fi.value = dr.fromISO;
         if (ti) ti.value = dr.toISO;
+        if (fi2) fi2.value = dr.fromISO;
+        if (ti2) ti2.value = dr.toISO;
       } else {
-        document.getElementById("dateFrom").textContent = "—";
-        document.getElementById("dateTo").textContent = "—";
         if (fi) fi.value = "";
         if (ti) ti.value = "";
+        if (fi2) fi2.value = "";
+        if (ti2) ti2.value = "";
       }
 
       // Set preset to the default (or 'all' if none) and disable date inputs
       const preset = document.getElementById("datePreset");
+      const preset2 = document.getElementById("datePreset2");
       // This now respects the 'selected' attribute in the HTML
       if (preset && !preset.value) preset.value = "all";
+      if (preset2) preset2.value = preset ? preset.value : "all";
       if (fi) fi.disabled = true;
       if (ti) ti.disabled = true;
+      if (fi2) fi2.disabled = true;
+      if (ti2) ti2.disabled = true;
 
       // Run analysis for the full range
       applyDateFilterAndRecompute();
@@ -1655,6 +1706,7 @@
         to: fmtDMY(max),
         fromISO: fmtISO(min),
         toISO: fmtISO(max),
+        maxDate: max,
       };
     }
 
@@ -1677,25 +1729,41 @@
     document.getElementById("hotPctVal").textContent = state.hotPct + "%";
     document.getElementById("coldPctVal").textContent = state.coldPct + "%";
 
-    // Date range control events
-    document.getElementById("datePreset").addEventListener("change", (e) => {
+    // Shared logic for preset change
+    function handlePresetChange(e) {
       const v = e.target.value;
+      // Sync the other preset selector
+      const otherId = e.target.id === "datePreset" ? "datePreset2" : "datePreset";
+      const other = document.getElementById(otherId);
+      if (other) other.value = v;
+
+      // Determine the latest date in the dataset
+      const dr = extractDateRange(_lastParsedObjects || []);
+      const latestDate = dr ? dr.maxDate : new Date();
+      const latestDateISO = fmtISO(latestDate);
+
       const fi = document.getElementById("dateFromInput");
       const ti = document.getElementById("dateToInput");
+      const fi2 = document.getElementById("dateFromInput2");
+      const ti2 = document.getElementById("dateToInput2");
+
       if (v === "custom") {
         fi.disabled = false;
         ti.disabled = false;
+        if (fi2) fi2.disabled = false;
+        if (ti2) ti2.disabled = false;
       } else {
         fi.disabled = true;
         ti.disabled = true;
+        if (fi2) fi2.disabled = true;
+        if (ti2) ti2.disabled = true;
         // For convenience, when user picks a preset compute and populate inputs
-        const today = new Date();
         if (v && v.startsWith("since-")) {
           const dateStr = v.slice("since-".length);
           const parsed = new Date(dateStr);
           const from = new Date(parsed);
-          fi.value = from.toISOString().slice(0, 10);
-          ti.value = today.toISOString().slice(0, 10);
+          fi.value = fmtISO(from);
+          ti.value = latestDateISO;
           // Fall through to applyDateFilterAndRecompute at the end
         }
         if (v === "all") {
@@ -1706,45 +1774,64 @@
           }
         } else if (v === "1y") {
           // "Last year" is from Jan 1 of the previous year to today
-          const today = new Date();
-          const lastYear = today.getFullYear() - 1;
+          const lastYear = latestDate.getFullYear() - 1;
           const from = new Date(lastYear, 0, 1); // Jan 1 of previous year
-          fi.value = from.toISOString().slice(0, 10);
-          ti.value = today.toISOString().slice(0, 10);
+          fi.value = fmtISO(from);
+          ti.value = latestDateISO;
         } else if (v.endsWith("m")) {
           const months = parseInt(v.slice(0, -1), 10);
-          const today = new Date();
           // Start from the 1st day of the month, N months ago.
-          const from = new Date(today.getFullYear(), today.getMonth() - months, 1);
-          fi.value = from.toISOString().slice(0, 10);
-          ti.value = today.toISOString().slice(0, 10); // End date is today.
+          const from = new Date(latestDate.getFullYear(), latestDate.getMonth() - months, 1);
+          fi.value = fmtISO(from);
+          ti.value = latestDateISO;
         } else if (v.endsWith("y")) {
           const years = parseInt(v.slice(0, -1), 10);
-          const to = new Date();
-          const from = new Date();
+          const from = new Date(latestDate);
           // Set 'from' date back by the specified number of years
           from.setFullYear(from.getFullYear() - years);
-          fi.value = from.toISOString().slice(0, 10);
-          ti.value = to.toISOString().slice(0, 10);
+          fi.value = fmtISO(from);
+          ti.value = latestDateISO;
         }
         // Centralize the call to recompute
         applyDateFilterAndRecompute();
       }
-    });
+    }
+
+    document.getElementById("datePreset").addEventListener("change", handlePresetChange);
+    const preset2 = document.getElementById("datePreset2");
+    if (preset2) preset2.addEventListener("change", handlePresetChange);
 
     // Auto-apply when custom date inputs change
+    function handleDateInputChange(e) {
+        // Sync the other input
+        const id = e.target.id;
+        let otherId = null;
+        if (id === "dateFromInput") otherId = "dateFromInput2";
+        else if (id === "dateFromInput2") otherId = "dateFromInput";
+        else if (id === "dateToInput") otherId = "dateToInput2";
+        else if (id === "dateToInput2") otherId = "dateToInput";
+        
+        if (otherId) {
+            const other = document.getElementById(otherId);
+            if (other) other.value = e.target.value;
+        }
+
+        document.getElementById("datePreset").value = "custom";
+        const p2 = document.getElementById("datePreset2");
+        if (p2) p2.value = "custom";
+        applyDateFilterAndRecompute();
+    }
+
     const _fi = document.getElementById("dateFromInput");
     const _ti = document.getElementById("dateToInput");
-    if (_fi)
-      _fi.addEventListener("change", () => {
-        document.getElementById("datePreset").value = "custom";
-        applyDateFilterAndRecompute();
-      });
-    if (_ti)
-      _ti.addEventListener("change", () => {
-        document.getElementById("datePreset").value = "custom";
-        applyDateFilterAndRecompute();
-      });
+    if (_fi) _fi.addEventListener("change", handleDateInputChange);
+    if (_ti) _ti.addEventListener("change", handleDateInputChange);
+    
+    const _fi2 = document.getElementById("dateFromInput2");
+    const _ti2 = document.getElementById("dateToInput2");
+    if (_fi2) _fi2.addEventListener("change", handleDateInputChange);
+    if (_ti2) _ti2.addEventListener("change", handleDateInputChange);
+
     // Toggle Show All / Top 5 for Number Cruncher
     (function attachCrunchToggle() {
       const crunchBtn = document.getElementById('crunchToggleBtn');
