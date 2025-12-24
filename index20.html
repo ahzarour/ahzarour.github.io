@@ -86,7 +86,7 @@
 
     .h2SectionStyle{
       margin: 0 0 8px 0;
-      font-size: medium;
+      font-size: clamp(0.6rem, 4cqi, 15px);
       padding-bottom: 8px;
       text-align: center;
     }
@@ -174,8 +174,10 @@
       display: flex;
       gap: 12px;
       align-items: center;
-      flex-wrap: wrap;
+      flex-wrap: nowrap;
       justify-content: center;
+      white-space: nowrap;
+      font-size: clamp(.5rem, 3cqi, 15px);
     }
 
     .dot {
@@ -299,7 +301,7 @@
 
     .freqWhiteNumbersHeader {
       margin: 0 0 8px 0;
-      font-size: clamp(1vw, 12vw, 15px);
+      font-size: clamp(0.6rem, 4cqi, 15px);
       color: var(--muted);
     }
 
