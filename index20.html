@@ -88,6 +88,7 @@
       margin: 0 0 8px 0;
       font-size: medium;
       padding-bottom: 8px;
+      text-align: center;
     }
 
     .combPattrenSection {
@@ -174,6 +175,7 @@
       gap: 12px;
       align-items: center;
       flex-wrap: wrap;
+      justify-content: center;
     }
 
     .dot {
@@ -342,7 +344,7 @@
     .combo-header,
     .combo-row {
       display: grid;
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: 2fr 1fr;
       gap: 8px;
       padding: 8px 10px;
       border-bottom: 1px solid rgba(255, 255, 255, 0.08);
@@ -731,8 +733,8 @@
 
     <!-- combination pattern -->
     <section class="sectionPanelSettings" >
-      <h2 class="h2SectionStyle">Combination patterns</h2>
-      <div class="combo-scroll">
+      <h2 class="h2SectionStyle" >Combination patterns</h2>
+      <div class="combo-scroll" style="max-width: 450px; margin: 0 auto;">
         <div class="combo-header">
           <div>Combination</div>
           <div>Count</div>
@@ -825,9 +827,9 @@
 
     <!-- Winners Map -->
     <section id="winnersMapSection" class="sectionPanelSettings">
-      <div style="margin-bottom:8px; text-align:center;">
+      <div style="margin-bottom:8px;">
         <h2 class="h2SectionStyle">Winners Map</h2>
-        <p class="ticket-meta" style="margin-left:0; padding: 0 8px 8px;">
+        <p class="ticket-meta" style="text-align: center; margin: 0; padding: 0 8px 8px;">
           A map of the last 10 winning numbers within the selected date range.
         </p>
       </div>
@@ -838,7 +840,7 @@
 
         <!-- Number Appearance Checker -->
     <section class="sectionPanelSettings">
-      <h2 class="h2SectionStyle" style="text-align:center;">Combination Appearance Checker</h2>
+      <h2 class="h2SectionStyle">Combination Appearance Checker</h2>
       <div id="comboCheckResult" style="padding-bottom: 12px;"></div>
       <div class="quality-controls" style="justify-content:center; padding-bottom: 12px;">
         <button id="checkComboBtn" type="button">Check Combination</button>
@@ -859,7 +861,7 @@
 
     <!-- Ultimate Smart Ticket -->
     <section id="ultimateTicketSection" class="sectionPanelSettings">
-      <div style="margin-bottom:8px; text-align:center;">
+      <div style="margin-bottom:8px;">
         <h2 class="h2SectionStyle">Ultimate Smart Ticket</h2>
         
         <!-- Duplicated Date Range Selector for Ultimate Ticket -->
@@ -921,7 +923,7 @@
     <!-- Number Quality Checker -->
     <section id="qualityCheckerSection" class="sectionPanelSettings">
       <div class="quality-wrap">
-        <h2 class="h2SectionStyle" style="text-align:center;">Number Quality Checker</h2>
+        <h2 class="h2SectionStyle">Number Quality Checker</h2>
         <div class="quality-controls" style="justify-content:center; padding-bottom: 12px;">
           <button id="ticketCheckBtn" type="button">Check Ticket</button>
           <button id="pasteTicketBtn" type="button">Paste</button>
@@ -943,8 +945,10 @@
       </div>
     </section>
 
+
+      <!-- historical data show -->
     <section class="sectionPanelSettings">
-      <h2 class="h2SectionStyle" style="text-align:center;">Historical Data</h2>
+      <h2 class="h2SectionStyle">Historical Data</h2>
       <div class="quality-controls" style="justify-content:center; margin-bottom: 12px;">
         <button id="showHistoryBtn" type="button">Show Historical Data</button>
       </div>
