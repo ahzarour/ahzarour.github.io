@@ -342,10 +342,14 @@
     .combo-header,
     .combo-row {
       display: grid;
-      grid-template-columns: 2fr 1fr;
+      grid-template-columns: 1fr 1fr;
       gap: 8px;
       padding: 8px 10px;
       border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    @media (max-width: 570px) {
+      .combo-header, .combo-row { grid-template-columns: 1fr auto; }
     }
 
     .combo-header {
