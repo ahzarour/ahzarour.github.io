@@ -943,6 +943,22 @@
       </div>
     </section>
 
+    <section class="sectionPanelSettings">
+      <h2 class="h2SectionStyle" style="text-align:center;">Historical Data</h2>
+      <div class="quality-controls" style="justify-content:center; margin-bottom: 12px;">
+        <button id="showHistoryBtn" type="button">Show Historical Data</button>
+      </div>
+      <div id="historyDataContainer" style="display: none;">
+        <div class="crunch-scroll" style="max-height: 300px; border: 1px solid rgba(255,255,255,0.06); border-radius:12px; max-width: 460px; margin: 0 auto;">
+           <div class="crunch-header" style="grid-template-columns: 1fr 3fr;">
+             <div>Date</div>
+             <div>Numbers</div>
+           </div>
+           <div id="historyList"></div>
+        </div>
+      </div>
+    </section>
+
     <!-- ---------------- footer ----------- -->
     <div class="footer">
       <p> Plan Don't Play is copyrited <strong>&copy; 2025 Ahmed Zarour</strong>
@@ -2986,6 +3002,68 @@
         const sortedHeader = container.querySelector(`.combo-header [data-sort-key="${comboDetailSort.key}"]`);
         if (sortedHeader) {
             sortedHeader.innerHTML += comboDetailSort.dir === 'asc' ? ' <span style="font-size:0.8em">▲</span>' : ' <span style="font-size:0.8em">▼</span>';
+        }
+      }
+    })();
+
+    // --- Historical Data Viewer ---
+    (function attachHistoryViewer() {
+      const btn = document.getElementById('showHistoryBtn');
+      const container = document.getElementById('historyDataContainer');
+      const list = document.getElementById('historyList');
+      
+      if (!btn || !container || !list) return;
+
+      btn.addEventListener('click', () => {
+        const isHidden = container.style.display === 'none';
+        if (isHidden) {
+          container.style.display = 'block';
+          btn.textContent = 'Hide Historical Data';
+          renderHistory();
+        } else {
+          container.style.display = 'none';
+          btn.textContent = 'Show Historical Data';
+        }
+      });
+
+      function renderHistory() {
+        list.innerHTML = '';
+        if (!state.draws || !state.draws.length) {
+          list.innerHTML = '<div style="padding:10px; text-align:center; color:var(--muted);">No data loaded.</div>';
+          return;
+        }
+        // Sort by date desc
+        const sorted = [...state.draws].sort((a,b) => (b.date || 0) - (a.date || 0));
+        
+        for (const d of sorted) {
+          const row = document.createElement('div');
+          row.className = 'crunch-row';
+          row.style.gridTemplateColumns = '1fr 3fr';
+          
+          const dateDiv = document.createElement('div');
+          dateDiv.textContent = d.date ? fmtDMY(d.date) : '—';
+          
+          const ballsDiv = document.createElement('div');
+          ballsDiv.style.display = 'flex';
+          ballsDiv.style.gap = '4px';
+          ballsDiv.style.justifyContent = 'center';
+          ballsDiv.style.flexWrap = 'wrap';
+          for (const w of d.whites) {
+            const b = document.createElement('div');
+            b.className = 'ball';
+            b.style.width = '24px'; b.style.height = '24px'; b.style.fontSize = '11px';
+            b.textContent = w;
+            ballsDiv.appendChild(b);
+          }
+          
+          const pb = document.createElement('div');
+          pb.className = 'ball pball';
+          pb.style.width = '24px'; pb.style.height = '24px'; pb.style.fontSize = '11px';
+          pb.textContent = d.red;
+          ballsDiv.appendChild(pb);
+
+          row.append(dateDiv, ballsDiv);
+          list.appendChild(row);
         }
       }
     })();
