@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Scrape Powerball</title>
+</head>
+<body>
+
+    <h2>Scrape from Visual Page</h2>
+    <button id="scrape-btn">Read Page</button>
+    <div id="output" style="margin-top: 10px; padding: 10px; background: #f0f0f0;"></div>
+
+    <script>
+        document.getElementById('scrape-btn').addEventListener('click', async () => {
+            const output = document.getElementById('output');
+            output.innerText = 'Loading...';
+
+            const target = 'https://www.valottery.com/data/draw-games/powerball';
+            // Use AllOrigins proxy to bypass CORS security
+            const proxy = `https://api.allorigins.win/get?url=${encodeURIComponent(target)}`;
+
+            try {
+                const response = await fetch(proxy);
+                const data = await response.json();
+                
+                // Convert text to HTML
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(data.contents, 'text/html');
+
+                // STRATEGY: Find the section that says "Latest Drawing"
+                // The website likely puts the numbers inside a specific container.
+                // You might need to Inspect Element on their site to find the exact class name.
+                // For now, let's try to find the "ball-number" class which is common.
+                
+                // ADJUST THIS SELECTOR based on the real site structure:
+                // Common possibilities: '.balls', '.winning-numbers', '.draw-result'
+                // Based on standard lottery sites, we will look for list items with numbers.
+                
+                // Attempt to grab all elements with class="balls-6"
+                const balls = Array.from(doc.querySelectorAll('.balls-6'));
+
+                // Attempt to grab the date (adjust selector based on inspection, e.g. .draw-date)
+                const dateEl = doc.querySelector('.title-display');
+                const dateText = dateEl ? dateEl.innerText.trim() : 'Date not found';
+                
+                if (balls.length > 0) {
+                    // Take the first 6 numbers found (5 white + 1 red)
+                    const numbers = balls.slice(0, 6).map(b => b.innerText.replace(/\D/g, '')).join(',');
+                    
+                    // Format date to DD/MM/YYYY
+                    let formattedDate = dateText;
+
+                    // Try to extract date pattern if present to avoid extra text
+                    const dateMatch = dateText.match(/(\d{1,2})[\/\-\.](\d{1,2})[\/\-\.](\d{4})/);
+                    const dateStringToParse = dateMatch ? dateMatch[0] : dateText;
+
+                    const d = new Date(dateStringToParse);
+                    if (!isNaN(d.getTime())) {
+                        formattedDate = `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}/${d.getFullYear()}`;
+                    }
+
+                    output.innerText = `${formattedDate},${numbers}`;
+                } else {
+                    // Fallback: Dump text so you can see what we retrieved
+                    output.innerText = "Could not auto-detect balls. Please Right Click -> Inspect on the lottery page to find the specific class name (e.g., class='game-ball').";
+                }
+
+            } catch (err) {
+                output.innerText = 'Error: ' + err.message;
+            }
+        });
+    </script>
+</body>
+</html>
