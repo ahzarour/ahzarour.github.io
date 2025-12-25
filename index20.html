@@ -827,19 +827,6 @@
       </div>
     </section>
 
-    <!-- Winners Map -->
-    <section id="winnersMapSection" class="sectionPanelSettings">
-      <div style="margin-bottom:8px;">
-        <h2 class="h2SectionStyle">Winners Map</h2>
-        <p class="ticket-meta" style="text-align: center; margin: 0; padding: 0 8px 8px;">
-          A map of the last 10 winning numbers within the selected date range.
-        </p>
-      </div>
-      <div class="tickets-grid" id="winnersMapList">
-        <!-- Winning numbers will be rendered here -->
-      </div>
-    </section>
-
         <!-- Number Appearance Checker -->
     <section class="sectionPanelSettings">
       <h2 class="h2SectionStyle">Combination Appearance Checker</h2>
@@ -956,9 +943,10 @@
       </div>
       <div id="historyDataContainer" style="display: none;">
         <div class="crunch-scroll" style="max-height: 300px; border: 1px solid rgba(255,255,255,0.06); border-radius:12px; max-width: 460px; margin: 0 auto;">
-           <div class="crunch-header" style="grid-template-columns: 1fr 3fr;">
+           <div class="crunch-header" style="grid-template-columns: 1fr 3fr 0.8fr;">
              <div>Date</div>
              <div>Numbers</div>
+             <div>Action</div>
            </div>
            <div id="historyList"></div>
         </div>
@@ -1651,7 +1639,6 @@
       generateAndRenderRangeTickets(5);
       generateAndRenderPatternTickets(5);
       renderUltimateTicket();
-      renderWinnersMap();
 
     }
 
@@ -2540,7 +2527,12 @@
       const wc = { hot:0, natural:0, cold:0 };
       whites.forEach(n => { const c = state.classes.white.cls[n] || 'natural'; wc[c] = (wc[c]||0)+1; });
       const diff = Math.abs((wc.hot||0)-(spec.hot||0)) + Math.abs((wc.natural||0)-(spec.natural||0)) + Math.abs((wc.cold||0)-(spec.cold||0));
-      const patternScore = Math.max(0, (5 - diff)) / 5; // 0..1
+      
+      // Include Red Ball in pattern match
+      const actualRedClass = state.classes.red.cls[red] || 'natural';
+      const redMatch = (spec.redClass === 'any' || spec.redClass === actualRedClass) ? 1 : 0;
+      const whitePart = Math.max(0, 5 - diff);
+      const patternScore = (whitePart + redMatch) / 6; // 0..1
 
       // Range alignment
       const stats = computeRangeGroups(state.draws || []);
@@ -2566,7 +2558,7 @@
         whites, red,
         avgWhitePercentile: avgW,
         powerballPercentile: pctlPB,
-        pattern: { target: spec, actual: wc, score: patternScore },
+        pattern: { target: spec, actual: wc, actualRed: actualRedClass, score: patternScore },
         ranges: { top12, top34, top5, ok12, ok34, ok5, score: rangeScore },
         score,
         grade
@@ -2594,7 +2586,7 @@
       details.innerHTML = `
         Whites: ${res.whites.join(', ')} • PB: ${res.red}<br>
         Avg white percentile: ${res.avgWhitePercentile.toFixed(1)} • PB percentile: ${res.powerballPercentile.toFixed(1)}<br>
-        Pattern target: ${res.pattern.target.hot}H/${res.pattern.target.natural}N/${res.pattern.target.cold}C • Actual: ${res.pattern.actual.hot||0}H/${res.pattern.actual.natural||0}N/${res.pattern.actual.cold||0}C<br>
+        Pattern target: ${res.pattern.target.hot}H/${res.pattern.target.natural}N/${res.pattern.target.cold}C (PB:${res.pattern.target.redClass}) • Actual: ${res.pattern.actual.hot||0}H/${res.pattern.actual.natural||0}N/${res.pattern.actual.cold||0}C (PB:${res.pattern.actualRed})<br>
         Range groups OK: G1 ${res.ranges.ok12? '✔':'✖'} (${rangesLbl(res.ranges.top12)}), G2 ${res.ranges.ok34? '✔':'✖'} (${rangesLbl(res.ranges.top34)}), G3 ${res.ranges.ok5? '✔':'✖'} (${rangesLbl(res.ranges.top5)})
       `;
       el.appendChild(details);
@@ -2738,54 +2730,6 @@
       renderRangeGroupList(document.getElementById('group4Ranges'), stats.g4, stats.total);
     }
 
-    // --- Winners Map ---
-    function renderWinnersMap() {
-      const listEl = document.getElementById('winnersMapList');
-      if (!listEl) return;
-
-      listEl.innerHTML = '';
-      const last10Draws = (state.draws || []).slice(0, 10);
-
-      if (!last10Draws.length) {
-        const empty = document.createElement('div');
-        empty.className = 'ticket-meta';
-        empty.textContent = 'No draws to display in the selected range.';
-        listEl.appendChild(empty);
-        return;
-      }
-
-      for (const draw of last10Draws) {
-        const wrapper = document.createElement('div');
-        wrapper.style.display = 'flex';
-        wrapper.style.alignItems = 'center';
-        wrapper.style.gap = '10px';
-
-        const row = document.createElement('div');
-        row.className = 'ticket';
-        for (const n of draw.whites) {
-          const b = document.createElement('div'); b.className = 'ball'; b.textContent = n;
-          row.appendChild(b);
-        }
-        const pb = document.createElement('div'); pb.className = 'ball pball'; pb.textContent = draw.red;
-        row.appendChild(pb);
-        wrapper.appendChild(row);
-
-        const btn = document.createElement('button');
-        btn.type = 'button';
-        btn.textContent = 'Copy';
-        btn.style.fontSize = '11px';
-        btn.style.padding = '4px 8px';
-        btn.style.margin = '0';
-        btn.addEventListener('click', () => {
-          navigator.clipboard.writeText(`${draw.whites.join(' ')} ${draw.red}`);
-          btn.textContent = 'Copied!';
-          setTimeout(() => btn.textContent = 'Copy', 1500);
-        });
-        wrapper.appendChild(btn);
-
-        listEl.appendChild(wrapper);
-      }
-    }
     // --- Number Appearance Checker ---
     function getCombinations(arr, k) {
       const result = [];
@@ -3044,7 +2988,7 @@
         for (const d of sorted) {
           const row = document.createElement('div');
           row.className = 'crunch-row';
-          row.style.gridTemplateColumns = '1fr 3fr';
+          row.style.gridTemplateColumns = '1fr 3fr 0.8fr';
           
           const dateDiv = document.createElement('div');
           dateDiv.textContent = d.date ? fmtDMY(d.date) : '—';
@@ -3068,7 +3012,21 @@
           pb.textContent = d.red;
           ballsDiv.appendChild(pb);
 
-          row.append(dateDiv, ballsDiv);
+          const btnDiv = document.createElement('div');
+          const copyBtn = document.createElement('button');
+          copyBtn.textContent = 'Copy';
+          copyBtn.style.fontSize = '10px';
+          copyBtn.style.padding = '2px 6px';
+          copyBtn.style.margin = '0';
+          copyBtn.type = 'button';
+          copyBtn.addEventListener('click', () => {
+             navigator.clipboard.writeText(`${d.whites.join(' ')} ${d.red}`);
+             copyBtn.textContent = 'Copied!';
+             setTimeout(() => copyBtn.textContent = 'Copy', 1500);
+          });
+          btnDiv.appendChild(copyBtn);
+
+          row.append(dateDiv, ballsDiv, btnDiv);
           list.appendChild(row);
         }
       }
