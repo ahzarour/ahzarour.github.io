@@ -84,7 +84,7 @@
       margin-bottom: 16px;
     }
 
-    .h2SectionStyle{
+    .h2SectionStyle {
       margin: 0 0 8px 0;
       font-size: clamp(0.6rem, 4cqi, 15px);
       padding-bottom: 8px;
@@ -110,7 +110,7 @@
         gap: 16px;
 
       }
-      }
+    }
 
     .controls {
       display: grid;
@@ -275,7 +275,7 @@
     /* Date inputs scale with viewport but never get too small or too large */
     .date-controls input[type="date"] {
       width: clamp(50px, 16vw, 320px);
-      max-width: 50%;
+      /* max-width: 50%; */
       box-sizing: border-box;
     }
 
@@ -296,7 +296,7 @@
       width: 100%;
       border-collapse: collapse;
       /* font-size: 13px; */
-      /* font-size: clamp(1vw, 12vw, 13px); 
+    /* font-size: clamp(1vw, 12vw, 13px); 
     } */
 
     .freqWhiteNumbersHeader {
@@ -331,13 +331,16 @@
       max-height: 224px;
       /* ~5 rows visible including header */
       overflow: auto;
-      -ms-overflow-style: none; /* IE/Edge */
-      scrollbar-width: none; /* Firefox */
+      -ms-overflow-style: none;
+      /* IE/Edge */
+      scrollbar-width: none;
+      /* Firefox */
       border: 1px solid rgba(255, 255, 255, 0.06);
       border-radius: 12px;
     }
 
-    .combo-scroll::-webkit-scrollbar { /* Chrome/Safari */
+    .combo-scroll::-webkit-scrollbar {
+      /* Chrome/Safari */
       width: 0;
       height: 0;
     }
@@ -353,7 +356,11 @@
     }
 
     @media (max-width: 570px) {
-      .combo-header, .combo-row { grid-template-columns: 1fr auto; }
+
+      .combo-header,
+      .combo-row {
+        grid-template-columns: 1fr auto;
+      }
     }
 
     .combo-header {
@@ -361,18 +368,47 @@
       font-weight: 600;
       position: sticky;
       top: 0;
-      background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0)) , var(--panel);
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0)), var(--panel);
       z-index: 1;
       font-size: 13px;
     }
 
-    .combo-row:last-child { border-bottom: 0; }
-    .combo-count { text-align: left; }
-    .combo-empty { padding: 8px 10px; color: var(--muted); }
-    .match-detail-row { display: grid; grid-template-columns: 2fr 1fr; gap: 8px; padding: 8px 10px; border-bottom: 1px solid rgba(255,255,255,0.08); font-size: 12px; }
-    .match-detail-row:last-child { border-bottom: 0; }
-    .match-detail-ticket { display: flex; flex-wrap: wrap; gap: 4px; align-items: center; }
-    .match-detail-matches { color: var(--muted); }
+    .combo-row:last-child {
+      border-bottom: 0;
+    }
+
+    .combo-count {
+      text-align: left;
+    }
+
+    .combo-empty {
+      padding: 8px 10px;
+      color: var(--muted);
+    }
+
+    .match-detail-row {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 8px;
+      padding: 8px 10px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      font-size: 12px;
+    }
+
+    .match-detail-row:last-child {
+      border-bottom: 0;
+    }
+
+    .match-detail-ticket {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      align-items: center;
+    }
+
+    .match-detail-matches {
+      color: var(--muted);
+    }
 
     /* Frequency lists (div-based replacement) */
     .freq-header,
@@ -384,19 +420,25 @@
       border-bottom: 1px solid rgba(255, 255, 255, 0.08);
       justify-items: center;
     }
+
     .freq-header {
       color: var(--muted);
       font-weight: 600;
       position: sticky;
       top: 0;
-      background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0)) , var(--panel);
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0)), var(--panel);
       z-index: 1;
       font-size: 13px;
     }
-    .freq-row:last-child { border-bottom: 0; }
+
+    .freq-row:last-child {
+      border-bottom: 0;
+    }
 
     /* Utility */
-    .text-right { text-align: center; }
+    .text-right {
+      text-align: center;
+    }
 
     /* Number Cruncher (7 columns) */
     .crunch-header,
@@ -411,40 +453,46 @@
       justify-items: center;
       text-align: center;
     }
+
     .crunch-header {
       color: var(--muted);
       font-weight: 600;
       position: sticky;
       top: 0;
-      background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0)) , var(--panel);
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0)), var(--panel);
       z-index: 1;
       font-size: clamp(11px, 1.8vw, 13px);
     }
+
     .crunch-row {
       font-size: clamp(11px, 1.8vw, 13px);
     }
-    .crunch-header > div,
-    .crunch-row > div {
+
+    .crunch-header>div,
+    .crunch-row>div {
       max-width: 100%;
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
     }
 
-    .crunch-header > div[data-sort-key] {
-        cursor: pointer;
-        transition: color 0.2s;
+    .crunch-header>div[data-sort-key] {
+      cursor: pointer;
+      transition: color 0.2s;
     }
-    .crunch-header > div[data-sort-key]:hover {
-        color: var(--accent);
+
+    .crunch-header>div[data-sort-key]:hover {
+      color: var(--accent);
     }
-    .crunch-header > div.sorted-asc::after {
-        content: ' ▲';
-        font-size: 0.8em;
+
+    .crunch-header>div.sorted-asc::after {
+      content: ' ▲';
+      font-size: 0.8em;
     }
-    .crunch-header > div.sorted-desc::after {
-        content: ' ▼';
-        font-size: 0.8em;
+
+    .crunch-header>div.sorted-desc::after {
+      content: ' ▼';
+      font-size: 0.8em;
     }
 
     /* Hidden scrollbar container for Number Cruncher */
@@ -490,10 +538,10 @@
     }
 
     div#comboList {
-    font-size: clamp(11px, 13px, 15px);
-    /* text-wrap-mode: nowrap; */
-    /* min-width: 280px; */
-}
+      font-size: clamp(11px, 13px, 15px);
+      /* text-wrap-mode: nowrap; */
+      /* min-width: 280px; */
+    }
 
     .footer {
       color: var(--muted);
@@ -506,16 +554,19 @@
 
     /* Range Groups: shrink numbers more on very small screens */
     @media (max-width: 375px) {
+
       #rangeGroupsSection .freqTableNumberlist,
       #rangeGroupsSection .freq-header,
       #rangeGroupsSection .freq-row {
         font-size: clamp(9px, 2.8vw, 12px);
       }
-      #rangeGroupsSection .freq-row > div:nth-child(2),
-      #rangeGroupsSection .freq-row > div:nth-child(3) {
+
+      #rangeGroupsSection .freq-row>div:nth-child(2),
+      #rangeGroupsSection .freq-row>div:nth-child(3) {
         font-size: clamp(8px, 2.4vw, 11px);
       }
     }
+
     /* For Range Groups, create a 2x2 grid on wider screens */
     @media (min-width: 640px) {
       #rangeGroupsSection .tables {
@@ -525,29 +576,125 @@
 
 
     /* Smart Tickets */
-    .tickets-grid { display: grid; gap: 10px; justify-content: center; justify-items: center; }
-    .tickets-block { text-align: center; padding: 8px; }
-    .ticket { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; justify-content: center; }
-    .ball { width: 34px; height: 34px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; background: #1e2554; border: 1px solid rgba(255,255,255,0.08); font-weight: 700; }
-    .pball { background: #4b1f2c; border-color: rgba(255,255,255,0.14); }
-    .ticket-meta { color: var(--muted); font-size: 12px; margin-left: 8px; }
+    .tickets-grid {
+      display: grid;
+      gap: 10px;
+      justify-content: center;
+      justify-items: center;
+    }
+
+    .tickets-block {
+      text-align: center;
+      padding: 8px;
+    }
+
+    .ticket {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .ball {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: #1e2554;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      font-weight: 700;
+    }
+
+    .pball {
+      background: #4b1f2c;
+      border-color: rgba(255, 255, 255, 0.14);
+    }
+
+    .ticket-meta {
+      color: var(--muted);
+      font-size: 12px;
+      margin-left: 8px;
+    }
+
     @media (max-width: 420px) {
-      .ball { width: 30px; height: 30px; font-size: 12px; }
+      .ball {
+        width: 30px;
+        height: 30px;
+        font-size: 12px;
+      }
     }
 
     /* Number Quality Checker */
-    .quality-wrap { display: grid; }
-    .quality-controls { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; justify-content: center; }
-    .quality-controls--inline { flex-wrap: nowrap; gap: 8px; overflow-x: auto; }
-    .quality-controls input[type="number"]:not(.ball-input) { width: 120px; }
-    .quality-result { display: flex; flex-direction: column; gap: 12px; text-align: center; align-items: center; }
-    .quality-badge { display: inline-block; max-width: fit-content; padding: 8px 12px; border-radius: 999px; font-weight: 700;  }
-    .q-ultimate { background: #1f3a5f; border: 1px solid rgba(255,255,255,0.12); }
-    .q-excellent { background: #1f4f3a; border: 1px solid rgba(255,255,255,0.12); }
-    .q-strong { background: #2a3a1f; border: 1px solid rgba(255,255,255,0.12); }
-    .q-moderate { background: #3a361f; border: 1px solid rgba(255,255,255,0.12); }
-    .q-weak { background: #3a2a1f; border: 1px solid rgba(255,255,255,0.12); }
-    .q-veryweak { background: #3a1f1f; border: 1px solid rgba(255,255,255,0.12); }
+    .quality-wrap {
+      display: grid;
+    }
+
+    .quality-controls {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .quality-controls--inline {
+      flex-wrap: nowrap;
+      gap: 8px;
+      overflow-x: auto;
+    }
+
+    .quality-controls input[type="number"]:not(.ball-input) {
+      width: 120px;
+    }
+
+    .quality-result {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      text-align: center;
+      align-items: center;
+    }
+
+    .quality-badge {
+      display: inline-block;
+      max-width: fit-content;
+      padding: 8px 12px;
+      border-radius: 999px;
+      font-weight: 700;
+    }
+
+    .q-ultimate {
+      background: #1f3a5f;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+    }
+
+    .q-excellent {
+      background: #1f4f3a;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+    }
+
+    .q-strong {
+      background: #2a3a1f;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+    }
+
+    .q-moderate {
+      background: #3a361f;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+    }
+
+    .q-weak {
+      background: #3a2a1f;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+    }
+
+    .q-veryweak {
+      background: #3a1f1f;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+    }
 
     /* Ball-styled number inputs */
     .ball-input {
@@ -555,7 +702,7 @@
       height: 34px;
       border-radius: 50%;
       background: #1e2554;
-      border: 1px solid rgba(255,255,255,0.08);
+      border: 1px solid rgba(255, 255, 255, 0.08);
       color: var(--text);
       text-align: center;
       font-weight: 700;
@@ -563,17 +710,33 @@
       padding: 0;
       margin: 0;
     }
-    .ball-input.pball { background: #4b1f2c; border-color: rgba(255,255,255,0.14); }
-    /* Remove spinners */
-    input.ball-input[type=number]::-webkit-outer-spin-button,
-    input.ball-input[type=number]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
-    input.ball-input[type=number] { -moz-appearance: textfield; }
-    /* Smaller on narrow screens to fit one line */
-    @media (max-width: 420px) {
-      .ball-input { width: 30px; height: 30px; font-size: 12px; }
+
+    .ball-input.pball {
+      background: #4b1f2c;
+      border-color: rgba(255, 255, 255, 0.14);
     }
 
-    .btnRow{
+    /* Remove spinners */
+    input.ball-input[type=number]::-webkit-outer-spin-button,
+    input.ball-input[type=number]::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+
+    input.ball-input[type=number] {
+      -moz-appearance: textfield;
+    }
+
+    /* Smaller on narrow screens to fit one line */
+    @media (max-width: 420px) {
+      .ball-input {
+        width: 30px;
+        height: 30px;
+        font-size: 12px;
+      }
+    }
+
+    .btnRow {
       display: flex;
       flex-wrap: nowrap;
     }
@@ -592,16 +755,16 @@
 
     <!-- date selector and quick range  -->
     <section class="sectionPanelSettings" style="margin-bottom: 16px; padding: 16px">
-      <div id="dateRange" class="meta date-range" style=" display: flex; gap: 16px; align-items: flex-start; flex-wrap: nowrap; overflow-x: auto; ">
+      <div id="dateRange" style=" display: flex; gap: 16px; align-items: flex-start; flex-wrap: nowrap; overflow-x: auto; ">
         <div class="date-labels" style="display: flex; flex-direction: column; gap: 14px">
-          <div style="font-size: 13px; color: var(--muted)">Quick range:</div>
+          <div style="font-size: 13px; color: var(--muted)">Quick:</div>
           <div style="font-size: 13px; color: var(--muted)">From</div>
           <div style="font-size: 13px; color: var(--muted)">Draws</div>
         </div>
 
         <div class="date-controls" style=" display: flex; flex-direction: column; gap: 12px; flex: 1; min-width: 0; ">
           <div>
-            <select id="datePreset" style="width: auto">
+            <select id="datePreset" style="max-width: auto;">
               <option value="since-2015-10-07" selected>From 10/07/2015</option>
               <option value="1m">Last month</option>
               <option value="3m">Last 3 months</option>
@@ -615,13 +778,13 @@
           </div>
 
           <div style="display: flex; gap: 8px; align-items: center">
-            <input id="dateFromInput" type="date" style="width: auto" />
+            <input id="dateFromInput" type="date" style="flex: 1; background-color: white; color: black; border: 0; max-width: 150px;"/>
             <div style="white-space: nowrap; color: var(--muted)">to</div>
-            <input id="dateToInput" type="date" style="width: auto" />
+            <input id="dateToInput"   type="date" style="flex: 1; background-color: white; color: black; border: 0; max-width: 150px;"/>
           </div>
 
           <div>
-            <div id="drawsInfo" class="meta date-range">
+            <div id="drawsInfo">
               <strong id="drawsCount">—————</strong>
             </div>
           </div>
@@ -661,14 +824,14 @@
     <!-- White Red Number  -->
     <section>
       <style>
-      .warpper2panels{
-        display: flex;
-        /* background-color: rgba(233, 38, 38); */
-        /* padding: 30px; */
-        margin: 0 auto;
-        gap: 12px;
-      }
-       </style>
+        .warpper2panels {
+          display: flex;
+          /* background-color: rgba(233, 38, 38); */
+          /* padding: 30px; */
+          margin: 0 auto;
+          gap: 12px;
+        }
+      </style>
       <div class="warpper2panels">
         <div class="sectionPanelSettings" style="flex: 1; min-width: 0;">
           <div style=" align-items: center; justify-content: space-between; margin-bottom: 8px; min-width: 0; ">
@@ -734,8 +897,8 @@
 
 
     <!-- combination pattern -->
-    <section class="sectionPanelSettings" >
-      <h2 class="h2SectionStyle" >Combination patterns</h2>
+    <section class="sectionPanelSettings">
+      <h2 class="h2SectionStyle">Combination patterns</h2>
       <div class="combo-scroll" style="max-width: 450px; margin: 0 auto;">
         <div class="combo-header">
           <div>Combination</div>
@@ -827,7 +990,7 @@
       </div>
     </section>
 
-        <!-- Number Appearance Checker -->
+    <!-- Number Appearance Checker -->
     <section class="sectionPanelSettings">
       <h2 class="h2SectionStyle">Combination Appearance Checker</h2>
       <div id="comboCheckResult" style="padding-bottom: 12px;"></div>
@@ -852,26 +1015,17 @@
     <section id="ultimateTicketSection" class="sectionPanelSettings">
       <div style="margin-bottom:8px;">
         <h2 class="h2SectionStyle">Ultimate Smart Ticket</h2>
-        
+
         <!-- Duplicated Date Range Selector for Ultimate Ticket -->
-        <div id="dateRange2" class="meta date-range" style="
-            display: flex;
-            gap: 16px;
-            align-items: flex-start;
-            flex-wrap: nowrap;
-            overflow-x: auto;
-            justify-content: center;
-            margin-bottom: 12px;
-            text-align: left;
-          ">
-          <div class="date-labels" style="display: flex; flex-direction: column; gap: 14px">
-            <div style="font-size: 13px; color: var(--muted)">Quick range:</div>
-            <div style="font-size: 13px; color: var(--muted)">From</div>
-            <div style="font-size: 13px; color: var(--muted)">Draws</div>
-          </div>
-          <div class="date-controls" style="display: flex; flex-direction: column; gap: 12px; min-width: 0;">
-            <div>
-              <select id="datePreset2" style="width: auto">
+
+
+
+
+        <div id="dateRange2">
+          <div class="date-controls" style="text-align: center;">
+            <div  style="display: flex; gap: 8px; justify-self: center;">
+              Quick Selection
+              <select id="datePreset2" style="max-width: 100px; border: 0px; flex: 1;">
                 <option value="since-2015-10-07" selected>From 10/07/2015</option>
                 <option value="1m">Last month</option>
                 <option value="3m">Last 3 months</option>
@@ -882,23 +1036,45 @@
                 <option value="all">All time</option>
                 <option value="custom">Custom dates</option>
               </select>
+              <div id="drawsInfo2" style="flex: 1;"><strong id="drawsCount2">—————</strong></div>
             </div>
-            <div style="display: flex; gap: 8px; align-items: center">
-              <input id="dateFromInput2" type="date" style="width: auto" />
-              <div style="white-space: nowrap; color: var(--muted)">to</div>
-              <input id="dateToInput2" type="date" style="width: auto" />
-            </div>
-            <div><div id="drawsInfo2" class="meta date-range"><strong id="drawsCount2">—————</strong></div></div>
+
+            <input id="dateFromInput2" type="date" style="width: auto; 
+            background-color: rgb(225, 225, 225); color: black; border: 0px" />
+
+            <strong style="white-space: nowrap;">to</strong>
+
+            <input id="dateToInput2" type="date" style="width: auto; 
+            background-color: rgb(225, 225, 225); color: black; border: 0px" />
+
+            
           </div>
         </div>
 
-        <div style="margin-bottom: 8px; display: flex; justify-content: center; gap: 8px; align-items: center;">
-             <label for="ultimateFreqX" style="color:var(--muted); font-size:13px;">Sum of Pairs (X):</label>
-             <input id="ultimateFreqX" type="number" min="0" step="1" placeholder="Any" style="width: 60px; padding: 4px; border-radius: 4px; border: 1px solid rgba(255,255,255,0.2); background: var(--chip); color: var(--text); text-align: center;">
-             <label for="ultimateFreqY" style="color:var(--muted); font-size:13px; margin-left:8px;">Sum of Triplets (Y):</label>
-             <input id="ultimateFreqY" type="number" min="0" step="1" placeholder="Any" style="width: 60px; padding: 4px; border-radius: 4px; border: 1px solid rgba(255,255,255,0.2); background: var(--chip); color: var(--text); text-align: center;">
-             <label for="ultimateFreqZ" style="color:var(--muted); font-size:13px; margin-left:8px;">Sum of Quads (Z):</label>
-             <input id="ultimateFreqZ" type="number" min="0" step="1" placeholder="Any" style="width: 60px; padding: 4px; border-radius: 4px; border: 1px solid rgba(255,255,255,0.2); background: var(--chip); color: var(--text); text-align: center;">
+        <style>
+          .FreqXYZ {
+            display: grid;
+            grid-template-columns: 1fr 70px;
+            margin: 20px;
+            justify-self: center;
+          }
+        </style>
+
+        <div class="FreqXYZ">
+          <label for="ultimateFreqX" style="color:var(--muted); font-size:13px; margin-right: 10px;">Sum of Pairs
+            (X):</label>
+          <input id="ultimateFreqX" type="number" min="0" step="1" placeholder="Any"
+            style="width: auto; padding: 4px; border-radius: 4px; border: 1px solid rgba(255,255,255,0.2); background: var(--chip); color: var(--text); text-align: left;">
+
+          <label for="ultimateFreqY" style="color:var(--muted); font-size:13px; margin-right: 10px;">Sum of Triplets
+            (Y):</label>
+          <input id="ultimateFreqY" type="number" min="0" step="1" placeholder="Any"
+            style="width: auto; padding: 4px; border-radius: 4px; border: 1px solid rgba(255,255,255,0.2); background: var(--chip); color: var(--text); text-align: left;">
+
+          <label for="ultimateFreqZ" style="color:var(--muted); font-size:13px; margin-right: 10px;">Sum of Quads
+            (Z):</label>
+          <input id="ultimateFreqZ" type="number" min="0" step="1" placeholder="Any"
+            style="width: auto; padding: 4px; border-radius: 4px; border: 1px solid rgba(255,255,255,0.2); background: var(--chip); color: var(--text); text-align: left;">
         </div>
         <div style="margin:6px 0 8px 0; text-align: center;">
           <button id="genUltimateBtn" type="button">Generate Ultimate Ticket</button>
@@ -918,7 +1094,7 @@
           <button id="pasteTicketBtn" type="button">Paste</button>
           <button id="copyTicketBtn" type="button">Copy</button>
         </div>
-        
+
         <div id="ticketQualityControls" class="quality-controls quality-controls--inline">
           <input id="tN1" class="ball-input" type="number" min="1" max="69" step="1" placeholder="N1" />
           <input id="tN2" class="ball-input" type="number" min="1" max="69" step="1" placeholder="N2" />
@@ -928,27 +1104,28 @@
           <input id="tPB" class="ball-input pball" type="number" min="1" max="26" step="1" placeholder="PB" />
         </div>
 
-       <!-- Result -->
-       <div id="ticketQualityResult" class="quality-result" style="padding-top: 12px;"></div>
+        <!-- Result -->
+        <div id="ticketQualityResult" class="quality-result" style="padding-top: 12px;"></div>
 
       </div>
     </section>
 
 
-      <!-- historical data show -->
+    <!-- historical data show -->
     <section class="sectionPanelSettings">
       <h2 class="h2SectionStyle">Historical Data</h2>
       <div class="quality-controls" style="justify-content:center; margin-bottom: 12px;">
         <button id="showHistoryBtn" type="button">Show Historical Data</button>
       </div>
       <div id="historyDataContainer" style="display: none;">
-        <div class="crunch-scroll" style="max-height: 300px; border: 1px solid rgba(255,255,255,0.06); border-radius:12px; max-width: 460px; margin: 0 auto;">
-           <div class="crunch-header" style="grid-template-columns: 1fr 3fr 0.8fr;">
-             <div>Date</div>
-             <div>Numbers</div>
-             <div>Action</div>
-           </div>
-           <div id="historyList"></div>
+        <div class="crunch-scroll"
+          style="max-height: 300px; border: 1px solid rgba(255,255,255,0.06); border-radius:12px; max-width: 460px; margin: 0 auto;">
+          <div class="crunch-header" style="grid-template-columns: 1fr 3fr 0.8fr;">
+            <div>Date</div>
+            <div>Numbers</div>
+            <div>Action</div>
+          </div>
+          <div id="historyList"></div>
         </div>
       </div>
     </section>
@@ -1309,7 +1486,7 @@
       crunchSortKey: 'qtyWhite', // 'n', 'qtyWhite', 'lastW', 'qtyRed', 'lastR'
       crunchSortDir: 'desc', // 'asc' or 'desc'
     };
-    
+
     const comboDetailSort = {
       key: 'date', // 'date' or 'matchedWhites'
       dir: 'desc' // 'asc' or 'desc'
@@ -1328,12 +1505,10 @@
         state.coldPct
       );
       state.classes = { white: whiteCls, red: redCls };
-      document.getElementById("whiteClassSummary").textContent = `Hot ≥ ${
-        whiteCls.hotMin
-      } • Cold ≤ ${whiteCls.coldMax}`;
-      document.getElementById("redClassSummary").textContent = `Hot ≥ ${
-        redCls.hotMin
-      } • Cold ≤ ${redCls.coldMax}`;
+      document.getElementById("whiteClassSummary").textContent = `Hot ≥ ${whiteCls.hotMin
+        } • Cold ≤ ${whiteCls.coldMax}`;
+      document.getElementById("redClassSummary").textContent = `Hot ≥ ${redCls.hotMin
+        } • Cold ≤ ${redCls.coldMax}`;
       renderBoard(
         document.getElementById("whiteBoard"),
         WHITE_MAX,
@@ -1460,14 +1635,14 @@
       rows.sort((a, b) => {
         let valA, valB;
         if (key === 'lastW') {
-            valA = a.lastWDate || 0;
-            valB = b.lastWDate || 0;
+          valA = a.lastWDate || 0;
+          valB = b.lastWDate || 0;
         } else if (key === 'lastR') {
-            valA = a.lastRDate || 0;
-            valB = b.lastRDate || 0;
+          valA = a.lastRDate || 0;
+          valB = b.lastRDate || 0;
         } else {
-            valA = a[key];
-            valB = b[key];
+          valA = a[key];
+          valB = b[key];
         }
         if (valA < valB) return -1 * dir;
         if (valA > valB) return 1 * dir;
@@ -1485,12 +1660,12 @@
 
       // Update header indicators
       if (header) {
-          header.querySelectorAll('div[data-sort-key]').forEach(el => {
-              el.classList.remove('sorted-asc', 'sorted-desc');
-              if (el.dataset.sortKey === key) {
-                  el.classList.add(state.crunchSortDir === 'asc' ? 'sorted-asc' : 'sorted-desc');
-              }
-          });
+        header.querySelectorAll('div[data-sort-key]').forEach(el => {
+          el.classList.remove('sorted-asc', 'sorted-desc');
+          if (el.dataset.sortKey === key) {
+            el.classList.add(state.crunchSortDir === 'asc' ? 'sorted-asc' : 'sorted-desc');
+          }
+        });
       }
 
       // Render
@@ -1498,13 +1673,13 @@
         const row = document.createElement('div');
         row.className = 'crunch-row';
         const c1 = document.createElement('div'); c1.textContent = r.n;
-        const c2 = document.createElement('div'); c2.textContent = r.qtyWhite.toLocaleString(); c2.className='text-right';
-        const c3 = document.createElement('div'); c3.textContent = r.pctWhite.toFixed(2) + '%'; c3.className='text-right';
+        const c2 = document.createElement('div'); c2.textContent = r.qtyWhite.toLocaleString(); c2.className = 'text-right';
+        const c3 = document.createElement('div'); c3.textContent = r.pctWhite.toFixed(2) + '%'; c3.className = 'text-right';
         const c4 = document.createElement('div'); c4.textContent = r.lastW;
-        const c5 = document.createElement('div'); c5.textContent = (r.qtyRed ? r.qtyRed.toLocaleString() : 0); c5.className='text-right';
-        const c6 = document.createElement('div'); c6.textContent = (r.qtyRed ? r.pctRed.toFixed(2) + '%' : '0%'); c6.className='text-right';
+        const c5 = document.createElement('div'); c5.textContent = (r.qtyRed ? r.qtyRed.toLocaleString() : 0); c5.className = 'text-right';
+        const c6 = document.createElement('div'); c6.textContent = (r.qtyRed ? r.pctRed.toFixed(2) + '%' : '0%'); c6.className = 'text-right';
         const c7 = document.createElement('div'); c7.textContent = r.lastR;
-        row.append(c1,c2,c3,c4,c5,c6,c7);
+        row.append(c1, c2, c3, c4, c5, c6, c7);
         list.appendChild(row);
       }
     }
@@ -1516,7 +1691,7 @@
 
     function applyDateFilterAndRecompute() {
       if (!_lastParsedObjects) return;
-      
+
       // Determine the latest date in the dataset to use as the upper bound for "since-" presets
       const drFull = extractDateRange(_lastParsedObjects);
       const latestDate = (drFull && drFull.maxDate) ? drFull.maxDate : new Date();
@@ -1806,30 +1981,30 @@
 
     // Auto-apply when custom date inputs change
     function handleDateInputChange(e) {
-        // Sync the other input
-        const id = e.target.id;
-        let otherId = null;
-        if (id === "dateFromInput") otherId = "dateFromInput2";
-        else if (id === "dateFromInput2") otherId = "dateFromInput";
-        else if (id === "dateToInput") otherId = "dateToInput2";
-        else if (id === "dateToInput2") otherId = "dateToInput";
-        
-        if (otherId) {
-            const other = document.getElementById(otherId);
-            if (other) other.value = e.target.value;
-        }
+      // Sync the other input
+      const id = e.target.id;
+      let otherId = null;
+      if (id === "dateFromInput") otherId = "dateFromInput2";
+      else if (id === "dateFromInput2") otherId = "dateFromInput";
+      else if (id === "dateToInput") otherId = "dateToInput2";
+      else if (id === "dateToInput2") otherId = "dateToInput";
 
-        document.getElementById("datePreset").value = "custom";
-        const p2 = document.getElementById("datePreset2");
-        if (p2) p2.value = "custom";
-        applyDateFilterAndRecompute();
+      if (otherId) {
+        const other = document.getElementById(otherId);
+        if (other) other.value = e.target.value;
+      }
+
+      document.getElementById("datePreset").value = "custom";
+      const p2 = document.getElementById("datePreset2");
+      if (p2) p2.value = "custom";
+      applyDateFilterAndRecompute();
     }
 
     const _fi = document.getElementById("dateFromInput");
     const _ti = document.getElementById("dateToInput");
     if (_fi) _fi.addEventListener("change", handleDateInputChange);
     if (_ti) _ti.addEventListener("change", handleDateInputChange);
-    
+
     const _fi2 = document.getElementById("dateFromInput2");
     const _ti2 = document.getElementById("dateToInput2");
     if (_fi2) _fi2.addEventListener("change", handleDateInputChange);
@@ -1847,20 +2022,20 @@
 
     // Handle sorting for Number Cruncher
     (function attachCrunchSort() {
-        const header = document.querySelector('.crunch-header');
-        if (!header) return;
-        header.addEventListener('click', (e) => {
-            const key = e.target.dataset.sortKey;
-            if (!key) return;
+      const header = document.querySelector('.crunch-header');
+      if (!header) return;
+      header.addEventListener('click', (e) => {
+        const key = e.target.dataset.sortKey;
+        if (!key) return;
 
-            if (state.crunchSortKey === key) {
-                state.crunchSortDir = state.crunchSortDir === 'asc' ? 'desc' : 'asc';
-            } else {
-                state.crunchSortKey = key;
-                state.crunchSortDir = 'desc'; // Default to descending for new column
-            }
-            renderCrunchTable();
-        });
+        if (state.crunchSortKey === key) {
+          state.crunchSortDir = state.crunchSortDir === 'asc' ? 'desc' : 'asc';
+        } else {
+          state.crunchSortKey = key;
+          state.crunchSortDir = 'desc'; // Default to descending for new column
+        }
+        renderCrunchTable();
+      });
     })();
 
     // Auto-load default dataset on page load (keeps manual Load button)
@@ -1888,7 +2063,7 @@
 
     // --- Smart Tickets ---
     function ticketKey(whites, red) {
-      const w = (whites || []).slice(0,5).sort((a,b)=>a-b).join('-');
+      const w = (whites || []).slice(0, 5).sort((a, b) => a - b).join('-');
       const r = (red != null) ? String(red) : 'null';
       return `${w}|${r}`;
     }
@@ -1958,7 +2133,7 @@
 
     function generateSmartTicket() {
       const { w, r } = computeSmartWeights();
-      const whites = weightedSampleWithoutReplacement(w, 5).sort((a,b)=>a-b);
+      const whites = weightedSampleWithoutReplacement(w, 5).sort((a, b) => a - b);
       const red = weightedPick(r);
       return { whites, red };
     }
@@ -2008,7 +2183,7 @@
     }
 
     // Hook up Generate button
-    (function attachSmartTicketsBtn(){
+    (function attachSmartTicketsBtn() {
       const btn = document.getElementById('genTicketsBtn');
       if (!btn) return;
       btn.addEventListener('click', () => generateAndRenderSmartTickets(5));
@@ -2018,7 +2193,7 @@
     function computeBinWeights(arr) {
       const eps = 0.5; // smoothing
       const w = arr.map((c) => (c || 0) + eps);
-      const sum = w.reduce((a,b)=>a+b,0);
+      const sum = w.reduce((a, b) => a + b, 0);
       return sum > 0 ? w : Array(arr.length).fill(1);
     }
 
@@ -2087,7 +2262,7 @@
         for (const n of fill) chosen.add(n);
       }
 
-      const whites = Array.from(chosen).slice(0,5).sort((a,b)=>a-b);
+      const whites = Array.from(chosen).slice(0, 5).sort((a, b) => a - b);
       const red = weightedPick(r);
       return { whites, red };
     }
@@ -2114,7 +2289,7 @@
     }
 
     // Button for Range‑Positioned tickets
-    (function attachRangeTicketsBtn(){
+    (function attachRangeTicketsBtn() {
       const btn = document.getElementById('genTicketsRangeBtn');
       if (!btn) return;
       btn.addEventListener('click', () => generateAndRenderRangeTickets(5));
@@ -2128,9 +2303,9 @@
       const parts = String(key).split('|');
       const left = parts[0] || '';
       const right = (parts[1] || '').trim();
-      const mHot = left.match(/(\d+)\s*Hot/i); if (mHot) out.hot = parseInt(mHot[1],10);
-      const mNat = left.match(/(\d+)\s*Natural/i); if (mNat) out.natural = parseInt(mNat[1],10);
-      const mCold = left.match(/(\d+)\s*Cold/i); if (mCold) out.cold = parseInt(mCold[1],10);
+      const mHot = left.match(/(\d+)\s*Hot/i); if (mHot) out.hot = parseInt(mHot[1], 10);
+      const mNat = left.match(/(\d+)\s*Natural/i); if (mNat) out.natural = parseInt(mNat[1], 10);
+      const mCold = left.match(/(\d+)\s*Cold/i); if (mCold) out.cold = parseInt(mCold[1], 10);
       const mRed = right.match(/Red:\s*(\w+)/i); if (mRed) out.redClass = mRed[1].toLowerCase();
       return out;
     }
@@ -2167,7 +2342,7 @@
       const items = Array.from(combos.entries());
       if (!items.length) return generateSmartTicket();
       // Weight by frequency so the highest pattern is most likely
-      items.sort((a,b) => b[1]-a[1]);
+      items.sort((a, b) => b[1] - a[1]);
       const topK = items.slice(0, Math.min(3, items.length));
       const weights = topK.map(x => x[1]);
       const pickIdx = weightedPickFromArray(weights);
@@ -2188,10 +2363,10 @@
         const fill = weightedSampleWithoutReplacement(wtmp, 5 - whites.length);
         whites.push(...fill);
       }
-      const whitesSorted = Array.from(new Set(whites)).slice(0,5).sort((a,b)=>a-b);
+      const whitesSorted = Array.from(new Set(whites)).slice(0, 5).sort((a, b) => a - b);
 
       let red;
-      if (['hot','natural','cold'].includes(spec.redClass)) {
+      if (['hot', 'natural', 'cold'].includes(spec.redClass)) {
         // build red candidates by class
         const redByClass = { hot: [], natural: [], cold: [] };
         for (let n = 1; n <= RED_MAX; n++) {
@@ -2234,7 +2409,7 @@
     }
 
     // Button for Pattern‑Based tickets
-    (function attachPatternTicketsBtn(){
+    (function attachPatternTicketsBtn() {
       const btn = document.getElementById('genTicketsPatternBtn');
       if (!btn) return;
       btn.addEventListener('click', () => generateAndRenderPatternTickets(5));
@@ -2245,7 +2420,7 @@
       const combos = computeCombinationCounts();
       const items = Array.from(combos.entries());
       if (!items.length) return { hot: 2, natural: 2, cold: 1, redClass: 'any' };
-      items.sort((a,b)=>b[1]-a[1]);
+      items.sort((a, b) => b[1] - a[1]);
       return parseCombinationKey(items[0][0]);
     }
 
@@ -2255,7 +2430,7 @@
       for (const d of state.draws) {
         const w = d.whites;
         if (!w || w.length < 2) continue;
-        const sorted = [...w].sort((a,b)=>a-b);
+        const sorted = [...w].sort((a, b) => a - b);
         for (let i = 0; i < sorted.length; i++) {
           for (let j = i + 1; j < sorted.length; j++) {
             const key = `${sorted[i]}-${sorted[j]}`;
@@ -2272,7 +2447,7 @@
       for (const d of state.draws) {
         const w = d.whites;
         if (!w || w.length < 3) continue;
-        const sorted = [...w].sort((a,b)=>a-b);
+        const sorted = [...w].sort((a, b) => a - b);
         for (let i = 0; i < sorted.length; i++) {
           for (let j = i + 1; j < sorted.length; j++) {
             for (let k = j + 1; k < sorted.length; k++) {
@@ -2291,7 +2466,7 @@
       for (const d of state.draws) {
         const w = d.whites;
         if (!w || w.length < 4) continue;
-        const sorted = [...w].sort((a,b)=>a-b);
+        const sorted = [...w].sort((a, b) => a - b);
         for (let i = 0; i < sorted.length; i++) {
           for (let j = i + 1; j < sorted.length; j++) {
             for (let k = j + 1; k < sorted.length; k++) {
@@ -2313,7 +2488,7 @@
       const targetY = yInput && yInput.value !== '' ? parseInt(yInput.value, 10) : null;
       const zInput = document.getElementById('ultimateFreqZ');
       const targetZ = zInput && zInput.value !== '' ? parseInt(zInput.value, 10) : null;
-      
+
       let pairCounts = null;
       if (targetX !== null) {
         pairCounts = getPairCounts();
@@ -2327,14 +2502,14 @@
         quadCounts = getQuadrupletCounts();
       }
 
-      const maxAttempts = 50000; 
+      const maxAttempts = 50000;
       for (let i = 0; i < maxAttempts; i++) {
         const whites = new Set();
         while (whites.size < 5) {
           whites.add(Math.floor(Math.random() * WHITE_MAX) + 1);
         }
         const wArray = Array.from(whites).sort((a, b) => a - b);
-        
+
         if (targetX !== null) {
           let currentSum = 0;
           for (let a = 0; a < wArray.length; a++) {
@@ -2451,8 +2626,8 @@
             }
             const controls = document.getElementById('comboCheckControls');
             if (controls) {
-                const sec = controls.closest('section');
-                if (sec) sec.scrollIntoView({ behavior: 'smooth' });
+              const sec = controls.closest('section');
+              if (sec) sec.scrollIntoView({ behavior: 'smooth' });
             }
           });
           btnWrap.appendChild(toComboBtn);
@@ -2463,7 +2638,7 @@
     }
 
     // Button
-    (function attachUltimateBtn(){
+    (function attachUltimateBtn() {
       const btn = document.getElementById('genUltimateBtn');
       if (btn) btn.addEventListener('click', renderUltimateTicket);
 
@@ -2480,7 +2655,7 @@
     // --- Number Quality Checker ---
     function percentileOfCount(counts, n) {
       const arr = counts.slice(1); // ignore index 0
-      const sorted = [...arr].sort((a,b)=>a-b);
+      const sorted = [...arr].sort((a, b) => a - b);
       const val = counts[n] || 0;
       // find last index of val in sorted to give best-case percentile for ties
       let idx = -1;
@@ -2501,16 +2676,16 @@
       else if (score >= 65) idx = 3;
       else if (score >= 45) idx = 2;
       else if (score >= 25) idx = 1;
-      const labels = ['Very Weak','Weak','Moderate','Strong','Excellent','Ultimate'];
-      const classes = ['q-veryweak','q-weak','q-moderate','q-strong','q-excellent','q-ultimate'];
+      const labels = ['Very Weak', 'Weak', 'Moderate', 'Strong', 'Excellent', 'Ultimate'];
+      const classes = ['q-veryweak', 'q-weak', 'q-moderate', 'q-strong', 'q-excellent', 'q-ultimate'];
       return { label: labels[idx], cls: classes[idx] };
     }
 
-    function evaluateTicketQuality(n1,n2,n3,n4,n5,pb) {
+    function evaluateTicketQuality(n1, n2, n3, n4, n5, pb) {
       if (!state.counts || !state.classes || !state.draws) return null;
-      const whites = [n1,n2,n3,n4,n5].map(x=>parseInt(x,10));
-      const red = parseInt(pb,10);
-      if (whites.some(n => !(n>=1 && n<=WHITE_MAX)) || !(red>=1 && red<=RED_MAX)) return null;
+      const whites = [n1, n2, n3, n4, n5].map(x => parseInt(x, 10));
+      const red = parseInt(pb, 10);
+      if (whites.some(n => !(n >= 1 && n <= WHITE_MAX)) || !(red >= 1 && red <= RED_MAX)) return null;
       // whites must be distinct
       const uniq = new Set(whites);
       if (uniq.size !== 5) return { error: 'White numbers must be distinct.' };
@@ -2519,15 +2694,15 @@
       const totalDraws = state.draws.length;
       const denomW = totalDraws * 5;
       const pctlW = whites.map(n => percentileOfCount(state.counts.white, n));
-      const avgW = pctlW.reduce((a,b)=>a+b,0)/pctlW.length;
+      const avgW = pctlW.reduce((a, b) => a + b, 0) / pctlW.length;
       const pctlPB = percentileOfCount(state.counts.red, red);
 
       // Pattern match
       const spec = getTopPatternSpec();
-      const wc = { hot:0, natural:0, cold:0 };
-      whites.forEach(n => { const c = state.classes.white.cls[n] || 'natural'; wc[c] = (wc[c]||0)+1; });
-      const diff = Math.abs((wc.hot||0)-(spec.hot||0)) + Math.abs((wc.natural||0)-(spec.natural||0)) + Math.abs((wc.cold||0)-(spec.cold||0));
-      
+      const wc = { hot: 0, natural: 0, cold: 0 };
+      whites.forEach(n => { const c = state.classes.white.cls[n] || 'natural'; wc[c] = (wc[c] || 0) + 1; });
+      const diff = Math.abs((wc.hot || 0) - (spec.hot || 0)) + Math.abs((wc.natural || 0) - (spec.natural || 0)) + Math.abs((wc.cold || 0) - (spec.cold || 0));
+
       // Include Red Ball in pattern match
       const actualRedClass = state.classes.red.cls[red] || 'natural';
       const redMatch = (spec.redClass === 'any' || spec.redClass === actualRedClass) ? 1 : 0;
@@ -2536,13 +2711,13 @@
 
       // Range alignment
       const stats = computeRangeGroups(state.draws || []);
-      const top12 = (stats.g1||[]).reduce((m, v, i) => v>(stats.g1[m]||0)?i:m, 0);
-      const top34 = (stats.g2||[]).reduce((m, v, i) => v>(stats.g2[m]||0)?i:m, 0);
-      const top5  = (stats.g3||[]).reduce((m, v, i) => v>(stats.g3[m]||0)?i:m, 0);
-      const b = (x)=> binIndex(x);
-      const ok12 = (b(n1)===top12 && b(n2)===top12) ? 1 : 0;
-      const ok34 = (b(n3)===top34 && b(n4)===top34) ? 1 : 0;
-      const ok5  = (b(n5)===top5) ? 1 : 0;
+      const top12 = (stats.g1 || []).reduce((m, v, i) => v > (stats.g1[m] || 0) ? i : m, 0);
+      const top34 = (stats.g2 || []).reduce((m, v, i) => v > (stats.g2[m] || 0) ? i : m, 0);
+      const top5 = (stats.g3 || []).reduce((m, v, i) => v > (stats.g3[m] || 0) ? i : m, 0);
+      const b = (x) => binIndex(x);
+      const ok12 = (b(n1) === top12 && b(n2) === top12) ? 1 : 0;
+      const ok34 = (b(n3) === top34 && b(n4) === top34) ? 1 : 0;
+      const ok5 = (b(n5) === top5) ? 1 : 0;
       const rangeScore = (ok12 + ok34 + ok5) / 3; // 0..1
 
       // Aggregate score
@@ -2582,17 +2757,17 @@
       const details = document.createElement('div');
       details.style.color = 'var(--muted)';
       details.style.fontSize = '12px';
-      const rangesLbl = (idx)=> RANGE_BINS[idx]?.label || '?';
+      const rangesLbl = (idx) => RANGE_BINS[idx]?.label || '?';
       details.innerHTML = `
         Whites: ${res.whites.join(', ')} • PB: ${res.red}<br>
         Avg white percentile: ${res.avgWhitePercentile.toFixed(1)} • PB percentile: ${res.powerballPercentile.toFixed(1)}<br>
-        Pattern target: ${res.pattern.target.hot}H/${res.pattern.target.natural}N/${res.pattern.target.cold}C (PB:${res.pattern.target.redClass}) • Actual: ${res.pattern.actual.hot||0}H/${res.pattern.actual.natural||0}N/${res.pattern.actual.cold||0}C (PB:${res.pattern.actualRed})<br>
-        Range groups OK: G1 ${res.ranges.ok12? '✔':'✖'} (${rangesLbl(res.ranges.top12)}), G2 ${res.ranges.ok34? '✔':'✖'} (${rangesLbl(res.ranges.top34)}), G3 ${res.ranges.ok5? '✔':'✖'} (${rangesLbl(res.ranges.top5)})
+        Pattern target: ${res.pattern.target.hot}H/${res.pattern.target.natural}N/${res.pattern.target.cold}C (PB:${res.pattern.target.redClass}) • Actual: ${res.pattern.actual.hot || 0}H/${res.pattern.actual.natural || 0}N/${res.pattern.actual.cold || 0}C (PB:${res.pattern.actualRed})<br>
+        Range groups OK: G1 ${res.ranges.ok12 ? '✔' : '✖'} (${rangesLbl(res.ranges.top12)}), G2 ${res.ranges.ok34 ? '✔' : '✖'} (${rangesLbl(res.ranges.top34)}), G3 ${res.ranges.ok5 ? '✔' : '✖'} (${rangesLbl(res.ranges.top5)})
       `;
       el.appendChild(details);
     }
 
-    (function attachTicketChecker(){
+    (function attachTicketChecker() {
       const btn = document.getElementById('ticketCheckBtn');
       if (!btn) return;
       btn.addEventListener('click', () => {
@@ -2602,7 +2777,7 @@
         const n4 = document.getElementById('tN4').value;
         const n5 = document.getElementById('tN5').value;
         const pb = document.getElementById('tPB').value;
-        const res = evaluateTicketQuality(n1,n2,n3,n4,n5,pb);
+        const res = evaluateTicketQuality(n1, n2, n3, n4, n5, pb);
         renderTicketQualityResult(res);
       });
     })();
@@ -2951,7 +3126,7 @@
         // Add sorting indicators
         const sortedHeader = container.querySelector(`.combo-header [data-sort-key="${comboDetailSort.key}"]`);
         if (sortedHeader) {
-            sortedHeader.innerHTML += comboDetailSort.dir === 'asc' ? ' <span style="font-size:0.8em">▲</span>' : ' <span style="font-size:0.8em">▼</span>';
+          sortedHeader.innerHTML += comboDetailSort.dir === 'asc' ? ' <span style="font-size:0.8em">▲</span>' : ' <span style="font-size:0.8em">▼</span>';
         }
       }
     })();
@@ -2961,7 +3136,7 @@
       const btn = document.getElementById('showHistoryBtn');
       const container = document.getElementById('historyDataContainer');
       const list = document.getElementById('historyList');
-      
+
       if (!btn || !container || !list) return;
 
       btn.addEventListener('click', () => {
@@ -2983,16 +3158,16 @@
           return;
         }
         // Sort by date desc
-        const sorted = [...state.draws].sort((a,b) => (b.date || 0) - (a.date || 0));
-        
+        const sorted = [...state.draws].sort((a, b) => (b.date || 0) - (a.date || 0));
+
         for (const d of sorted) {
           const row = document.createElement('div');
           row.className = 'crunch-row';
           row.style.gridTemplateColumns = '1fr 3fr 0.8fr';
-          
+
           const dateDiv = document.createElement('div');
           dateDiv.textContent = d.date ? fmtDMY(d.date) : '—';
-          
+
           const ballsDiv = document.createElement('div');
           ballsDiv.style.display = 'flex';
           ballsDiv.style.gap = '4px';
@@ -3005,7 +3180,7 @@
             b.textContent = w;
             ballsDiv.appendChild(b);
           }
-          
+
           const pb = document.createElement('div');
           pb.className = 'ball pball';
           pb.style.width = '24px'; pb.style.height = '24px'; pb.style.fontSize = '11px';
@@ -3020,9 +3195,9 @@
           copyBtn.style.margin = '0';
           copyBtn.type = 'button';
           copyBtn.addEventListener('click', () => {
-             navigator.clipboard.writeText(`${d.whites.join(' ')} ${d.red}`);
-             copyBtn.textContent = 'Copied!';
-             setTimeout(() => copyBtn.textContent = 'Copy', 1500);
+            navigator.clipboard.writeText(`${d.whites.join(' ')} ${d.red}`);
+            copyBtn.textContent = 'Copied!';
+            setTimeout(() => copyBtn.textContent = 'Copy', 1500);
           });
           btnDiv.appendChild(copyBtn);
 
