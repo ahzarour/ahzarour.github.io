@@ -755,16 +755,16 @@
 
     <!-- date selector and quick range  -->
     <section class="sectionPanelSettings" style="margin-bottom: 16px; padding: 16px">
-      <div id="dateRange" style=" display: flex; gap: 16px; align-items: flex-start; flex-wrap: nowrap; overflow-x: auto; ">
+      <div id="dateRange" style="display: flex; gap: 16px; flex-wrap: nowrap; overflow-x: auto; align-items: center; ">
         <div class="date-labels" style="display: flex; flex-direction: column; gap: 14px">
           <div style="font-size: 13px; color: var(--muted)">Quick:</div>
           <div style="font-size: 13px; color: var(--muted)">From</div>
           <div style="font-size: 13px; color: var(--muted)">Draws</div>
         </div>
 
-        <div class="date-controls" style=" display: flex; flex-direction: column; gap: 12px; flex: 1; min-width: 0; ">
-          <div>
-            <select id="datePreset" style="max-width: auto;">
+        <div class="date-controls" style=" display: flex; flex-direction: column; gap: 12px; flex: 1; ">
+          <div style="display: flex; gap: 12px;">
+            <select id="datePreset" style="max-width: 150px; flex: 1;">
               <option value="since-2015-10-07" selected>From 10/07/2015</option>
               <option value="1m">Last month</option>
               <option value="3m">Last 3 months</option>
@@ -775,16 +775,17 @@
               <option value="all">All time</option>
               <option value="custom">Custom dates</option>
             </select>
+            Dates
           </div>
 
           <div style="display: flex; gap: 8px; align-items: center">
             <input id="dateFromInput" type="date" style="flex: 1; background-color: white; color: black; border: 0; max-width: 150px;"/>
-            <div style="white-space: nowrap; color: var(--muted)">to</div>
+            <div style="white-space: nowrap; color: var(--text)">to</div>
             <input id="dateToInput"   type="date" style="flex: 1; background-color: white; color: black; border: 0; max-width: 150px;"/>
           </div>
 
           <div>
-            <div id="drawsInfo">
+            <div id="drawsInfo" style="color: var(--text);">
               <strong id="drawsCount">—————</strong>
             </div>
           </div>
@@ -1017,13 +1018,9 @@
         <h2 class="h2SectionStyle">Ultimate Smart Ticket</h2>
 
         <!-- Duplicated Date Range Selector for Ultimate Ticket -->
-
-
-
-
         <div id="dateRange2">
           <div class="date-controls" style="text-align: center;">
-            <div  style="display: flex; gap: 8px; justify-self: center;">
+            <div  style="display: flex; gap: 8px; justify-self: center; padding: 12px;">
               Quick Selection
               <select id="datePreset2" style="max-width: 100px; border: 0px; flex: 1;">
                 <option value="since-2015-10-07" selected>From 10/07/2015</option>
