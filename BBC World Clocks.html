@@ -20,7 +20,7 @@
             background-color: var(--background);
             height: 100%;
             margin: 0;
-            padding: 20px;
+            padding: 0;
             overflow: hidden;
         }
 
@@ -158,7 +158,7 @@
         /* Weather Widget Styles */
         .weather-container {
             background-color: rgb(22, 4, 74);
-            margin: 0 0 20px 0;
+            margin: 20px;
             padding: 20px;
             border-radius: 20px;
             display: flex;
@@ -229,6 +229,10 @@
                 line-height: 1;
                 padding-right: 1rem;
             }
+
+            body{
+                padding: 1%;
+            }
         }
     </style>
 </head>
@@ -236,7 +240,7 @@
 <body class="text-white">
     <div class="app-container">
         <!-- Header Bar -->
-        <header class="header-bg sticky top-0 z-10 pt-4 pb-2 px-4">
+        <header class="header-bg sticky top-0 m-5">
             <div class="flex justify-start items-center text-gray-400">
                 <!-- iOS style buttons (non-functional for this demo) -->
                 <div class="flex space-x-1">
@@ -261,7 +265,7 @@
                     </div>
 
                     <div class="cal-meta-display flex flex-col">
-                        <div class="cal-weekday-display text-xl font-bold uppercase pb-1 leading-none" id="cal-weekday">
+                        <div class="cal-weekday-display text-xl font-bold uppercase leading-none" id="cal-weekday">
                             Day
                         </div>
 
