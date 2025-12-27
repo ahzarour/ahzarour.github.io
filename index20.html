@@ -779,9 +779,11 @@
           </div>
 
           <div style="display: flex; gap: 8px; align-items: center">
-            <input id="dateFromInput" type="date" style="flex: 1; background-color: white; color: black; border: 0; max-width: 150px;"/>
+            <input id="dateFromInput" type="date"
+              style="flex: 1; background-color: white; color: black; border: 0; max-width: 150px;" />
             <div style="white-space: nowrap; color: var(--text)">to</div>
-            <input id="dateToInput"   type="date" style="flex: 1; background-color: white; color: black; border: 0; max-width: 150px;"/>
+            <input id="dateToInput" type="date"
+              style="flex: 1; background-color: white; color: black; border: 0; max-width: 150px;" />
           </div>
 
           <div>
@@ -1019,10 +1021,10 @@
 
         <!-- Duplicated Date Range Selector for Ultimate Ticket -->
         <div id="dateRange2">
-          <div class="date-controls" style="text-align: center;">
-            <div  style="display: flex; gap: 8px; justify-self: center; padding: 12px;">
+          <div style="max-width: 350px; margin: 0 auto; text-align: center;">
+            <div style="display: flex; gap: 8px; justify-self: center; padding-bottom: 20px;">
               Quick Selection
-              <select id="datePreset2" style="max-width: 100px; border: 0px; flex: 1;">
+              <select id="datePreset2" style="max-width: fit-content; flex: 1;">
                 <option value="since-2015-10-07" selected>From 10/07/2015</option>
                 <option value="1m">Last month</option>
                 <option value="3m">Last 3 months</option>
@@ -1036,15 +1038,25 @@
               <div id="drawsInfo2" style="flex: 1;"><strong id="drawsCount2">—————</strong></div>
             </div>
 
-            <input id="dateFromInput2" type="date" style="width: auto; 
-            background-color: rgb(225, 225, 225); color: black; border: 0px" />
+            <style>
+              input[type="date"] {
+                color: black;                
+              }
+
+              input[type="date"]:disabled {
+                color: rgb(0, 0, 0);
+                -webkit-text-fill-color: rgb(0, 0, 0);
+                opacity: 1;
+              }
+            </style>
+
+            <input id="dateFromInput2" type="date" style="width: auto; background-color: rgb(255, 255, 255);" />
 
             <strong style="white-space: nowrap;">to</strong>
 
-            <input id="dateToInput2" type="date" style="width: auto; 
-            background-color: rgb(225, 225, 225); color: black; border: 0px" />
+            <input id="dateToInput2" type="date" style="width: auto; background-color: rgb(255, 255, 255);" />
 
-            
+
           </div>
         </div>
 
@@ -1052,12 +1064,11 @@
           .FreqXYZ {
             display: grid;
             grid-template-columns: 1fr 70px;
-            margin: 20px;
             justify-self: center;
           }
         </style>
 
-        <div class="FreqXYZ">
+        <div class="FreqXYZ" style="max-width: 250px; margin: 0 auto; padding: 16px 0; align-items: center;">
           <label for="ultimateFreqX" style="color:var(--muted); font-size:13px; margin-right: 10px;">Sum of Pairs
             (X):</label>
           <input id="ultimateFreqX" type="number" min="0" step="1" placeholder="Any"
