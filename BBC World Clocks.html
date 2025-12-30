@@ -1,691 +1,741 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
+  <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>World Clock</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- UPDATED: Changed the fixed-width font from Roboto Mono to Space Mono -->
     <link
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&family=Space+Mono:wght@700&display=swap"
-        rel="stylesheet" />
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&family=Space+Mono:wght@700&display=swap"
+      rel="stylesheet"
+    />
     <style>
-        html,
-        body {
-            height: 100%;
-            /* background-color: #BB1919; */
-            box-sizing: border-box;
-            font-family: "Reith Sans", "Helvetica Neue", Arial, sans-serif;
-            background-color: var(--background);
-            height: 100%;
-            margin: 0;
-            padding: 0;
-            overflow: hidden;
-            text-transform: uppercase;
+      html,
+      body {
+        height: 100%;
+        /* background-color: #BB1919; */
+        box-sizing: border-box;
+        font-family: "Reith Sans", "Helvetica Neue", Arial, sans-serif;
+        background-color: var(--background);
+        height: 100%;
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+        text-transform: uppercase;
+      }
+
+      :root {
+        --bbc-red: #bb1919;
+        --bbc-red-90: #a21616;
+        --background: #05072c;
+        --charcoal: #333333;
+        --muted: #666666;
+        --white: #ffffff;
+
+        --bbc-red-dark: var(--bbc-red);
+        --bbc-light: var(--white);
+        --bbc-text: var(--white);
+      }
+
+      .container-logo {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 5px;
+      }
+
+      .bbc-logo {
+        display: flex;
+        gap: 12px;
+        /* Adjusted spacing for authentic look */
+      }
+
+      .bbc-letter {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 40px;
+        height: 40px;
+        background-color: var(--bbc-red-dark);
+        color: var(--bbc-light);
+        font-family: sans-serif;
+        font-weight: bold;
+        font-size: 24px;
+      }
+
+      .sub-logo {
+        font-size: clamp(12px, 3.2vw, 28px);
+        font-weight: 300;
+        letter-spacing: 3px;
+        margin-top: 8px;
+        color: var(--bbc-text);
+        text-shadow: 0 0 8px rgba(77, 76, 76, 0.127);
+        text-transform: uppercase;
+      }
+
+      /* Custom Dark Theme Styles to mimic the image */
+
+      .app-container {
+        width: 100%;
+        height: 100%;
+        background-color: var(--background);
+        box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
+        display: flex;
+        flex-direction: column;
+        padding: 3vw;
+        /* max-width: 900px; */
+      }
+
+      main {
+        flex-grow: 1;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .clock-item {
+        padding: 0 80px;
+        /* Feathered separator */
+        background-image: linear-gradient(
+          to right,
+          rgba(179, 179, 179, 0),
+          #b3b3b3,
+          rgba(179, 179, 179, 0)
+        );
+        background-size: 100% 1px;
+        background-position: bottom;
+        background-repeat: no-repeat;
+        transition: background-color 0.1s;
+        flex-grow: 1;
+        margin-bottom: 10px;
+      }
+
+      .clock-item:active {
+        background-color: var(--charcoal);
+        /* Slight press state */
+      }
+
+      .time-display {
+        /* Adjusted font-size slightly to better accommodate seconds without wrapping */
+        font-size: clamp(2.1rem, 7.5cqi, 9rem);
+        line-height: 1;
+        font-weight: 800;
+      }
+
+      .header-bg {
+        background-color: var(--background);
+        /* Header stays black */
+      }
+
+      .flipBoard-Calender {
+        /* width: 100%; Adapted for header layout */
+        display: flex;
+        justify-content: flex-start;
+        align-items: center;
+        gap: 12px;
+        text-transform: uppercase;
+        perspective: 800px;
+      }
+
+      .date-part {
+        background-color: var(--charcoal);
+        padding: 10px 14px;
+        border-radius: 8px;
+        font-weight: bold;
+        font-size: 1.5rem;
+      }
+
+      .flip {
+        animation: flip-anim 0.6s ease-in-out;
+      }
+
+      @keyframes flip-anim {
+        0% {
+          transform: rotateX(0deg);
         }
 
-        :root {
-            --bbc-red: #BB1919;
-            --bbc-red-90: #A21616;
-            --background: #05072c;
-            --charcoal: #333333;
-            --muted: #666666;
-            --white: #ffffff;
-
-            --bbc-red-dark: var(--bbc-red);
-            --bbc-light: var(--white);
-            --bbc-text: var(--white);
+        50% {
+          transform: rotateX(90deg);
         }
 
-        .container-logo {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 5px;
+        100% {
+          transform: rotateX(0deg);
+        }
+      }
+
+      /* Weather Widget Styles */
+      .weather-container {
+        background-color: rgb(22, 4, 74);
+        margin: 20px;
+        padding: 20px;
+        border-radius: 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+      }
+
+      .weather-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 2px solid var(--bbc-red);
+        padding-bottom: 15px;
+      }
+
+      .current-weather {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+      }
+
+      .weather-temp-large,
+      .weather-temp-state {
+        font-size: clamp(0.3rem, 4.5cqi, 40px);
+        font-weight: bold;
+        font-family: Arial, Helvetica, sans-serif;
+        line-height: 1;
+      }
+
+      .weather-icon {
+        font-size: clamp(0.6rem, 10cqi, 100px);
+        padding: 0;
+        line-height: 1;
+      }
+
+      .text-large-t1 {
+        font-size: clamp(0.3rem, 3.5cqi, 10rem);
+        font-weight: 800;
+        font-family: Arial, Helvetica, sans-serif;
+        line-height: 1;
+        text-transform: uppercase;
+      }
+
+      .forecast-grid {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        gap: 10px;
+        text-align: center;
+      }
+
+      .forecast-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
+        padding: 10px;
+        background: rgb(14, 3, 48);
+        border-radius: 8px;
+      }
+
+      #clock-item-9 {
+        margin-bottom: 5%;
+      }
+
+      @media (max-width: 768px) {
+        .forecast-grid {
+          grid-template-columns: repeat(4, 1fr);
         }
 
-        .bbc-logo {
-            display: flex;
-            gap: 12px;
-            /* Adjusted spacing for authentic look */
-        }
-
-        .bbc-letter {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            width: 40px;
-            height: 40px;
-            background-color: var(--bbc-red-dark);
-            color: var(--bbc-light);
-            font-family: sans-serif;
-            font-weight: bold;
-            font-size: 24px;
-        }
-
-        .sub-logo {
-            font-size: clamp(12px, 3.2vw, 28px);
-            font-weight: 300;
-            letter-spacing: 3px;
-            margin-top: 8px;
-            color: var(--bbc-text);
-            text-shadow: 0 0 8px rgba(77, 76, 76, 0.127);
-            text-transform: uppercase;
-        }
-
-        /* Custom Dark Theme Styles to mimic the image */
-
-        .app-container {
-            width: 100%;
-            height: 100%;
-            background-color: var(--background);
-            box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
-            display: flex;
-            flex-direction: column;
-            padding: 3vw;
-            /* max-width: 900px; */
-        }
-
-        main {
-            flex-grow: 1;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
+        .forecast-item:nth-child(n + 5) {
+          display: none;
         }
 
         .clock-item {
-            padding: 0 80px;
-            /* Feathered separator */
-            background-image: linear-gradient(to right, rgba(179, 179, 179, 0), #b3b3b3, rgba(179, 179, 179, 0));
-            background-size: 100% 1px;
-            background-position: bottom;
-            background-repeat: no-repeat;
-            transition: background-color 0.1s;
-            flex-grow: 1;
+          padding: 0 20px;
+        }
+      }
+
+      @media (max-width: 550px) {
+        .bbc-letter {
+          width: clamp(0.5rem, 6vw, 50px);
+          height: clamp(0.5rem, 6vw, 50px);
+          font-size: clamp(0.5rem, 5vw, 24px);
         }
 
-        .clock-item:active {
-            background-color: var(--charcoal);
-            /* Slight press state */
+        .bbc-logo {
+          gap: 6px;
         }
 
-        .time-display {
-            /* Adjusted font-size slightly to better accommodate seconds without wrapping */
-            font-size: clamp(2.1rem, 7.5cqi, 9rem);
-            line-height: 1;
-            font-weight: 800;
+        body
+          > div
+          > header
+          > div.flex.justify-between.items-center.mt-4.mb-2
+          > div.flex.items-center.gap-4
+          > h1 {
+          font-size: medium;
+          line-height: 1;
+          padding-right: 1rem;
         }
 
-        .header-bg {
-            background-color: var(--background);
-            /* Header stays black */
+        .app-container {
+          padding: 1vw;
         }
 
+        .text-xl {
+          font-size: clamp(1rem, 3.5cqi, 6rem);
+        }
+      }
 
-
-        .flipBoard-Calender {
-            /* width: 100%; Adapted for header layout */
-            display: flex;
-            justify-content: flex-start;
-            align-items: center;
-            gap: 12px;
-            text-transform: uppercase;
-            perspective: 800px;
+      @media (max-width: 500px) {
+        .text-xs {
+          padding: 0;
         }
 
-        .date-part {
-            background-color: var(--charcoal);
-            padding: 10px 14px;
-            border-radius: 8px;
-            font-weight: bold;
-            font-size: 1.5rem;
-        }
-
-        .flip {
-            animation: flip-anim 0.6s ease-in-out;
-        }
-
-        @keyframes flip-anim {
-            0% {
-                transform: rotateX(0deg);
-            }
-
-            50% {
-                transform: rotateX(90deg);
-            }
-
-            100% {
-                transform: rotateX(0deg);
-            }
-        }
-
-        /* Weather Widget Styles */
-        .weather-container {
-            background-color: rgb(22, 4, 74);
-            margin: 20px;
-            padding: 20px;
-            border-radius: 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
-
-        .weather-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 2px solid var(--bbc-red);
-            padding-bottom: 15px;
-        }
-
-        .current-weather {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-        }
-
-        .weather-temp-large,
-        .weather-temp-state {
-            font-size: clamp(.3rem, 4.5cqi, 40px);
-            font-weight: bold;
-            font-family: Arial, Helvetica, sans-serif;
-            line-height: 1;
-        }
-
-        .weather-icon {
-            font-size: clamp(0.6rem, 10cqi, 100px);
-            padding: 0;
-            line-height: 1;
-        }
-
-        .text-large-t1 {
-            font-size: clamp(.3rem, 3.5cqi, 10rem);
-            font-weight: 800;
-            font-family: Arial, Helvetica, sans-serif;
-            line-height: 1;
-            text-transform: uppercase;
+        .text-xl {
+          padding-bottom: 3%;
         }
 
         .forecast-grid {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            gap: 10px;
-            text-align: center;
+          grid-template-columns: repeat(3, 1fr);
         }
 
-        .forecast-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 8px;
-            padding: 10px;
-            background: rgb(14, 3, 48);
-            border-radius: 8px;
+        .forecast-item:nth-child(n + 4) {
+          display: none;
         }
-
-        @media (max-width: 768px) {
-            .forecast-grid {
-                grid-template-columns: repeat(4, 1fr);
-            }
-
-            .forecast-item:nth-child(n+5) {
-                display: none;
-            }
-
-            .clock-item {
-                padding: 0 20px;
-            }
-        }
-
-        @media (max-width: 550px) {
-            .bbc-letter {
-                width: clamp(0.5rem, 6vw, 50px);
-                height: clamp(0.5rem, 6vw, 50px);
-                font-size: clamp(0.5rem, 5vw, 24px);
-            }
-
-            .bbc-logo {
-                gap: 6px;
-            }
-
-            body>div>header>div.flex.justify-between.items-center.mt-4.mb-2>div.flex.items-center.gap-4>h1 {
-                font-size: medium;
-                line-height: 1;
-                padding-right: 1rem;
-            }
-
-            .app-container {
-                padding: 1vw;
-            }
-
-            .text-xl {
-                font-size: clamp(1rem, 3.5cqi, 6rem);
-            }
-        }
-
-
-        #clock-item-9 {
-            margin-bottom: 5%;
-        }
+      }
     </style>
-</head>
+  </head>
 
-<body class="text-white">
+  <body class="text-white">
     <div class="app-container">
-        <!-- Header Bar -->
-        <header class="header-bg sticky top-0 m-5">
-            <div class="flex justify-start items-center text-gray-400">
-                <!-- iOS style buttons (non-functional for this demo) -->
-                <div class="flex space-x-1">
-                    <div class="w-3 h-3 bg-red-500 rounded-full"></div>
-                    <div class="w-3 h-3 bg-yellow-500 rounded-full"></div>
-                    <div class="w-3 h-3 bg-green-500 rounded-full"></div>
-                </div>
-                <!-- Removed Edit and + buttons as requested -->
-            </div>
-            <div class="flex justify-between items-center mt-4 mb-2">
-                <div class="flex items-center gap-4">
-                    <div class="bbc-logo">
-                        <span class="bbc-letter">B</span>
-                        <span class="bbc-letter">B</span>
-                        <span class="bbc-letter">C</span>
-                    </div>
-                    <h1 class="text-large-t1">World Time</h1>
-                </div>
-                <div class="calendar-widget flex items-center gap-1">
-                    <div class="cal-day-display text-6xl font-bold leading-none" id="cal-day">
-                        dates
-                    </div>
-
-                    <div class="cal-meta-display flex flex-col">
-                        <div class="cal-weekday-display text-xl font-bold uppercase leading-none" id="cal-weekday">
-                            Day
-                        </div>
-
-                        <div class="cal-month-year-display text-lg text-gray-400 leading-none">
-                            <span id="cal-month">DEC</span>
-                            <span id="cal-year">2025</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </header>
-
-        <style>
-            .text-xl {
-                font-size: clamp(1.25rem, 3.5cqi, 6rem);
-            }
-
-            .text-lg {
-                font-size: clamp(1.15rem, 3.5cqi, 6rem);
-            }
-
-            .text-xs {
-                font-size: clamp(0.75rem, 1.5cqi, 4rem);
-                padding-bottom: 3%;
-            }
-
-            @media (max-width: 500px) {
-                .text-xs {
-                    padding: 0;
-                }
-
-                .text-xl {
-                    padding-bottom: 3%;
-                }
-            }
-
-
-            .text-2xl {
-                font-size: clamp(1.5rem, 3.5cqi, 6rem);
-            }
-
-            .text-6xl {
-                font-size: clamp(2.5rem, 9cqi, 15rem);
-            }
-
-            .text-sm-weather-city {
-                font-size: clamp(.3rem, 2.67cqi, 30px);
-
-            }
-        </style>
-
-        <div id="weakly-Weather" class="weather-container">
-            <div class="weather-header">
-                <div class="current-weather">
-                    <div class="weather-icon" id="current-weather-icon">--</div>
-                    <div>
-                        <div class="weather-temp-large" id="current-temp">--°F</div>
-                        <div class="weather-temp-state" id="current-condition">
-                            Loading...
-                        </div>
-                        <div class="text-sm-weather-city text-gray-400 text-lea">Washington DC, USA</div>
-                    </div>
-                </div>
-                <div class="text-right text-sm-weather-city">
-                    <div class="text-gray-400" id="current-humidity">
-                        Humidity: --%
-                    </div>
-                    <div class="text-gray-400" id="current-wind">
-                        Wind: -- km/h
-                    </div>
-                </div>
-            </div>
-            <div class="forecast-grid" id="forecast-container">
-                <!-- Populated by JS -->
-            </div>
+      <!-- Header Bar -->
+      <header class="header-bg sticky top-0 m-5">
+        <div class="flex justify-start items-center text-gray-400">
+          <!-- iOS style buttons (non-functional for this demo) -->
+          <div class="flex space-x-1">
+            <div class="w-3 h-3 bg-red-500 rounded-full"></div>
+            <div class="w-3 h-3 bg-yellow-500 rounded-full"></div>
+            <div class="w-3 h-3 bg-green-500 rounded-full"></div>
+          </div>
+          <!-- Removed Edit and + buttons as requested -->
         </div>
+        <div class="flex justify-between items-center mt-4 mb-2">
+          <div class="flex items-center gap-4">
+            <div class="bbc-logo">
+              <span class="bbc-letter">B</span>
+              <span class="bbc-letter">B</span>
+              <span class="bbc-letter">C</span>
+            </div>
+            <h1 class="text-large-t1">World Time</h1>
+          </div>
+          <div class="calendar-widget flex items-center gap-1">
+            <div
+              class="cal-day-display text-6xl font-bold leading-none"
+              id="cal-day"
+            >
+              dates
+            </div>
 
-        <!-- Clock List Container -->
-        <main id="clock-list">
-            <div id="clock-item-0" class="clock-item flex justify-between items-center">
-                <div>
-                    <div id="offset-0" class="text-xs text-gray-400 leading-none"></div>
-                    <div class="text-xl font-semibold">Los Angeles</div>
-                </div>
-                <div id="time-0" class="time-display text-white text-right"></div>
+            <div class="cal-meta-display flex flex-col">
+              <div
+                class="cal-weekday-display text-xl font-bold uppercase leading-none"
+                id="cal-weekday"
+              >
+                Day
+              </div>
+
+              <div
+                class="cal-month-year-display text-lg text-gray-400 leading-none"
+              >
+                <span id="cal-month">DEC</span>
+                <span id="cal-year">2025</span>
+              </div>
             </div>
-            <div id="clock-item-1" class="clock-item flex justify-between items-center">
-                <div>
-                    <p id="offset-1" class="text-xs text-gray-400 leading-none"></p>
-                    <p class="text-xl font-semibold">Washington, D.C.</p>
-                </div>
-                <div id="time-1" class="time-display text-white text-right"></div>
+          </div>
+        </div>
+      </header>
+
+      <style>
+        .text-xl {
+          font-size: clamp(1.25rem, 3.5cqi, 6rem);
+        }
+
+        .text-lg {
+          font-size: clamp(1.15rem, 3.5cqi, 6rem);
+        }
+
+        .text-xs {
+          font-size: clamp(0.75rem, 1.5cqi, 4rem);
+          padding-bottom: 10px;
+        }
+
+        .text-2xl {
+          font-size: clamp(1.5rem, 3.5cqi, 6rem);
+        }
+
+        .text-6xl {
+          font-size: clamp(2.5rem, 9cqi, 15rem);
+        }
+
+        .text-sm-weather-city {
+          font-size: clamp(0.3rem, 2.67cqi, 30px);
+        }
+      </style>
+
+      <div id="weakly-Weather" class="weather-container">
+        <div class="weather-header">
+          <div class="current-weather">
+            <div class="weather-icon" id="current-weather-icon">--</div>
+            <div>
+              <div class="weather-temp-large" id="current-temp">--°F</div>
+              <div class="weather-temp-state" id="current-condition">
+                Loading...
+              </div>
+              <div class="text-sm-weather-city text-gray-400 text-lea">
+                Washington DC, USA
+              </div>
             </div>
-            <div id="clock-item-2" class="clock-item flex justify-between items-center">
-                <div>
-                    <p id="offset-2" class="text-xs text-gray-400 leading-none"></p>
-                    <p class="text-xl font-semibold">London</p>
-                </div>
-                <div id="time-2" class="time-display text-white text-right"></div>
-            </div>
-            <div id="clock-item-3" class="clock-item flex justify-between items-center">
-                <div>
-                    <p id="offset-3" class="text-xs text-gray-400 leading-none"></p>
-                    <p class="text-xl font-semibold">Paris</p>
-                </div>
-                <div id="time-3" class="time-display text-white text-right"></div>
-            </div>
-            <div id="clock-item-4" class="clock-item flex justify-between items-center">
-                <div>
-                    <p id="offset-4" class="text-xs text-gray-400 leading-none"></p>
-                    <p class="text-xl font-semibold">Moscow</p>
-                </div>
-                <div id="time-4" class="time-display text-white text-right"></div>
-            </div>
-            <div id="clock-item-5" class="clock-item flex justify-between items-center">
-                <div>
-                    <p id="offset-5" class="text-xs text-gray-400 leading-none"></p>
-                    <p class="text-xl font-semibold">Dubai</p>
-                </div>
-                <div id="time-5" class="time-display text-white text-right"></div>
-            </div>
-            <div id="clock-item-6" class="clock-item flex justify-between items-center">
-                <div>
-                    <p id="offset-6" class="text-xs text-gray-400 leading-none"></p>
-                    <p class="text-xl font-semibold">Beijing</p>
-                </div>
-                <div id="time-6" class="time-display text-white text-right"></div>
-            </div>
-            <div id="clock-item-7" class="clock-item flex justify-between items-center">
-                <div>
-                    <p id="offset-7" class="text-xs text-gray-400 leading-none"></p>
-                    <p class="text-xl font-semibold">Singapore</p>
-                </div>
-                <div id="time-7" class="time-display text-white text-right"></div>
-            </div>
-            <div id="clock-item-8" class="clock-item flex justify-between items-center">
-                <div>
-                    <p id="offset-8" class="text-xs text-gray-400 leading-none"></p>
-                    <p class="text-xl font-semibold">Tokyo</p>
-                </div>
-                <div id="time-8" class="time-display text-white text-right"></div>
-            </div>
-            <div id="clock-item-9" class="clock-item flex justify-between items-center">
-                <div>
-                    <p id="offset-9" class="text-xs text-gray-400 leading-none"></p>
-                    <p class="text-xl font-semibold">Sydney</p>
-                </div>
-                <div id="time-9" class="time-display text-white text-right"></div>
-            </div>
-        </main>
+          </div>
+          <div class="text-right text-sm-weather-city">
+            <div class="text-gray-400" id="current-humidity">Humidity: --%</div>
+            <div class="text-gray-400" id="current-wind">Wind: -- km/h</div>
+          </div>
+        </div>
+        <div class="forecast-grid" id="forecast-container">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+
+      <!-- Clock List Container -->
+      <main id="clock-list">
+        <div
+          id="clock-item-0"
+          class="clock-item flex justify-between items-center"
+        >
+          <div>
+            <div id="offset-0" class="text-xs text-gray-400 leading-none"></div>
+            <div class="text-xl font-semibold">Los Angeles</div>
+          </div>
+          <div id="time-0" class="time-display text-white text-right"></div>
+        </div>
+        <div
+          id="clock-item-1"
+          class="clock-item flex justify-between items-center"
+        >
+          <div>
+            <p id="offset-1" class="text-xs text-gray-400 leading-none"></p>
+            <p class="text-xl font-semibold">Washington, D.C.</p>
+          </div>
+          <div id="time-1" class="time-display text-white text-right"></div>
+        </div>
+        <div
+          id="clock-item-2"
+          class="clock-item flex justify-between items-center"
+        >
+          <div>
+            <p id="offset-2" class="text-xs text-gray-400 leading-none"></p>
+            <p class="text-xl font-semibold">London</p>
+          </div>
+          <div id="time-2" class="time-display text-white text-right"></div>
+        </div>
+        <div
+          id="clock-item-3"
+          class="clock-item flex justify-between items-center"
+        >
+          <div>
+            <p id="offset-3" class="text-xs text-gray-400 leading-none"></p>
+            <p class="text-xl font-semibold">Paris</p>
+          </div>
+          <div id="time-3" class="time-display text-white text-right"></div>
+        </div>
+        <div
+          id="clock-item-4"
+          class="clock-item flex justify-between items-center"
+        >
+          <div>
+            <p id="offset-4" class="text-xs text-gray-400 leading-none"></p>
+            <p class="text-xl font-semibold">Moscow</p>
+          </div>
+          <div id="time-4" class="time-display text-white text-right"></div>
+        </div>
+        <div
+          id="clock-item-5"
+          class="clock-item flex justify-between items-center"
+        >
+          <div>
+            <p id="offset-5" class="text-xs text-gray-400 leading-none"></p>
+            <p class="text-xl font-semibold">Dubai</p>
+          </div>
+          <div id="time-5" class="time-display text-white text-right"></div>
+        </div>
+        <div
+          id="clock-item-6"
+          class="clock-item flex justify-between items-center"
+        >
+          <div>
+            <p id="offset-6" class="text-xs text-gray-400 leading-none"></p>
+            <p class="text-xl font-semibold">Beijing</p>
+          </div>
+          <div id="time-6" class="time-display text-white text-right"></div>
+        </div>
+        <div
+          id="clock-item-7"
+          class="clock-item flex justify-between items-center"
+        >
+          <div>
+            <p id="offset-7" class="text-xs text-gray-400 leading-none"></p>
+            <p class="text-xl font-semibold">Singapore</p>
+          </div>
+          <div id="time-7" class="time-display text-white text-right"></div>
+        </div>
+        <div
+          id="clock-item-8"
+          class="clock-item flex justify-between items-center"
+        >
+          <div>
+            <p id="offset-8" class="text-xs text-gray-400 leading-none"></p>
+            <p class="text-xl font-semibold">Tokyo</p>
+          </div>
+          <div id="time-8" class="time-display text-white text-right"></div>
+        </div>
+        <div
+          id="clock-item-9"
+          class="clock-item flex justify-between items-center"
+        >
+          <div>
+            <p id="offset-9" class="text-xs text-gray-400 leading-none"></p>
+            <p class="text-xl font-semibold">Sydney</p>
+          </div>
+          <div id="time-9" class="time-display text-white text-right"></div>
+        </div>
+      </main>
     </div>
 
     <script>
-        // Use a descriptive variable for the app ID, even if not using Firestore.
-        const appId =
-            typeof __app_id !== "undefined" ? __app_id : "world-clock-app";
+      // Use a descriptive variable for the app ID, even if not using Firestore.
+      const appId =
+        typeof __app_id !== "undefined" ? __app_id : "world-clock-app";
 
-        /**
-         * List of cities with their display name and IANA Timezone identifier.
-         * The order here matches the order in the image.
-         */
-        const timezones = [
-            { name: "Los Angeles", zone: "America/Los_Angeles" },
-            { name: "Washington, D.C.", zone: "America/New_York" },
-            { name: "London", zone: "Europe/London" },
-            { name: "Paris", zone: "Europe/Paris" },
-            { name: "Moscow", zone: "Europe/Moscow" },
-            { name: "Dubai", zone: "Asia/Dubai" },
-            { name: "Beijing", zone: "Asia/Shanghai" },
-            { name: "Singapore", zone: "Asia/Singapore" },
-            { name: "Tokyo", zone: "Asia/Tokyo" },
-            { name: "Sydney", zone: "Australia/Sydney" },
+      /**
+       * List of cities with their display name and IANA Timezone identifier.
+       * The order here matches the order in the image.
+       */
+      const timezones = [
+        { name: "Los Angeles", zone: "America/Los_Angeles" },
+        { name: "Washington, D.C.", zone: "America/New_York" },
+        { name: "London", zone: "Europe/London" },
+        { name: "Paris", zone: "Europe/Paris" },
+        { name: "Moscow", zone: "Europe/Moscow" },
+        { name: "Dubai", zone: "Asia/Dubai" },
+        { name: "Beijing", zone: "Asia/Shanghai" },
+        { name: "Singapore", zone: "Asia/Singapore" },
+        { name: "Tokyo", zone: "Asia/Tokyo" },
+        { name: "Sydney", zone: "Australia/Sydney" },
+      ];
+
+      const clockList = document.getElementById("clock-list");
+
+      /**
+       * Formats a Date object to a time string (e.g., "9:04:30 PM").
+       * @param {Date} date - The date object for the city's time.
+       * @param {string} timezone - The IANA timezone string.
+       * @returns {string} The formatted time string.
+       */
+      function formatTime(date, timezone) {
+        // NOTE: Added 'second: 2-digit' here to display seconds.
+        return date.toLocaleTimeString("en-US", {
+          hour: "numeric",
+          minute: "2-digit",
+          second: "2-digit",
+          hour12: true,
+          timeZone: timezone, // Use the correct timezone for consistent formatting
+        });
+      }
+
+      /**
+       * Calculates the difference in days and hours relative to the user's local time.
+       * * @param {string} cityZone - The IANA timezone string for the city.
+       * @returns {{dayLabel: string, hourOffset: string}}
+       */
+      function calculateOffset(cityZone) {
+        const userNow = new Date();
+        // Get the city's current time object (relies on toLocaleString string parsing, which sets cityNow to the correct local time in that city)
+        const cityNow = new Date(
+          userNow.toLocaleString("en-US", { timeZone: cityZone })
+        );
+
+        // 1. Calculate the total difference in HOURS (For the +/- N HRS label)
+        const diffMs = cityNow.getTime() - userNow.getTime();
+        // Round to the nearest hour for the display label, e.g., -3, +5, +14
+        const totalHoursDiff = Math.round(diffMs / (1000 * 60 * 60));
+
+        // 2. Calculate the difference in DAYS (For the Day label: Today, Yesterday, Tomorrow, etc.)
+        // We create two new Date objects based only on the year, month, and date parts to compare calendar days reliably.
+        const userDateOnly = new Date(
+          userNow.getFullYear(),
+          userNow.getMonth(),
+          userNow.getDate()
+        );
+        const cityDateOnly = new Date(
+          cityNow.getFullYear(),
+          cityNow.getMonth(),
+          cityNow.getDate()
+        );
+
+        const oneDayMs = 1000 * 60 * 60 * 24;
+        // The difference between these two timestamps, divided by 1 day in milliseconds, gives the clean integer day difference.
+        const dateDiffDays = Math.round(
+          (cityDateOnly.getTime() - userDateOnly.getTime()) / oneDayMs
+        );
+
+        let dayLabel = "";
+
+        if (dateDiffDays === 0) {
+          dayLabel = "Today";
+        } else if (dateDiffDays === -1) {
+          dayLabel = "Yesterday";
+        } else if (dateDiffDays === 1) {
+          dayLabel = "Tomorrow";
+        } else if (dateDiffDays < -1) {
+          dayLabel = `${Math.abs(dateDiffDays)} Days Ago`;
+        } else {
+          dayLabel = `${dateDiffDays} Days Later`;
+        }
+
+        // Determine the hour offset label (e.g., "+3HRS", "-5HRS")
+        const hourOffsetLabel =
+          (totalHoursDiff >= 0 ? "+" : "") + totalHoursDiff + "HRS";
+
+        return {
+          dayLabel: dayLabel,
+          hourOffset: hourOffsetLabel,
+        };
+      }
+
+      /**
+       * Renders or updates all clock items in the list.
+       */
+      function updateClocks() {
+        const now = new Date();
+        // Update time and offset for all clocks
+        timezones.forEach((city, index) => {
+          const { dayLabel, hourOffset } = calculateOffset(city.zone);
+
+          // We format the time using the city's timezone to ensure the string is correct.
+          const formattedTime = formatTime(now, city.zone);
+
+          document.getElementById(
+            `offset-${index}`
+          ).textContent = `${dayLabel}, ${hourOffset}`;
+          // This replaces the AM/PM with smaller text style, matching the image.
+          // The digits are now using the fixed-width 'Space Mono' font defined in CSS.
+          document.getElementById(`time-${index}`).innerHTML =
+            formattedTime.replace(
+              /\s(AM|PM)$/,
+              '<span class="text-base font-medium ml-1">$1</span>'
+            );
+        });
+      }
+
+      function updateCalendar() {
+        const now = new Date();
+        const month = now
+          .toLocaleString("default", { month: "short" })
+          .toUpperCase();
+        const weekday = now.toLocaleString("default", { weekday: "long" });
+        const day = now.getDate();
+        const year = now.getFullYear();
+
+        const parts = [
+          { id: "cal-weekday", value: weekday },
+          { id: "cal-month", value: month },
+          { id: "cal-day", value: day },
+          { id: "cal-year", value: year },
         ];
 
-        const clockList = document.getElementById("clock-list");
+        parts.forEach((p) => {
+          const el = document.getElementById(p.id);
+          if (el && el.textContent !== String(p.value)) {
+            el.classList.add("pulse-anim");
+            setTimeout(() => {
+              el.textContent = p.value;
+            }, 300); // halfway through the flip
+            setTimeout(() => {
+              el.classList.remove("pulse-anim");
+            }, 600); // after animation ends
+          }
+        });
+      }
 
-        /**
-         * Formats a Date object to a time string (e.g., "9:04:30 PM").
-         * @param {Date} date - The date object for the city's time.
-         * @param {string} timezone - The IANA timezone string.
-         * @returns {string} The formatted time string.
-         */
-        function formatTime(date, timezone) {
-            // NOTE: Added 'second: 2-digit' here to display seconds.
-            return date.toLocaleTimeString("en-US", {
-                hour: "numeric",
-                minute: "2-digit",
-                second: "2-digit",
-                hour12: true,
-                timeZone: timezone, // Use the correct timezone for consistent formatting
-            });
-        }
+      function getWeatherInfo(code) {
+        const codes = {
+          0: { icon: "☀️", text: "Clear Sky" },
+          1: { icon: "🌤️", text: "Mainly Clear" },
+          2: { icon: "⛅", text: "Partly Cloudy" },
+          3: { icon: "☁️", text: "Overcast" },
+          45: { icon: "🌫️", text: "Fog" },
+          48: { icon: "🌫️", text: "Depositing Rime Fog" },
+          51: { icon: "🌧️", text: "Light Drizzle" },
+          53: { icon: "🌧️", text: "Moderate Drizzle" },
+          55: { icon: "🌧️", text: "Dense Drizzle" },
+          61: { icon: "🌧️", text: "Slight Rain" },
+          63: { icon: "🌧️", text: "Moderate Rain" },
+          65: { icon: "🌧️", text: "Heavy Rain" },
+          71: { icon: "🌨️", text: "Slight Snow" },
+          73: { icon: "🌨️", text: "Moderate Snow" },
+          75: { icon: "🌨️", text: "Heavy Snow" },
+          77: { icon: "🌨️", text: "Snow Grains" },
+          80: { icon: "🌧️", text: "Slight Rain Showers" },
+          81: { icon: "🌧️", text: "Moderate Rain Showers" },
+          82: { icon: "🌧️", text: "Violent Rain Showers" },
+          85: { icon: "🌨️", text: "Slight Snow Showers" },
+          86: { icon: "🌨️", text: "Heavy Snow Showers" },
+          95: { icon: "⛈️", text: "Thunderstorm" },
+          96: { icon: "⛈️", text: "Thunderstorm with Hail" },
+          99: { icon: "⛈️", text: "Heavy Thunderstorm with Hail" },
+        };
+        return codes[code] || { icon: "❓", text: "Unknown" };
+      }
 
-        /**
-         * Calculates the difference in days and hours relative to the user's local time.
-         * * @param {string} cityZone - The IANA timezone string for the city.
-         * @returns {{dayLabel: string, hourOffset: string}}
-         */
-        function calculateOffset(cityZone) {
-            const userNow = new Date();
-            // Get the city's current time object (relies on toLocaleString string parsing, which sets cityNow to the correct local time in that city)
-            const cityNow = new Date(
-                userNow.toLocaleString("en-US", { timeZone: cityZone })
-            );
+      async function fetchWeather() {
+        const forecastContainer = document.getElementById("forecast-container");
+        if (!forecastContainer) return;
 
-            // 1. Calculate the total difference in HOURS (For the +/- N HRS label)
-            const diffMs = cityNow.getTime() - userNow.getTime();
-            // Round to the nearest hour for the display label, e.g., -3, +5, +14
-            const totalHoursDiff = Math.round(diffMs / (1000 * 60 * 60));
+        try {
+          // Fetch weather for Washington DC (Lat: 38.8951, Long: -77.0364)
+          const response = await fetch(
+            "https://api.open-meteo.com/v1/forecast?latitude=38.8951&longitude=-77.0364&current=temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m&daily=weather_code,temperature_2m_max,temperature_2m_min&timezone=America%2FNew_York&forecast_days=8&temperature_unit=fahrenheit"
+          );
+          const data = await response.json();
 
-            // 2. Calculate the difference in DAYS (For the Day label: Today, Yesterday, Tomorrow, etc.)
-            // We create two new Date objects based only on the year, month, and date parts to compare calendar days reliably.
-            const userDateOnly = new Date(
-                userNow.getFullYear(),
-                userNow.getMonth(),
-                userNow.getDate()
-            );
-            const cityDateOnly = new Date(
-                cityNow.getFullYear(),
-                cityNow.getMonth(),
-                cityNow.getDate()
-            );
+          // Update Current Weather
+          const current = data.current;
+          const currentInfo = getWeatherInfo(current.weather_code);
 
-            const oneDayMs = 1000 * 60 * 60 * 24;
-            // The difference between these two timestamps, divided by 1 day in milliseconds, gives the clean integer day difference.
-            const dateDiffDays = Math.round(
-                (cityDateOnly.getTime() - userDateOnly.getTime()) / oneDayMs
-            );
+          document.getElementById("current-weather-icon").textContent =
+            currentInfo.icon;
+          const tempF = current.temperature_2m;
+          const tempC = (tempF - 32) * (5 / 9);
+          document.getElementById("current-temp").textContent = `${Math.round(
+            tempF
+          )}°F (${Math.round(tempC)}°C)`;
+          document.getElementById("current-condition").textContent =
+            currentInfo.text;
+          document.getElementById(
+            "current-humidity"
+          ).textContent = `Humidity: ${current.relative_humidity_2m}%`;
+          document.getElementById(
+            "current-wind"
+          ).textContent = `Wind: ${current.wind_speed_10m} km/h`;
 
-            let dayLabel = "";
+          // Update Forecast
+          const daily = data.daily;
+          let html = "";
+          const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
-            if (dateDiffDays === 0) {
-                dayLabel = "Today";
-            } else if (dateDiffDays === -1) {
-                dayLabel = "Yesterday";
-            } else if (dateDiffDays === 1) {
-                dayLabel = "Tomorrow";
-            } else if (dateDiffDays < -1) {
-                dayLabel = `${Math.abs(dateDiffDays)} Days Ago`;
-            } else {
-                dayLabel = `${dateDiffDays} Days Later`;
-            }
+          for (let i = 1; i < 8; i++) {
+            // Show next 7 days
+            if (!daily.time[i]) break;
+            const date = new Date(daily.time[i]);
+            const dayName = days[date.getUTCDay()];
+            const info = getWeatherInfo(daily.weather_code[i]);
+            const maxTempF = Math.round(daily.temperature_2m_max[i]);
+            const minTempF = Math.round(daily.temperature_2m_min[i]);
+            const maxTempC = Math.round((maxTempF - 32) * (5 / 9));
+            const minTempC = Math.round((minTempF - 32) * (5 / 9));
 
-            // Determine the hour offset label (e.g., "+3HRS", "-5HRS")
-            const hourOffsetLabel =
-                (totalHoursDiff >= 0 ? "+" : "") + totalHoursDiff + "HRS";
-
-            return {
-                dayLabel: dayLabel,
-                hourOffset: hourOffsetLabel,
-            };
-        }
-
-        /**
-         * Renders or updates all clock items in the list.
-         */
-        function updateClocks() {
-            const now = new Date();
-            // Update time and offset for all clocks
-            timezones.forEach((city, index) => {
-                const { dayLabel, hourOffset } = calculateOffset(city.zone);
-
-                // We format the time using the city's timezone to ensure the string is correct.
-                const formattedTime = formatTime(now, city.zone);
-
-                document.getElementById(
-                    `offset-${index}`
-                ).textContent = `${dayLabel}, ${hourOffset}`;
-                // This replaces the AM/PM with smaller text style, matching the image.
-                // The digits are now using the fixed-width 'Space Mono' font defined in CSS.
-                document.getElementById(`time-${index}`).innerHTML =
-                    formattedTime.replace(
-                        /\s(AM|PM)$/,
-                        '<span class="text-base font-medium ml-1">$1</span>'
-                    );
-            });
-        }
-
-        function updateCalendar() {
-            const now = new Date();
-            const month = now
-                .toLocaleString("default", { month: "short" })
-                .toUpperCase();
-            const weekday = now.toLocaleString("default", { weekday: "long" });
-            const day = now.getDate();
-            const year = now.getFullYear();
-
-            const parts = [
-                { id: "cal-weekday", value: weekday },
-                { id: "cal-month", value: month },
-                { id: "cal-day", value: day },
-                { id: "cal-year", value: year },
-            ];
-
-            parts.forEach((p) => {
-                const el = document.getElementById(p.id);
-                if (el && el.textContent !== String(p.value)) {
-                    el.classList.add("pulse-anim");
-                    setTimeout(() => {
-                        el.textContent = p.value;
-                    }, 300); // halfway through the flip
-                    setTimeout(() => {
-                        el.classList.remove("pulse-anim");
-                    }, 600); // after animation ends
-                }
-            });
-        }
-
-        function getWeatherInfo(code) {
-            const codes = {
-                0: { icon: "☀️", text: "Clear Sky" },
-                1: { icon: "🌤️", text: "Mainly Clear" },
-                2: { icon: "⛅", text: "Partly Cloudy" },
-                3: { icon: "☁️", text: "Overcast" },
-                45: { icon: "🌫️", text: "Fog" },
-                48: { icon: "🌫️", text: "Depositing Rime Fog" },
-                51: { icon: "🌧️", text: "Light Drizzle" },
-                53: { icon: "🌧️", text: "Moderate Drizzle" },
-                55: { icon: "🌧️", text: "Dense Drizzle" },
-                61: { icon: "🌧️", text: "Slight Rain" },
-                63: { icon: "🌧️", text: "Moderate Rain" },
-                65: { icon: "🌧️", text: "Heavy Rain" },
-                71: { icon: "🌨️", text: "Slight Snow" },
-                73: { icon: "🌨️", text: "Moderate Snow" },
-                75: { icon: "🌨️", text: "Heavy Snow" },
-                77: { icon: "🌨️", text: "Snow Grains" },
-                80: { icon: "🌧️", text: "Slight Rain Showers" },
-                81: { icon: "🌧️", text: "Moderate Rain Showers" },
-                82: { icon: "🌧️", text: "Violent Rain Showers" },
-                85: { icon: "🌨️", text: "Slight Snow Showers" },
-                86: { icon: "🌨️", text: "Heavy Snow Showers" },
-                95: { icon: "⛈️", text: "Thunderstorm" },
-                96: { icon: "⛈️", text: "Thunderstorm with Hail" },
-                99: { icon: "⛈️", text: "Heavy Thunderstorm with Hail" },
-            };
-            return codes[code] || { icon: "❓", text: "Unknown" };
-        }
-
-        async function fetchWeather() {
-            const forecastContainer = document.getElementById("forecast-container");
-            if (!forecastContainer) return;
-
-            try {
-                // Fetch weather for Washington DC (Lat: 38.8951, Long: -77.0364)
-                const response = await fetch(
-                    "https://api.open-meteo.com/v1/forecast?latitude=38.8951&longitude=-77.0364&current=temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m&daily=weather_code,temperature_2m_max,temperature_2m_min&timezone=America%2FNew_York&forecast_days=8&temperature_unit=fahrenheit"
-                );
-                const data = await response.json();
-
-                // Update Current Weather
-                const current = data.current;
-                const currentInfo = getWeatherInfo(current.weather_code);
-
-                document.getElementById("current-weather-icon").textContent =
-                    currentInfo.icon;
-                const tempF = current.temperature_2m;
-                const tempC = (tempF - 32) * (5 / 9);
-                document.getElementById("current-temp").textContent = `${Math.round(
-                    tempF
-                )}°F (${Math.round(tempC)}°C)`;
-                document.getElementById("current-condition").textContent =
-                    currentInfo.text;
-                document.getElementById(
-                    "current-humidity"
-                ).textContent = `Humidity: ${current.relative_humidity_2m}%`;
-                document.getElementById(
-                    "current-wind"
-                ).textContent = `Wind: ${current.wind_speed_10m} km/h`;
-
-                // Update Forecast
-                const daily = data.daily;
-                let html = "";
-                const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-
-                for (let i = 1; i < 8; i++) {
-                    // Show next 7 days
-                    if (!daily.time[i]) break;
-                    const date = new Date(daily.time[i]);
-                    const dayName = days[date.getUTCDay()];
-                    const info = getWeatherInfo(daily.weather_code[i]);
-                    const maxTempF = Math.round(daily.temperature_2m_max[i]);
-                    const minTempF = Math.round(daily.temperature_2m_min[i]);
-                    const maxTempC = Math.round((maxTempF - 32) * (5 / 9));
-                    const minTempC = Math.round((minTempF - 32) * (5 / 9));
-
-                    html += `
+            html += `
                     <div class="forecast-item">
                         <div class="text-gray-400 text-xs font-bold uppercase">${dayName}</div>
                         <div class="text-2xl">${info.icon}</div>
@@ -695,24 +745,23 @@
                         </div>
                     </div>
                 `;
-                }
-                forecastContainer.innerHTML = html;
-            } catch (e) {
-                console.error("Error fetching weather:", e);
-            }
+          }
+          forecastContainer.innerHTML = html;
+        } catch (e) {
+          console.error("Error fetching weather:", e);
         }
+      }
 
-        // Start the clock update loop
-        window.onload = function () {
-            updateClocks(); // Initial call
-            updateCalendar(); // Initial calendar call
-            fetchWeather(); // Initial weather call
-            // Update every second
-            setInterval(updateClocks, 1000);
-            setInterval(updateCalendar, 10000);
-            setInterval(fetchWeather, 600000); // Update weather every 10 minutes
-        };
+      // Start the clock update loop
+      window.onload = function () {
+        updateClocks(); // Initial call
+        updateCalendar(); // Initial calendar call
+        fetchWeather(); // Initial weather call
+        // Update every second
+        setInterval(updateClocks, 1000);
+        setInterval(updateCalendar, 10000);
+        setInterval(fetchWeather, 600000); // Update weather every 10 minutes
+      };
     </script>
-</body>
-
+  </body>
 </html>
