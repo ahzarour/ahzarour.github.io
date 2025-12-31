@@ -548,10 +548,10 @@
       function formatTime(date, timezone) {
         // NOTE: Added 'second: 2-digit' here to display seconds.
         return date.toLocaleTimeString("en-US", {
-          hour: "numeric",
+          hour: "2-digit",
           minute: "2-digit",
           second: "2-digit",
-          hour12: true,
+          hour12: false,
           timeZone: timezone, // Use the correct timezone for consistent formatting
         });
       }
@@ -631,13 +631,8 @@
           document.getElementById(
             `offset-${index}`
           ).textContent = `${dayLabel}, ${hourOffset}`;
-          // This replaces the AM/PM with smaller text style, matching the image.
           // The digits are now using the fixed-width 'Space Mono' font defined in CSS.
-          document.getElementById(`time-${index}`).innerHTML =
-            formattedTime.replace(
-              /\s(AM|PM)$/,
-              '<span class="text-base font-medium ml-1">$1</span>'
-            );
+          document.getElementById(`time-${index}`).innerHTML = formattedTime;
         });
       }
 
