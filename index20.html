@@ -21,7 +21,6 @@
       --chip: #1b2042;
     }
 
-    
     * {
       box-sizing: border-box;
     }
@@ -596,7 +595,7 @@
       align-items: center;
       justify-content: center;
     }
-
+    
     .ball {
       width: 34px;
       height: 34px;
@@ -637,14 +636,12 @@
       display: flex;
       gap: 12px;
       align-items: center;
-      flex-wrap: wrap;
       justify-content: center;
     }
 
     .quality-controls--inline {
-      flex-wrap: nowrap;
-      gap: 8px;
-      overflow-x: auto;
+      /* gap: 8px; */
+      container-type: inline-size;
     }
 
     .quality-controls input[type="number"]:not(.ball-input) {
@@ -702,19 +699,37 @@
       width: 34px;
       height: 34px;
       border-radius: 50%;
-      background: #1e2554;
-      border: 1px solid rgba(255, 255, 255, 0.08);
+      background: var(--chip);
+      border: 1px solid rgba(255, 255, 255, 0.06);
       color: var(--text);
       text-align: center;
       font-weight: 700;
-      outline: none;
       padding: 0;
       margin: 0;
+      transition: outline 0.2s, box-shadow 0.2s;
+    }
+
+    .ball-input::placeholder {
+      color: var(--muted);
+      opacity: 0.6;
     }
 
     .ball-input.pball {
-      background: #4b1f2c;
-      border-color: rgba(255, 255, 255, 0.14);
+      background: var(--chip);
+      border-color: rgba(255, 255, 255, 0.06);
+    }
+
+    .ball-input.hot {
+      outline: 2px solid var(--hot);
+      box-shadow: inset 0 0 0 999px rgba(255, 89, 90, 0.08);
+    }
+    .ball-input.cold {
+      outline: 2px solid var(--cold);
+      box-shadow: inset 0 0 0 999px rgba(79, 155, 255, 0.08);
+    }
+    .ball-input.natural {
+      outline: 2px solid var(--natural);
+      box-shadow: inset 0 0 0 999px rgba(52, 211, 153, 0.08);
     }
 
     /* Remove spinners */
@@ -1545,6 +1560,7 @@
       // rebuildCharts(state.counts, state.classes);
       renderCombinationTable();
       renderRangeGroups();
+      updateInputColors();
       const exportBtn = document.getElementById("exportBtn");
       if (exportBtn) exportBtn.disabled = false;
     }
@@ -2611,6 +2627,7 @@
             document.getElementById('tN4').value = t.whites[3];
             document.getElementById('tN5').value = t.whites[4];
             document.getElementById('tPB').value = t.red;
+            updateInputColors();
             const sec = document.getElementById('qualityCheckerSection');
             if (sec) sec.scrollIntoView({ behavior: 'smooth' });
           });
@@ -2632,6 +2649,7 @@
               inputs[3].value = t.whites[3];
               inputs[4].value = t.whites[4];
               inputs[5].value = t.red;
+              updateInputColors();
             }
             const controls = document.getElementById('comboCheckControls');
             if (controls) {
@@ -2720,14 +2738,27 @@
 
       // Range alignment
       const stats = computeRangeGroups(state.draws || []);
-      const top12 = (stats.g1 || []).reduce((m, v, i) => v > (stats.g1[m] || 0) ? i : m, 0);
-      const top34 = (stats.g2 || []).reduce((m, v, i) => v > (stats.g2[m] || 0) ? i : m, 0);
-      const top5 = (stats.g3 || []).reduce((m, v, i) => v > (stats.g3[m] || 0) ? i : m, 0);
-      const b = (x) => binIndex(x);
-      const ok12 = (b(n1) === top12 && b(n2) === top12) ? 1 : 0;
-      const ok34 = (b(n3) === top34 && b(n4) === top34) ? 1 : 0;
-      const ok5 = (b(n5) === top5) ? 1 : 0;
-      const rangeScore = (ok12 + ok34 + ok5) / 3; // 0..1
+      const getTop2 = (arr) => arr.map((v, i) => ({v, i})).sort((a, b) => b.v - a.v).slice(0, 2).map(x => x.i);
+      const top2_G1 = getTop2(stats.g1 || []);
+      const top2_G2 = getTop2(stats.g2 || []);
+      const top2_G3 = getTop2(stats.g3 || []);
+
+      // The user's ticket numbers must be sorted to correctly identify N1, N2, etc.
+      const sortedWhites = [...whites].sort((a, b) => a - b);
+      const user_n1 = sortedWhites[0];
+      const user_n2 = sortedWhites[1];
+      const user_n3 = sortedWhites[2];
+      const user_n4 = sortedWhites[3];
+      const user_n5 = sortedWhites[4];
+
+      const b1 = binIndex(user_n1), b2 = binIndex(user_n2);
+      const b3 = binIndex(user_n3), b4 = binIndex(user_n4);
+      const b5 = binIndex(user_n5);
+
+      const okG1 = (top2_G1.includes(b1) && top2_G1.includes(b2)) ? 1 : 0;
+      const okG2 = (top2_G2.includes(b3) && top2_G2.includes(b4)) ? 1 : 0;
+      const okG3 = (top2_G3.includes(b5)) ? 1 : 0;
+      const rangeScore = (okG1 + okG2 + okG3) / 3; // 0..1
 
       // Aggregate score
       const score = (
@@ -2743,7 +2774,7 @@
         avgWhitePercentile: avgW,
         powerballPercentile: pctlPB,
         pattern: { target: spec, actual: wc, actualRed: actualRedClass, score: patternScore },
-        ranges: { top12, top34, top5, ok12, ok34, ok5, score: rangeScore },
+        ranges: { okG1, okG2, okG3, score: rangeScore, top2_G1, top2_G2, top2_G3 },
         score,
         grade
       };
@@ -2766,12 +2797,12 @@
       const details = document.createElement('div');
       details.style.color = 'var(--muted)';
       details.style.fontSize = '12px';
-      const rangesLbl = (idx) => RANGE_BINS[idx]?.label || '?';
+      const rangesLbl = (indices) => indices.map(i => RANGE_BINS[i]?.label || '?').join(' or ');
       details.innerHTML = `
         Whites: ${res.whites.join(', ')} • PB: ${res.red}<br>
         Avg white percentile: ${res.avgWhitePercentile.toFixed(1)} • PB percentile: ${res.powerballPercentile.toFixed(1)}<br>
         Pattern target: ${res.pattern.target.hot}H/${res.pattern.target.natural}N/${res.pattern.target.cold}C (PB:${res.pattern.target.redClass}) • Actual: ${res.pattern.actual.hot || 0}H/${res.pattern.actual.natural || 0}N/${res.pattern.actual.cold || 0}C (PB:${res.pattern.actualRed})<br>
-        Range groups OK: G1 ${res.ranges.ok12 ? '✔' : '✖'} (${rangesLbl(res.ranges.top12)}), G2 ${res.ranges.ok34 ? '✔' : '✖'} (${rangesLbl(res.ranges.top34)}), G3 ${res.ranges.ok5 ? '✔' : '✖'} (${rangesLbl(res.ranges.top5)})
+        Range groups OK: G1 (${rangesLbl(res.ranges.top2_G1)}) ${res.ranges.okG1 ? '✔' : '✖'}, G2 (${rangesLbl(res.ranges.top2_G2)}) ${res.ranges.okG2 ? '✔' : '✖'}, G3 (${rangesLbl(res.ranges.top2_G3)}) ${res.ranges.okG3 ? '✔' : '✖'}
       `;
       el.appendChild(details);
     }
@@ -2791,6 +2822,27 @@
       });
     })();
 
+    // --- Dynamic Input Coloring ---
+    function updateInputColors() {
+      document.querySelectorAll('.ball-input').forEach(input => {
+        input.classList.remove('hot', 'cold', 'natural');
+        const val = parseInt(input.value, 10);
+        if (!val || !state.classes) return;
+        
+        const isPb = input.classList.contains('pball');
+        const max = isPb ? RED_MAX : WHITE_MAX;
+        if (val >= 1 && val <= max) {
+          const clsMap = isPb ? state.classes.red : state.classes.white;
+          const c = clsMap.cls[val];
+          if (c) input.classList.add(c);
+        }
+      });
+    }
+
+    document.querySelectorAll('.ball-input').forEach(el => {
+      el.addEventListener('input', updateInputColors);
+    });
+
     // --- Paste Functionality ---
     async function pasteToInputs(inputs) {
       try {
@@ -2801,6 +2853,7 @@
           inputs.forEach((inp, i) => {
             if (nums[i] !== undefined) inp.value = nums[i];
           });
+          updateInputColors();
         } else {
           alert('Clipboard does not contain enough numbers.');
         }
