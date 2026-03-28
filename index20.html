@@ -839,7 +839,85 @@
       </div>
     </section>
 
+    <!-- Ultimate Smart Ticket -->
+    <section id="ultimateTicketSection" class="sectionPanelSettings">
+      <div style="margin-bottom:8px;">
+        <h2 class="h2SectionStyle">Ultimate Smart Ticket</h2>
 
+        <!-- Duplicated Date Range Selector for Ultimate Ticket -->
+        <div id="dateRange2">
+          <div style="max-width: 350px; margin: 0 auto; text-align: center;">
+            <div style="display: flex; gap: 8px; justify-self: center; padding-bottom: 20px;">
+              Quick Selection
+              <select id="datePreset2" style="max-width: fit-content; flex: 1;">
+                <option value="since-2015-10-07" selected>From 10/07/2015</option>
+                <option value="1m">Last month</option>
+                <option value="3m">Last 3 months</option>
+                <option value="6m">Last 6 months</option>
+                <option value="1y">Last year</option>
+                <option value="2y">Last 2 years</option>
+                <option value="3y">Last 3 years</option>
+                <option value="all">All time</option>
+                <option value="custom">Custom dates</option>
+              </select>
+              <div id="drawsInfo2" style="flex: 1;"><strong id="drawsCount2">—————</strong></div>
+            </div>
+
+            <style>
+              input[type="date"] {
+                color: black;                
+              }
+
+              input[type="date"]:disabled {
+                color: rgb(0, 0, 0);
+                -webkit-text-fill-color: rgb(0, 0, 0);
+                opacity: 1;
+              }
+            </style>
+
+            <input id="dateFromInput2" type="date" style="width: auto; background-color: rgb(255, 255, 255);" />
+
+            <strong style="white-space: nowrap;">to</strong>
+
+            <input id="dateToInput2" type="date" style="width: auto; background-color: rgb(255, 255, 255);" />
+
+
+          </div>
+        </div>
+
+        <style>
+          .FreqXYZ {
+            display: grid;
+            grid-template-columns: 1fr 70px;
+            justify-self: center;
+          }
+        </style>
+
+        <div class="FreqXYZ" style="max-width: 250px; margin: 0 auto; padding: 16px 0; align-items: center;">
+          <label for="ultimateFreqX" style="color:var(--muted); font-size:13px; margin-right: 10px;">Sum of Pairs
+            (X):</label>
+          <input id="ultimateFreqX" type="number" min="0" step="1" placeholder="Any"
+            style="width: auto; padding: 4px; border-radius: 4px; border: 1px solid rgba(255,255,255,0.2); background: var(--chip); color: var(--text); text-align: left;">
+
+          <label for="ultimateFreqY" style="color:var(--muted); font-size:13px; margin-right: 10px;">Sum of Triplets
+            (Y):</label>
+          <input id="ultimateFreqY" type="number" min="0" step="1" placeholder="Any"
+            style="width: auto; padding: 4px; border-radius: 4px; border: 1px solid rgba(255,255,255,0.2); background: var(--chip); color: var(--text); text-align: left;">
+
+          <label for="ultimateFreqZ" style="color:var(--muted); font-size:13px; margin-right: 10px;">Sum of Quads
+            (Z):</label>
+          <input id="ultimateFreqZ" type="number" min="0" step="1" placeholder="Any"
+            style="width: auto; padding: 4px; border-radius: 4px; border: 1px solid rgba(255,255,255,0.2); background: var(--chip); color: var(--text); text-align: left;">
+        </div>
+        <div style="margin:6px 0 8px 0; text-align: center;">
+          <button id="genUltimateBtn" type="button">Generate Ultimate Ticket</button>
+          <button id="clearUltimateInputsBtn" type="button" style="margin-left: 8px;">Clear</button>
+        </div>
+      </div>
+      <div class="tickets-grid" id="ultimateTicketList"></div>
+    </section>
+
+    
     <!-- White Red Number  -->
     <section>
       <style>
@@ -1026,86 +1104,6 @@
         <input class="ball-input combo-input" type="number" min="1" max="69" step="1" placeholder="N5" />
         <input class="ball-input pball combo-input" type="number" min="1" max="26" step="1" placeholder="PB" />
       </div>
-    </section>
-
-
-
-    <!-- Ultimate Smart Ticket -->
-    <section id="ultimateTicketSection" class="sectionPanelSettings">
-      <div style="margin-bottom:8px;">
-        <h2 class="h2SectionStyle">Ultimate Smart Ticket</h2>
-
-        <!-- Duplicated Date Range Selector for Ultimate Ticket -->
-        <div id="dateRange2">
-          <div style="max-width: 350px; margin: 0 auto; text-align: center;">
-            <div style="display: flex; gap: 8px; justify-self: center; padding-bottom: 20px;">
-              Quick Selection
-              <select id="datePreset2" style="max-width: fit-content; flex: 1;">
-                <option value="since-2015-10-07" selected>From 10/07/2015</option>
-                <option value="1m">Last month</option>
-                <option value="3m">Last 3 months</option>
-                <option value="6m">Last 6 months</option>
-                <option value="1y">Last year</option>
-                <option value="2y">Last 2 years</option>
-                <option value="3y">Last 3 years</option>
-                <option value="all">All time</option>
-                <option value="custom">Custom dates</option>
-              </select>
-              <div id="drawsInfo2" style="flex: 1;"><strong id="drawsCount2">—————</strong></div>
-            </div>
-
-            <style>
-              input[type="date"] {
-                color: black;                
-              }
-
-              input[type="date"]:disabled {
-                color: rgb(0, 0, 0);
-                -webkit-text-fill-color: rgb(0, 0, 0);
-                opacity: 1;
-              }
-            </style>
-
-            <input id="dateFromInput2" type="date" style="width: auto; background-color: rgb(255, 255, 255);" />
-
-            <strong style="white-space: nowrap;">to</strong>
-
-            <input id="dateToInput2" type="date" style="width: auto; background-color: rgb(255, 255, 255);" />
-
-
-          </div>
-        </div>
-
-        <style>
-          .FreqXYZ {
-            display: grid;
-            grid-template-columns: 1fr 70px;
-            justify-self: center;
-          }
-        </style>
-
-        <div class="FreqXYZ" style="max-width: 250px; margin: 0 auto; padding: 16px 0; align-items: center;">
-          <label for="ultimateFreqX" style="color:var(--muted); font-size:13px; margin-right: 10px;">Sum of Pairs
-            (X):</label>
-          <input id="ultimateFreqX" type="number" min="0" step="1" placeholder="Any"
-            style="width: auto; padding: 4px; border-radius: 4px; border: 1px solid rgba(255,255,255,0.2); background: var(--chip); color: var(--text); text-align: left;">
-
-          <label for="ultimateFreqY" style="color:var(--muted); font-size:13px; margin-right: 10px;">Sum of Triplets
-            (Y):</label>
-          <input id="ultimateFreqY" type="number" min="0" step="1" placeholder="Any"
-            style="width: auto; padding: 4px; border-radius: 4px; border: 1px solid rgba(255,255,255,0.2); background: var(--chip); color: var(--text); text-align: left;">
-
-          <label for="ultimateFreqZ" style="color:var(--muted); font-size:13px; margin-right: 10px;">Sum of Quads
-            (Z):</label>
-          <input id="ultimateFreqZ" type="number" min="0" step="1" placeholder="Any"
-            style="width: auto; padding: 4px; border-radius: 4px; border: 1px solid rgba(255,255,255,0.2); background: var(--chip); color: var(--text); text-align: left;">
-        </div>
-        <div style="margin:6px 0 8px 0; text-align: center;">
-          <button id="genUltimateBtn" type="button">Generate Ultimate Ticket</button>
-          <button id="clearUltimateInputsBtn" type="button" style="margin-left: 8px;">Clear</button>
-        </div>
-      </div>
-      <div class="tickets-grid" id="ultimateTicketList"></div>
     </section>
 
 
