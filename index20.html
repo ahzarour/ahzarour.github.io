@@ -619,6 +619,21 @@
       margin-left: 8px;
     }
 
+    .ball.hot {
+      outline: 2px solid var(--hot);
+      box-shadow: inset 0 0 0 999px rgba(255, 89, 90, 0.08);
+    }
+
+    .ball.cold {
+      outline: 2px solid var(--cold);
+      box-shadow: inset 0 0 0 999px rgba(79, 155, 255, 0.08);
+    }
+
+    .ball.natural {
+      outline: 2px solid var(--natural);
+      box-shadow: inset 0 0 0 999px rgba(52, 211, 153, 0.08);
+    }
+
     @media (max-width: 420px) {
       .ball {
         width: 30px;
@@ -2192,10 +2207,16 @@
         const row = document.createElement('div');
         row.className = 'ticket';
         for (const n of t.whites) {
-          const b = document.createElement('div'); b.className = 'ball'; b.textContent = n;
+          const b = document.createElement('div');
+          b.textContent = n;
+          const cls = state.classes?.white?.cls?.[n] || 'natural';
+          b.className = `ball ${cls}`;
           row.appendChild(b);
         }
-        const pb = document.createElement('div'); pb.className = 'ball pball'; pb.textContent = t.red;
+        const pb = document.createElement('div');
+        pb.textContent = t.red;
+        const redCls = state.classes?.red?.cls?.[t.red] || 'natural';
+        pb.className = `ball pball ${redCls}`;
         row.appendChild(pb);
         listEl.appendChild(row);
       }
