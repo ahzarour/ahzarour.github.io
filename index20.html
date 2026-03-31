@@ -986,6 +986,27 @@
       </div>
     </section>
 
+    <!-- Number Quality Checker - GROUP -->
+    <section id="groupQualityCheckerSection" class="sectionPanelSettings">
+      <div class="quality-wrap">
+        <h2 class="h2SectionStyle">Group Ticket Quality Checker</h2>
+        <div class="quality-controls" style="justify-content:center; padding-bottom: 12px;">
+          <button id="groupTicketCheckBtn" type="button">Check Group</button>
+          <button id="clearGroupTicketBtn" type="button">Clear</button>
+        </div>
+
+        <div id="groupTicketQualityControls" class="quality-controls quality-controls--inline" style="flex-direction: column;">
+          <textarea id="groupTicketInput" rows="6" placeholder="Paste your tickets here, one per line. E.g.&#10;1 2 3 4 5 6&#10;10 20 30 40 50 26" 
+            style="width: 100%; max-width: 400px; padding: 10px; border-radius: 8px; background: var(--chip); color: var(--text); border: 1px solid rgba(255,255,255,0.12); font-family: monospace; resize: vertical;"
+          ></textarea>
+        </div>
+
+        <!-- Result -->
+        <div id="groupTicketQualityResult" class="quality-result" style="padding-top: 12px; display: flex; flex-direction: column; gap: 8px;"></div>
+
+      </div>
+    </section>
+
 
     <!-- historical data show -->
     <section class="sectionPanelSettings">
@@ -1344,8 +1365,6 @@
     }
 
 
-
-
     function parseDraws(objs) {
       // Attempt schema detection for whites (array of up to 5) + red (single)
       const draws = [];
@@ -1584,6 +1603,15 @@
       renderRangeGroups();
       updateInputColors();
       updateGeneratedTicketColors();
+      
+      // Re-evaluate quality checkers if they have inputs to reflect the new Hot/Cold thresholds
+      if (document.getElementById('tN1')?.value) {
+        document.getElementById('ticketCheckBtn')?.click();
+      }
+      if (document.getElementById('groupTicketInput')?.value.trim()) {
+        document.getElementById('groupTicketCheckBtn')?.click();
+      }
+
       const exportBtn = document.getElementById("exportBtn");
       if (exportBtn) exportBtn.disabled = false;
     }
@@ -2845,6 +2873,77 @@
         const pb = document.getElementById('tPB').value;
         const res = evaluateTicketQuality(n1, n2, n3, n4, n5, pb);
         renderTicketQualityResult(res);
+      });
+    })();
+
+    // --- Group Ticket Quality Checker ---
+    (function attachGroupTicketChecker() {
+      const btn = document.getElementById('groupTicketCheckBtn');
+      const clearBtn = document.getElementById('clearGroupTicketBtn');
+      const inputArea = document.getElementById('groupTicketInput');
+      const resultEl = document.getElementById('groupTicketQualityResult');
+
+      if (!btn || !clearBtn || !inputArea || !resultEl) return;
+
+      clearBtn.addEventListener('click', () => {
+        inputArea.value = '';
+        resultEl.innerHTML = '';
+      });
+
+      btn.addEventListener('click', () => {
+        resultEl.innerHTML = '';
+        const text = inputArea.value.trim();
+        if (!text) {
+          resultEl.textContent = 'Please paste tickets to check.';
+          return;
+        }
+
+        const lines = text.split('\n');
+        for (let line of lines) {
+          line = line.trim();
+          if (!line) continue;
+
+          const nums = line.match(/\d+/g);
+          if (!nums || nums.length < 6) {
+             const errRow = document.createElement('div');
+             errRow.style.color = 'var(--hot)';
+             errRow.textContent = `Invalid ticket: ${line}`;
+             resultEl.appendChild(errRow);
+             continue;
+          }
+          
+          const res = evaluateTicketQuality(nums[0], nums[1], nums[2], nums[3], nums[4], nums[5]);
+          
+          const row = document.createElement('div');
+          row.style.display = 'flex';
+          row.style.alignItems = 'center';
+          row.style.justifyContent = 'space-between';
+          row.style.background = 'rgba(255,255,255,0.03)';
+          row.style.padding = '8px 12px';
+          row.style.borderRadius = '8px';
+          row.style.border = '1px solid rgba(255,255,255,0.06)';
+          row.style.gap = '16px';
+          row.style.flexWrap = 'wrap';
+
+          if (!res || res.error) {
+             row.innerHTML = `<div>${line}</div><div style="color:var(--hot)">${res ? res.error : 'Invalid numbers / Data not loaded'}</div>`;
+          } else {
+             const ballsDiv = document.createElement('div');
+             ballsDiv.className = 'ticket';
+             ballsDiv.innerHTML = res.whites.map(w => `<div class="ball ${state.classes?.white?.cls?.[w] || 'natural'}" style="width:24px;height:24px;font-size:11px;">${w}</div>`).join('') + 
+                                  `<div class="ball pball ${state.classes?.red?.cls?.[res.red] || 'natural'}" style="width:24px;height:24px;font-size:11px;">${res.red}</div>`;
+
+             const badgeDiv = document.createElement('div');
+             badgeDiv.className = `quality-badge ${res.grade.cls}`;
+             badgeDiv.style.fontSize = '11px';
+             badgeDiv.style.padding = '4px 8px';
+             badgeDiv.textContent = `${res.grade.label} (${res.score.toFixed(1)})`;
+
+             row.appendChild(ballsDiv);
+             row.appendChild(badgeDiv);
+          }
+          resultEl.appendChild(row);
+        }
       });
     })();
 
