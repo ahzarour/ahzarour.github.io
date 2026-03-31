@@ -113,9 +113,13 @@
     }
 
     .controls {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
+         display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    max-width: 450px;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
     }
 
     .row {
@@ -256,14 +260,19 @@
       border: 1px solid rgba(255, 255, 255, 0.08);
     }
 
-    .meta {
-      display: flex;
-      gap: 10px;
-      align-items: center;
-      flex-wrap: wrap;
-      color: var(--muted);
-      font-size: 12px;
-    }
+.meta {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    color: var(--muted);
+    font-size: 12px;
+    max-width: 450px;
+    margin-left: auto;
+    margin-right: auto;
+    justify-content: center;
+    flex-direction: column;
+    align-items: flex-start;
+}
 
     /* Responsive date inputs inside the date-controls column */
     .date-controls .date-row {
@@ -1018,8 +1027,15 @@
         </div>
 
         <!-- Result -->
-        <div id="groupTicketQualityResult" class="quality-result" style="padding-top: 12px; display: flex; flex-direction: column; gap: 8px;"></div>
-
+        <div id="groupTicketResultContainer" style="display: none; padding-top: 16px;">
+          <div class="combo-scroll" style="max-width: 450px; margin: 0 auto;">
+            <div class="combo-header" style="grid-template-columns: 2fr 1fr;">
+              <div>Ticket</div>
+              <div id="groupSortHeader" style="cursor: pointer; text-align: right; user-select: none; transition: color 0.2s;" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color=''">Result <span style="font-size:0.8em">▼</span></div>
+            </div>
+            <div id="groupTicketQualityResult"></div>
+          </div>
+        </div>
       </div>
     </section>
 
@@ -2927,19 +2943,88 @@
       const clearBtn = document.getElementById('clearGroupTicketBtn');
       const inputArea = document.getElementById('groupTicketInput');
       const resultEl = document.getElementById('groupTicketQualityResult');
+      const container = document.getElementById('groupTicketResultContainer');
+      const sortHeader = document.getElementById('groupSortHeader');
 
       if (!btn || !clearBtn || !inputArea || !resultEl) return;
 
+      let groupTicketResults = [];
+      let groupTicketSortDir = 'desc';
+
+      function renderGroupTicketResults() {
+        if (!resultEl || !container) return;
+
+        if (groupTicketResults.length === 0) {
+          container.style.display = 'none';
+          return;
+        }
+        container.style.display = 'block';
+
+        // Sort
+        const dir = groupTicketSortDir === 'asc' ? 1 : -1;
+        groupTicketResults.sort((a, b) => {
+          const scoreA = a.error ? -1 : a.score;
+          const scoreB = b.error ? -1 : b.score;
+          return (scoreA - scoreB) * dir;
+        });
+
+        if (sortHeader) {
+          sortHeader.innerHTML = `Result <span style="font-size:0.8em">${groupTicketSortDir === 'asc' ? '▲' : '▼'}</span>`;
+        }
+
+        resultEl.innerHTML = '';
+        for (const res of groupTicketResults) {
+          const row = document.createElement('div');
+          row.className = 'combo-row';
+          row.style.gridTemplateColumns = '2fr 1fr';
+          row.style.alignItems = 'center';
+
+          if (res.error) {
+            row.innerHTML = `<div>${res.line}</div><div style="color:var(--hot); text-align: right; font-size: 12px;">${res.errorMsg}</div>`;
+          } else {
+            const ballsDiv = document.createElement('div');
+            ballsDiv.className = 'ticket';
+            ballsDiv.style.justifyContent = 'flex-start';
+            ballsDiv.innerHTML = res.whites.map(w => `<div class="ball ${state.classes?.white?.cls?.[w] || 'natural'}" style="width:24px;height:24px;font-size:11px;">${w}</div>`).join('') + 
+                                 `<div class="ball pball ${state.classes?.red?.cls?.[res.red] || 'natural'}" style="width:24px;height:24px;font-size:11px;">${res.red}</div>`;
+
+            const badgeDiv = document.createElement('div');
+            badgeDiv.style.textAlign = 'right';
+            const badge = document.createElement('div');
+            badge.className = `quality-badge ${res.grade.cls}`;
+            badge.style.fontSize = '11px';
+            badge.style.padding = '4px 8px';
+            badge.textContent = `${res.grade.label} (${res.score.toFixed(1)})`;
+            badgeDiv.appendChild(badge);
+
+            row.appendChild(ballsDiv);
+            row.appendChild(badgeDiv);
+          }
+          resultEl.appendChild(row);
+        }
+      }
+
+      if (sortHeader) {
+        sortHeader.addEventListener('click', () => {
+          groupTicketSortDir = groupTicketSortDir === 'asc' ? 'desc' : 'asc';
+          renderGroupTicketResults();
+        });
+      }
+
       clearBtn.addEventListener('click', () => {
         inputArea.value = '';
-        resultEl.innerHTML = '';
+        groupTicketResults = [];
+        renderGroupTicketResults();
       });
 
       btn.addEventListener('click', () => {
-        resultEl.innerHTML = '';
+        groupTicketResults = [];
         const text = inputArea.value.trim();
         if (!text) {
-          resultEl.textContent = 'Please paste tickets to check.';
+          if (container) {
+            container.style.display = 'block';
+            resultEl.innerHTML = '<div class="combo-empty">Please paste tickets to check.</div>';
+          }
           return;
         }
 
@@ -2950,45 +3035,19 @@
 
           const nums = line.match(/\d+/g);
           if (!nums || nums.length < 6) {
-             const errRow = document.createElement('div');
-             errRow.style.color = 'var(--hot)';
-             errRow.textContent = `Invalid ticket: ${line}`;
-             resultEl.appendChild(errRow);
+             groupTicketResults.push({ line, error: true, errorMsg: 'Invalid ticket' });
              continue;
           }
           
           const res = evaluateTicketQuality(nums[0], nums[1], nums[2], nums[3], nums[4], nums[5]);
-          
-          const row = document.createElement('div');
-          row.style.display = 'flex';
-          row.style.alignItems = 'center';
-          row.style.justifyContent = 'space-between';
-          row.style.background = 'rgba(255,255,255,0.03)';
-          row.style.padding = '8px 12px';
-          row.style.borderRadius = '8px';
-          row.style.border = '1px solid rgba(255,255,255,0.06)';
-          row.style.gap = '16px';
-          row.style.flexWrap = 'wrap';
-
           if (!res || res.error) {
-             row.innerHTML = `<div>${line}</div><div style="color:var(--hot)">${res ? res.error : 'Invalid numbers / Data not loaded'}</div>`;
+             groupTicketResults.push({ line, error: true, errorMsg: res ? res.error : 'Data not loaded' });
           } else {
-             const ballsDiv = document.createElement('div');
-             ballsDiv.className = 'ticket';
-             ballsDiv.innerHTML = res.whites.map(w => `<div class="ball ${state.classes?.white?.cls?.[w] || 'natural'}" style="width:24px;height:24px;font-size:11px;">${w}</div>`).join('') + 
-                                  `<div class="ball pball ${state.classes?.red?.cls?.[res.red] || 'natural'}" style="width:24px;height:24px;font-size:11px;">${res.red}</div>`;
-
-             const badgeDiv = document.createElement('div');
-             badgeDiv.className = `quality-badge ${res.grade.cls}`;
-             badgeDiv.style.fontSize = '11px';
-             badgeDiv.style.padding = '4px 8px';
-             badgeDiv.textContent = `${res.grade.label} (${res.score.toFixed(1)})`;
-
-             row.appendChild(ballsDiv);
-             row.appendChild(badgeDiv);
+             res.line = line;
+             groupTicketResults.push(res);
           }
-          resultEl.appendChild(row);
         }
+        renderGroupTicketResults();
       });
     })();
 
