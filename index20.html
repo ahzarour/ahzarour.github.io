@@ -2657,8 +2657,8 @@
             document.getElementById('tN5').value = t.whites[4];
             document.getElementById('tPB').value = t.red;
             updateInputColors();
-            const sec = document.getElementById('qualityCheckerSection');
-            if (sec) sec.scrollIntoView({ behavior: 'smooth' });
+            toQualityBtn.textContent = 'Added!';
+            setTimeout(() => toQualityBtn.textContent = 'To Quality Checker', 1500);
           });
           btnWrap.appendChild(toQualityBtn);
 
@@ -2680,11 +2680,8 @@
               inputs[5].value = t.red;
               updateInputColors();
             }
-            const controls = document.getElementById('comboCheckControls');
-            if (controls) {
-              const sec = controls.closest('section');
-              if (sec) sec.scrollIntoView({ behavior: 'smooth' });
-            }
+            toComboBtn.textContent = 'Added!';
+            setTimeout(() => toComboBtn.textContent = 'To Appearance Checker', 1500);
           });
           btnWrap.appendChild(toComboBtn);
 
