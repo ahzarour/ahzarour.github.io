@@ -990,6 +990,22 @@
     <section id="groupQualityCheckerSection" class="sectionPanelSettings">
       <div class="quality-wrap">
         <h2 class="h2SectionStyle">Group Ticket Quality Checker</h2>
+        
+        <div class="controls" style="margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid rgba(255,255,255,0.08);">
+          <div>
+            <div class="row">
+              <label for="hotPct2">Hot threshold (top % by frequency)</label><span class="val" id="hotPctVal2">10%</span>
+            </div>
+            <input id="hotPct2" type="range" min="5" max="40" step="1" value="10" />
+          </div>
+          <div>
+            <div class="row">
+              <label for="coldPct2">Cold threshold (bottom % by frequency)</label><span class="val" id="coldPctVal2">20%</span>
+            </div>
+            <input id="coldPct2" type="range" min="5" max="40" step="1" value="20" />
+          </div>
+        </div>
+
         <div class="quality-controls" style="justify-content:center; padding-bottom: 12px;">
           <button id="groupTicketCheckBtn" type="button">Check Group</button>
           <button id="clearGroupTicketBtn" type="button">Clear</button>
@@ -1965,23 +1981,52 @@
     }
 
     // --- Events ---
-    document.getElementById("hotPct").addEventListener("input", (e) => {
+    function handleHotPctChange(e) {
       state.hotPct = parseInt(e.target.value, 10);
       document.getElementById("hotPctVal").textContent = state.hotPct + "%";
-      updateClassification();
-    });
+      const hotPct2Val = document.getElementById("hotPctVal2");
+      if (hotPct2Val) hotPct2Val.textContent = state.hotPct + "%";
+      
+      const hotPct = document.getElementById("hotPct");
+      const hotPct2 = document.getElementById("hotPct2");
+      if (hotPct && e.target !== hotPct) hotPct.value = state.hotPct;
+      if (hotPct2 && e.target !== hotPct2) hotPct2.value = state.hotPct;
 
-    document.getElementById("coldPct").addEventListener("input", (e) => {
+      updateClassification();
+    }
+
+    function handleColdPctChange(e) {
       state.coldPct = parseInt(e.target.value, 10);
       document.getElementById("coldPctVal").textContent = state.coldPct + "%";
+      const coldPct2Val = document.getElementById("coldPctVal2");
+      if (coldPct2Val) coldPct2Val.textContent = state.coldPct + "%";
+      
+      const coldPct = document.getElementById("coldPct");
+      const coldPct2 = document.getElementById("coldPct2");
+      if (coldPct && e.target !== coldPct) coldPct.value = state.coldPct;
+      if (coldPct2 && e.target !== coldPct2) coldPct2.value = state.coldPct;
+
       updateClassification();
-    });
+    }
+
+    document.getElementById("hotPct").addEventListener("input", handleHotPctChange);
+    document.getElementById("coldPct").addEventListener("input", handleColdPctChange);
+    
+    const hotPct2El = document.getElementById("hotPct2");
+    if (hotPct2El) hotPct2El.addEventListener("input", handleHotPctChange);
+    
+    const coldPct2El = document.getElementById("coldPct2");
+    if (coldPct2El) coldPct2El.addEventListener("input", handleColdPctChange);
 
     // Removed Export Results button and its event listener
 
     // Initialize labels
     document.getElementById("hotPctVal").textContent = state.hotPct + "%";
     document.getElementById("coldPctVal").textContent = state.coldPct + "%";
+    const hotPctVal2El = document.getElementById("hotPctVal2");
+    if (hotPctVal2El) hotPctVal2El.textContent = state.hotPct + "%";
+    const coldPctVal2El = document.getElementById("coldPctVal2");
+    if (coldPctVal2El) coldPctVal2El.textContent = state.coldPct + "%";
 
     // Shared logic for preset change
     function handlePresetChange(e) {
