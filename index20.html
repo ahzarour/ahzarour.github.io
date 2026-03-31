@@ -1584,6 +1584,7 @@
       renderCombinationTable();
       renderRangeGroups();
       updateInputColors();
+      updateGeneratedTicketColors();
       const exportBtn = document.getElementById("exportBtn");
       if (exportBtn) exportBtn.disabled = false;
     }
@@ -2861,6 +2862,23 @@
           const clsMap = isPb ? state.classes.red : state.classes.white;
           const c = clsMap.cls[val];
           if (c) input.classList.add(c);
+        }
+      });
+    }
+
+    function updateGeneratedTicketColors() {
+      document.querySelectorAll('.ball').forEach(ball => {
+        const val = parseInt(ball.textContent, 10);
+        if (!val || !state.classes) return;
+        
+        ball.classList.remove('hot', 'cold', 'natural');
+        const isPb = ball.classList.contains('pball');
+        const max = isPb ? RED_MAX : WHITE_MAX;
+        
+        if (val >= 1 && val <= max) {
+          const clsMap = isPb ? state.classes.red : state.classes.white;
+          const c = clsMap.cls[val];
+          if (c) ball.classList.add(c);
         }
       });
     }
