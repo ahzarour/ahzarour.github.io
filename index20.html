@@ -471,7 +471,7 @@
     .crunch-header>div,
     .crunch-row>div {
       max-width: 100%;
-      overflow: hidden;
+      /* overflow: hidden; */
       text-overflow: ellipsis;
       white-space: nowrap;
     }
@@ -3258,14 +3258,16 @@
           ballsDiv.style.flexWrap = 'wrap';
           for (const w of d.whites) {
             const b = document.createElement('div');
-            b.className = 'ball';
+            const cls = state.classes?.white?.cls?.[w] || 'natural';
+            b.className = `ball ${cls}`;
             b.style.width = '24px'; b.style.height = '24px'; b.style.fontSize = '11px';
             b.textContent = w;
             ballsDiv.appendChild(b);
           }
 
           const pb = document.createElement('div');
-          pb.className = 'ball pball';
+          const redCls = state.classes?.red?.cls?.[d.red] || 'natural';
+          pb.className = `ball pball ${redCls}`;
           pb.style.width = '24px'; pb.style.height = '24px'; pb.style.fontSize = '11px';
           pb.textContent = d.red;
           ballsDiv.appendChild(pb);
