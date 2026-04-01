@@ -1016,6 +1016,7 @@
 
         <div class="quality-controls" style="justify-content:center; padding-bottom: 12px;">
           <button id="groupTicketCheckBtn" type="button">Check Group</button>
+          <button id="pasteGroupTicketBtn" type="button">Paste</button>
           <button id="clearGroupTicketBtn" type="button">Clear</button>
         </div>
 
@@ -2987,13 +2988,30 @@
                                  `<div class="ball pball ${state.classes?.red?.cls?.[res.red] || 'natural'}">${res.red}</div>`;
 
             const badgeDiv = document.createElement('div');
-            badgeDiv.style.textAlign = 'right';
+            badgeDiv.style.display = 'flex';
+            badgeDiv.style.justifyContent = 'flex-end';
+            badgeDiv.style.alignItems = 'center';
+            badgeDiv.style.gap = '8px';
+            
             const badge = document.createElement('div');
             badge.className = `quality-badge ${res.grade.cls}`;
             badge.style.fontSize = '11px';
             badge.style.padding = '4px 8px';
             badge.textContent = `${res.grade.label} (${res.score.toFixed(1)})`;
             badgeDiv.appendChild(badge);
+
+            const copyBtn = document.createElement('button');
+            copyBtn.type = 'button';
+            copyBtn.textContent = 'Copy';
+            copyBtn.style.fontSize = '10px';
+            copyBtn.style.padding = '4px 8px';
+            copyBtn.style.margin = '0';
+            copyBtn.addEventListener('click', () => {
+              navigator.clipboard.writeText(`${res.whites.join(' ')} ${res.red}`);
+              copyBtn.textContent = 'Copied!';
+              setTimeout(() => copyBtn.textContent = 'Copy', 1500);
+            });
+            badgeDiv.appendChild(copyBtn);
 
             row.appendChild(ballsDiv);
             row.appendChild(badgeDiv);
@@ -3115,6 +3133,18 @@
       const ids = ['tN1', 'tN2', 'tN3', 'tN4', 'tN5', 'tPB'];
       const inputs = ids.map(id => document.getElementById(id));
       pasteToInputs(inputs);
+    });
+
+    document.getElementById('pasteGroupTicketBtn')?.addEventListener('click', async () => {
+      try {
+        const text = await navigator.clipboard.readText();
+        const textarea = document.getElementById('groupTicketInput');
+        if (textarea) {
+          textarea.value = (textarea.value ? textarea.value + '\n' : '') + text;
+        }
+      } catch (err) {
+        console.error('Failed to read clipboard:', err);
+      }
     });
 
     // --- Copy Functionality (Manual Inputs) ---
