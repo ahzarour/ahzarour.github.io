@@ -598,20 +598,27 @@
     }
 
     .ticket {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      align-items: center;
-      justify-content: center;
+      display: flex !important;
+      flex-wrap: nowrap !important;
+      width: 100% !important;
+      max-width: 160px !important;
+      container-type: inline-size !important;
+      justify-content: space-between !important;
+      gap: 4px !important;
     }
     
     .ball {
-      width: 34px;
-      height: 34px;
-      border-radius: 50%;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
+      width: 12cqw !important;
+      max-width: 22px !important;
+      min-width: 16px !important;
+      aspect-ratio: 1 / 1 !important;
+      height: auto !important;
+      border-radius: 50% !important;
+      font-size: clamp(9px, 5cqw, 11px) !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      flex-shrink: 1 !important;
       background: #1e2554;
       border: 1px solid rgba(255, 255, 255, 0.08);
       font-weight: 700;
@@ -641,14 +648,6 @@
     .ball.natural {
       outline: 2px solid var(--natural);
       box-shadow: inset 0 0 0 999px rgba(52, 211, 153, 0.08);
-    }
-
-    @media (max-width: 420px) {
-      .ball {
-        width: 30px;
-        height: 30px;
-        font-size: 12px;
-      }
     }
 
     /* Number Quality Checker */
@@ -1029,7 +1028,7 @@
         <!-- Result -->
         <div id="groupTicketResultContainer" style="display: none; padding-top: 16px;">
           <div class="combo-scroll" style="max-width: 450px; margin: 0 auto;">
-            <div class="combo-header" style="grid-template-columns: 2fr 1fr;">
+            <div class="combo-header combo-row-dynamic">
               <div>Ticket</div>
               <div id="groupSortHeader" style="cursor: pointer; text-align: right; user-select: none; transition: color 0.2s;" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color=''">Result <span style="font-size:0.8em">▼</span></div>
             </div>
@@ -1065,7 +1064,7 @@
     <section class="sectionPanelSettings">
       <h2 class="h2SectionStyle">Combination patterns</h2>
       <div class="combo-scroll" style="max-width: 450px; margin: 0 auto;">
-        <div class="combo-header">
+        <div class="combo-header combo-row-dynamic">
           <div>Combination</div>
           <div>Count</div>
         </div>
@@ -1674,7 +1673,7 @@
       const rows = Array.from(combos.entries()).sort((a, b) => b[1] - a[1]);
       for (const [k, v] of rows) {
         const row = document.createElement("div");
-        row.className = "combo-row";
+        row.className = "combo-row combo-row-dynamic";
         const key = document.createElement("div");
         key.textContent = k;
         const cnt = document.createElement("div");
@@ -2975,8 +2974,7 @@
         resultEl.innerHTML = '';
         for (const res of groupTicketResults) {
           const row = document.createElement('div');
-          row.className = 'combo-row';
-          row.style.gridTemplateColumns = '2fr 1fr';
+          row.className = 'combo-row combo-row-dynamic';
           row.style.alignItems = 'center';
 
           if (res.error) {
@@ -2985,8 +2983,8 @@
             const ballsDiv = document.createElement('div');
             ballsDiv.className = 'ticket';
             ballsDiv.style.justifyContent = 'flex-start';
-            ballsDiv.innerHTML = res.whites.map(w => `<div class="ball ${state.classes?.white?.cls?.[w] || 'natural'}" style="width:24px;height:24px;font-size:11px;">${w}</div>`).join('') + 
-                                 `<div class="ball pball ${state.classes?.red?.cls?.[res.red] || 'natural'}" style="width:24px;height:24px;font-size:11px;">${res.red}</div>`;
+            ballsDiv.innerHTML = res.whites.map(w => `<div class="ball ${state.classes?.white?.cls?.[w] || 'natural'}">${w}</div>`).join('') + 
+                                 `<div class="ball pball ${state.classes?.red?.cls?.[res.red] || 'natural'}">${res.red}</div>`;
 
             const badgeDiv = document.createElement('div');
             badgeDiv.style.textAlign = 'right';
@@ -3316,7 +3314,7 @@
 
         // Now add the partial match table
         html += `<div class="freq-scroll" style="border: 1px solid rgba(255,255,255,0.06); border-radius:12px;">`;
-        html += `<div class="combo-header" style="grid-template-columns: 2fr 1fr 1fr;">
+        html += `<div class="combo-header combo-row-dynamic">
                     <div>Match Type</div>
                     <div>Draws</div>
                     <div>Total Sets</div>
@@ -3338,7 +3336,7 @@
         } else {
           for (const key of sortedKeys) {
             const d = matchCounts[key];
-            html += `<div class="combo-row" data-match-key="${key}" style="cursor: pointer; grid-template-columns: 2fr 1fr 1fr;" title="Click to see details">
+            html += `<div class="combo-row combo-row-dynamic" data-match-key="${key}" style="cursor: pointer;" title="Click to see details">
               <div class="combo-name">${key}</div>
               <div class="combo-count">${d.draws.toLocaleString()}</div>
               <div class="combo-count">${d.combos.toLocaleString()}</div>
@@ -3415,17 +3413,17 @@
 
         let detailHtml = `<div class="ticket-meta" style="padding:0 0 8px 0;">Details for matches of type: <strong>${matchKey}</strong></div>`;
         detailHtml += `<div class="freq-scroll" style="max-height: 260px; border: 1px solid rgba(255,255,255,0.06); border-radius:12px;">`;
-        detailHtml += `<div class="combo-header"><div data-sort-key="date" style="cursor:pointer;">Draw Date & Numbers</div><div data-sort-key="matchedWhites" style="cursor:pointer;">Matches</div></div>`;
+        detailHtml += `<div class="combo-header combo-row-dynamic"><div data-sort-key="date" style="cursor:pointer;">Draw Date & Numbers</div><div data-sort-key="matchedWhites" style="cursor:pointer;">Matches</div></div>`;
         detailHtml += `<div id="comboMatchDetailList">`;
 
         for (const match of matches) {
           const drawDate = match.date ? fmtDMY(match.date) : 'N/A';
-          const drawTicketHTML = `<div class="ticket-meta">${drawDate}</div><div class="ticket">${match.drawWhites.map(n => `<div class="ball" style="width:24px;height:24px;font-size:11px;">${n}</div>`).join('')}<div class="ball pball" style="width:24px;height:24px;font-size:11px;">${match.drawRed}</div></div>`;
+          const drawTicketHTML = `<div class="ticket-meta">${drawDate}</div><div class="ticket">${match.drawWhites.map(n => `<div class="ball">${n}</div>`).join('')}<div class="ball pball">${match.drawRed}</div></div>`;
           let matchDetailsHTML = `<div>${match.matchedSubset.join(', ')}</div>`;
           if (match.pbMatch) {
             matchDetailsHTML += `<div style="color:var(--hot)">+ PB</div>`;
           }
-          detailHtml += `<div class="match-detail-row"><div class="match-detail-ticket">${drawTicketHTML}</div><div class="match-detail-matches">${matchDetailsHTML}</div></div>`;
+          detailHtml += `<div class="match-detail-row combo-row-dynamic"><div class="match-detail-ticket">${drawTicketHTML}</div><div class="match-detail-matches">${matchDetailsHTML}</div></div>`;
         }
 
         detailHtml += `</div></div>`;
@@ -3477,15 +3475,11 @@
           dateDiv.textContent = d.date ? fmtDMY(d.date) : '—';
 
           const ballsDiv = document.createElement('div');
-          ballsDiv.style.display = 'flex';
-          ballsDiv.style.gap = '4px';
-          ballsDiv.style.justifyContent = 'center';
-          ballsDiv.style.flexWrap = 'wrap';
+          ballsDiv.className = 'ticket';
           for (const w of d.whites) {
             const b = document.createElement('div');
             const cls = state.classes?.white?.cls?.[w] || 'natural';
             b.className = `ball ${cls}`;
-            b.style.width = '24px'; b.style.height = '24px'; b.style.fontSize = '11px';
             b.textContent = w;
             ballsDiv.appendChild(b);
           }
@@ -3493,7 +3487,6 @@
           const pb = document.createElement('div');
           const redCls = state.classes?.red?.cls?.[d.red] || 'natural';
           pb.className = `ball pball ${redCls}`;
-          pb.style.width = '24px'; pb.style.height = '24px'; pb.style.fontSize = '11px';
           pb.textContent = d.red;
           ballsDiv.appendChild(pb);
 
