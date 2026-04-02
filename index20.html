@@ -113,13 +113,13 @@
     }
 
     .controls {
-         display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
-    max-width: 450px;
-    align-items: center;
-    justify-content: center;
-    margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      max-width: 450px;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto;
     }
 
     .row {
@@ -266,32 +266,32 @@
       border: 1px solid rgba(255, 255, 255, 0.08);
     }
 
-.summary-container {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    justify-content: center;
-    max-width: 450px;
-    margin: 0 auto 12px;
-}
+    .summary-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: center;
+      max-width: 450px;
+      margin: 0 auto 12px;
+    }
 
-.summary-badge {
-    font-size: 11px !important;
-}
+    .summary-badge {
+      font-size: 11px !important;
+    }
 
-.meta {
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
-    color: var(--muted);
-    font-size: 12px;
-    max-width: 450px;
-    margin-left: auto;
-    margin-right: auto;
-    justify-content: center;
-    flex-direction: column;
-    align-items: flex-start;
-}
+    .meta {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      color: var(--muted);
+      font-size: 12px;
+      max-width: 450px;
+      margin-left: auto;
+      margin-right: auto;
+      justify-content: center;
+      flex-direction: column;
+      align-items: flex-start;
+    }
 
     /* Responsive date inputs inside the date-controls column */
     .date-controls .date-row {
@@ -616,7 +616,8 @@
       padding: 8px;
     }
 
-    .ticket, .smart-ticket {
+    .ticket,
+    .smart-ticket {
       display: flex !important;
       flex-wrap: nowrap !important;
       width: 100% !important;
@@ -626,16 +627,16 @@
       gap: 4px !important;
       font-size: clamp(11px, 1.8vw, 13px);
     }
-    
+
     /* Custom class for the Ultimate Smart Ticket */
     .ultimate-ticket {
-      display: flex ;
-      flex-wrap: nowrap ;
-      width: 100% ;
-      max-width: 400px ;
-      container-type: inline-size ;
+      display: flex;
+      flex-wrap: nowrap;
+      width: 100%;
+      max-width: 400px;
+      container-type: inline-size;
       justify-content: center;
-      gap: 8px ;
+      gap: 8px;
       /* font-size: clamp(11px, 1.9cqi, 18px); */
       font-size: 18px;
     }
@@ -781,10 +782,12 @@
       outline: 2px solid var(--hot);
       box-shadow: inset 0 0 0 999px rgba(255, 89, 90, 0.08);
     }
+
     .ball-input.cold {
       outline: 2px solid var(--cold);
       box-shadow: inset 0 0 0 999px rgba(79, 155, 255, 0.08);
     }
+
     .ball-input.natural {
       outline: 2px solid var(--natural);
       box-shadow: inset 0 0 0 999px rgba(52, 211, 153, 0.08);
@@ -923,7 +926,7 @@
 
             <style>
               input[type="date"] {
-                color: black;                
+                color: black;
               }
 
               input[type="date"]:disabled {
@@ -968,23 +971,23 @@
             style="width: auto; padding: 4px; border-radius: 4px; border: 1px solid rgba(255,255,255,0.2); background: var(--chip); color: var(--text); text-align: left;">
         </div>
 
-<style>
-  .button-spec {
-    padding-bottom: 20px;
-    text-align: center;
-  }
-</style>
+        <style>
+          .button-spec {
+            padding-bottom: 20px;
+            text-align: center;
+          }
+        </style>
 
       </div>
-        <div class="button-spec">
-          <button id="genUltimateBtn" type="button">Generate Ultimate Ticket</button>
-          <button id="clearUltimateInputsBtn" type="button" style="margin-left: 8px;">Clear</button>
-        </div>
+      <div class="button-spec">
+        <button id="genUltimateBtn" type="button">Generate Ultimate Ticket</button>
+        <button id="clearUltimateInputsBtn" type="button" style="margin-left: 8px;">Clear</button>
+      </div>
       <div class="tickets-grid" id="ultimateTicketList"></div>
     </section>
 
 
-        <!-- Number Appearance Checker -->
+    <!-- Number Appearance Checker -->
     <section class="sectionPanelSettings">
       <h2 class="h2SectionStyle">Combination Appearance Checker</h2>
       <div id="comboCheckResult" style="padding-bottom: 12px;"></div>
@@ -1033,17 +1036,20 @@
     <section id="groupQualityCheckerSection" class="sectionPanelSettings">
       <div class="quality-wrap">
         <h2 class="h2SectionStyle">Group Ticket Quality Checker</h2>
-        
-        <div class="controls" style="margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid rgba(255,255,255,0.08);">
+
+        <div class="controls"
+          style="margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid rgba(255,255,255,0.08);">
           <div>
             <div class="row">
-              <label for="hotPct2">Hot threshold (top % by frequency)</label><span class="val" id="hotPctVal2">10%</span>
+              <label for="hotPct2">Hot threshold (top % by frequency)</label><span class="val"
+                id="hotPctVal2">10%</span>
             </div>
             <input id="hotPct2" type="range" min="5" max="40" step="1" value="10" />
           </div>
           <div>
             <div class="row">
-              <label for="coldPct2">Cold threshold (bottom % by frequency)</label><span class="val" id="coldPctVal2">20%</span>
+              <label for="coldPct2">Cold threshold (bottom % by frequency)</label><span class="val"
+                id="coldPctVal2">20%</span>
             </div>
             <input id="coldPct2" type="range" min="5" max="40" step="1" value="20" />
           </div>
@@ -1055,10 +1061,11 @@
           <button id="clearGroupTicketBtn" type="button">Clear</button>
         </div>
 
-        <div id="groupTicketQualityControls" class="quality-controls quality-controls--inline" style="flex-direction: column;">
-          <textarea id="groupTicketInput" rows="6" placeholder="Paste your tickets here, one per line. E.g.&#10;1 2 3 4 5 6&#10;10 20 30 40 50 26" 
-            style="width: 100%; max-width: 400px; padding: 10px; border-radius: 8px; background: var(--chip); color: var(--text); border: 1px solid rgba(255,255,255,0.12); font-family: monospace; resize: vertical;"
-          ></textarea>
+        <div id="groupTicketQualityControls" class="quality-controls quality-controls--inline"
+          style="flex-direction: column;">
+          <textarea id="groupTicketInput" rows="6"
+            placeholder="Paste your tickets here, one per line. E.g.&#10;1 2 3 4 5 6&#10;10 20 30 40 50 26"
+            style="width: 100%; max-width: 400px; padding: 10px; border-radius: 8px; background: var(--chip); color: var(--text); border: 1px solid rgba(255,255,255,0.12); font-family: monospace; resize: vertical;"></textarea>
         </div>
 
         <!-- Result -->
@@ -1066,7 +1073,10 @@
           <div class="combo-scroll" style="max-width: 450px; margin: 0 auto;">
             <div class="combo-header combo-row-dynamic">
               <div>Ticket</div>
-              <div id="groupSortHeader" style="cursor: pointer; text-align: right; user-select: none; transition: color 0.2s;" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color=''">Result <span style="font-size:0.8em">▼</span></div>
+              <div id="groupSortHeader"
+                style="cursor: pointer; text-align: right; user-select: none; transition: color 0.2s;"
+                onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color=''">Result <span
+                  style="font-size:0.8em">▼</span></div>
             </div>
             <div id="groupTicketQualityResult"></div>
           </div>
@@ -1096,7 +1106,7 @@
       </div>
     </section>
 
-    
+
 
     <!-- combination pattern -->
     <section class="sectionPanelSettings">
@@ -1672,7 +1682,7 @@
       renderRangeGroups();
       updateInputColors();
       updateGeneratedTicketColors();
-      
+
       // Re-evaluate quality checkers if they have inputs to reflect the new Hot/Cold thresholds
       if (document.getElementById('tN1')?.value) {
         document.getElementById('ticketCheckBtn')?.click();
@@ -2039,7 +2049,7 @@
       document.getElementById("hotPctVal").textContent = state.hotPct + "%";
       const hotPct2Val = document.getElementById("hotPctVal2");
       if (hotPct2Val) hotPct2Val.textContent = state.hotPct + "%";
-      
+
       const hotPct = document.getElementById("hotPct");
       const hotPct2 = document.getElementById("hotPct2");
       if (hotPct && e.target !== hotPct) hotPct.value = state.hotPct;
@@ -2053,7 +2063,7 @@
       document.getElementById("coldPctVal").textContent = state.coldPct + "%";
       const coldPct2Val = document.getElementById("coldPctVal2");
       if (coldPct2Val) coldPct2Val.textContent = state.coldPct + "%";
-      
+
       const coldPct = document.getElementById("coldPct");
       const coldPct2 = document.getElementById("coldPct2");
       if (coldPct && e.target !== coldPct) coldPct.value = state.coldPct;
@@ -2064,10 +2074,10 @@
 
     document.getElementById("hotPct").addEventListener("input", handleHotPctChange);
     document.getElementById("coldPct").addEventListener("input", handleColdPctChange);
-    
+
     const hotPct2El = document.getElementById("hotPct2");
     if (hotPct2El) hotPct2El.addEventListener("input", handleHotPctChange);
-    
+
     const coldPct2El = document.getElementById("coldPct2");
     if (coldPct2El) coldPct2El.addEventListener("input", handleColdPctChange);
 
@@ -2890,7 +2900,7 @@
 
       // Range alignment
       const stats = computeRangeGroups(state.draws || []);
-      const getTop2 = (arr) => arr.map((v, i) => ({v, i})).sort((a, b) => b.v - a.v).slice(0, 2).map(x => x.i);
+      const getTop2 = (arr) => arr.map((v, i) => ({ v, i })).sort((a, b) => b.v - a.v).slice(0, 2).map(x => x.i);
       const top2_G1 = getTop2(stats.g1 || []);
       const top2_G2 = getTop2(stats.g2 || []);
       const top2_G3 = getTop2(stats.g3 || []);
@@ -3021,15 +3031,15 @@
             const ballsDiv = document.createElement('div');
             ballsDiv.className = 'ticket';
             ballsDiv.style.justifyContent = 'flex-start';
-            ballsDiv.innerHTML = res.whites.map(w => `<div class="ball ${state.classes?.white?.cls?.[w] || 'natural'}">${w}</div>`).join('') + 
-                                 `<div class="ball pball ${state.classes?.red?.cls?.[res.red] || 'natural'}">${res.red}</div>`;
+            ballsDiv.innerHTML = res.whites.map(w => `<div class="ball ${state.classes?.white?.cls?.[w] || 'natural'}">${w}</div>`).join('') +
+              `<div class="ball pball ${state.classes?.red?.cls?.[res.red] || 'natural'}">${res.red}</div>`;
 
             const badgeDiv = document.createElement('div');
             badgeDiv.style.display = 'flex';
             badgeDiv.style.justifyContent = 'flex-end';
             badgeDiv.style.alignItems = 'center';
             badgeDiv.style.gap = '8px';
-            
+
             const badge = document.createElement('div');
             badge.className = `quality-badge ${res.grade.cls}`;
             badge.style.padding = '4px 8px';
@@ -3085,16 +3095,16 @@
 
           const nums = line.match(/\d+/g);
           if (!nums || nums.length < 6) {
-             groupTicketResults.push({ line, error: true, errorMsg: 'Invalid ticket' });
-             continue;
+            groupTicketResults.push({ line, error: true, errorMsg: 'Invalid ticket' });
+            continue;
           }
-          
+
           const res = evaluateTicketQuality(nums[0], nums[1], nums[2], nums[3], nums[4], nums[5]);
           if (!res || res.error) {
-             groupTicketResults.push({ line, error: true, errorMsg: res ? res.error : 'Data not loaded' });
+            groupTicketResults.push({ line, error: true, errorMsg: res ? res.error : 'Data not loaded' });
           } else {
-             res.line = line;
-             groupTicketResults.push(res);
+            res.line = line;
+            groupTicketResults.push(res);
           }
         }
         renderGroupTicketResults();
@@ -3107,7 +3117,7 @@
         input.classList.remove('hot', 'cold', 'natural');
         const val = parseInt(input.value, 10);
         if (!val || !state.classes) return;
-        
+
         const isPb = input.classList.contains('pball');
         const max = isPb ? RED_MAX : WHITE_MAX;
         if (val >= 1 && val <= max) {
@@ -3122,11 +3132,11 @@
       document.querySelectorAll('.ball').forEach(ball => {
         const val = parseInt(ball.textContent, 10);
         if (!val || !state.classes) return;
-        
+
         ball.classList.remove('hot', 'cold', 'natural');
         const isPb = ball.classList.contains('pball');
         const max = isPb ? RED_MAX : WHITE_MAX;
-        
+
         if (val >= 1 && val <= max) {
           const clsMap = isPb ? state.classes.red : state.classes.white;
           const c = clsMap.cls[val];
@@ -3525,7 +3535,7 @@
         list.innerHTML = '';
         const summary = document.getElementById('historySummary');
         if (summary) summary.innerHTML = '';
-        
+
         if (!state.draws || !state.draws.length) {
           list.innerHTML = '<div style="padding:10px; text-align:center; color:var(--muted);">No data loaded.</div>';
           return;
@@ -3570,7 +3580,7 @@
           strengthDiv.style.display = 'flex';
           strengthDiv.style.alignItems = 'center';
           strengthDiv.style.justifyContent = 'center';
-          
+
           const res = evaluateTicketQuality(d.whites[0], d.whites[1], d.whites[2], d.whites[3], d.whites[4], d.red);
           if (res && !res.error) {
             const tally = gradeTallies.find(t => t.label === res.grade.label);
