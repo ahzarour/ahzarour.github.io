@@ -164,6 +164,13 @@
       transition: 120ms ease;
     }
 
+    .group-copy-btn {
+      font-size: 11px;
+      font-weight: 700;
+      padding: 4px 8px;
+      margin: 0;
+    }
+
     button:hover,
     .filelabel:hover {
       transform: translateY(-1px);
@@ -236,7 +243,6 @@
       opacity: 0.9;
     }
 
-    /*.cell small { position: absolute; bottom: 4px; right: 6px; color: var(--muted); font-variant-numeric: tabular-nums; font-size: 10px; }*/
     .cell.hot {
       outline: 2px solid var(--hot);
       box-shadow: inset 0 0 0 999px rgba(255, 89, 90, 0.08);
@@ -371,13 +377,13 @@
     .combo-header,
     .combo-row {
       display: grid;
-      grid-template-columns: 2fr 1fr;
+      grid-template-columns: 2fr auto;
       gap: 8px;
       padding: 8px 10px;
       border-bottom: 1px solid rgba(255, 255, 255, 0.08);
     }
 
-    @media (max-width: 570px) {
+    @media (max-width: 450px) {
 
       .combo-header,
       .combo-row {
@@ -610,7 +616,7 @@
       padding: 8px;
     }
 
-    .ticket {
+    .ticket, .smart-ticket {
       display: flex !important;
       flex-wrap: nowrap !important;
       width: 100% !important;
@@ -621,9 +627,22 @@
       font-size: clamp(11px, 1.8vw, 13px);
     }
     
+    /* Custom class for the Ultimate Smart Ticket */
+    .ultimate-ticket {
+      display: flex ;
+      flex-wrap: nowrap ;
+      width: 100% ;
+      max-width: 400px ;
+      container-type: inline-size ;
+      justify-content: center;
+      gap: 8px ;
+      /* font-size: clamp(11px, 1.9cqi, 18px); */
+      font-size: 18px;
+    }
+
     .ball {
       width: 12cqw !important;
-      max-width: 22px !important;
+      max-width: 32px;
       min-width: 16px !important;
       aspect-ratio: 1 / 1 !important;
       height: auto !important;
@@ -699,7 +718,8 @@
       padding: 8px 12px;
       border-radius: 999px;
       font-weight: 700;
-      font-size: clamp(1vw, 11px, 1.4cqi);
+      /* font-size: clamp(10px, 11px, 11px); */
+      font-size: 11px;
     }
 
     .q-ultimate {
@@ -2307,7 +2327,7 @@
       return tickets;
     }
 
-    function renderSmartTickets(listEl, tickets) {
+    function renderSmartTickets(listEl, tickets, className = 'smart-ticket') {
       if (!listEl) return;
       listEl.innerHTML = '';
       if (!tickets || !tickets.length) {
@@ -2319,7 +2339,7 @@
       }
       for (const t of tickets) {
         const row = document.createElement('div');
-        row.className = 'ticket';
+        row.className = className;
         for (const n of t.whites) {
           const b = document.createElement('div');
           b.textContent = n;
@@ -2726,7 +2746,7 @@
         if (!t) {
           list.innerHTML = '<div class="ticket-meta">No ticket found matching criteria.</div>';
         } else {
-          renderSmartTickets(list, [t]);
+          renderSmartTickets(list, [t], 'ultimate-ticket');
 
           // Copy buttons Div
           const btnWrap = document.createElement('div');
@@ -3019,9 +3039,7 @@
             const copyBtn = document.createElement('button');
             copyBtn.type = 'button';
             copyBtn.textContent = 'Copy';
-            copyBtn.style.fontSize = '10px';
-            copyBtn.style.padding = '4px 8px';
-            copyBtn.style.margin = '0';
+            copyBtn.className = 'group-copy-btn';
             copyBtn.addEventListener('click', () => {
               navigator.clipboard.writeText(`${res.whites.join(' ')} ${res.red}`);
               copyBtn.textContent = 'Copied!';
