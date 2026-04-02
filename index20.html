@@ -685,6 +685,7 @@
       padding: 8px 12px;
       border-radius: 999px;
       font-weight: 700;
+      font-size: clamp(1vw, 11px, 1.4cqi);
     }
 
     .q-ultimate {
@@ -2996,7 +2997,6 @@
             
             const badge = document.createElement('div');
             badge.className = `quality-badge ${res.grade.cls}`;
-            badge.style.fontSize = '11px';
             badge.style.padding = '4px 8px';
             badge.textContent = `${res.grade.label} (${res.score.toFixed(1)})`;
             badgeDiv.appendChild(badge);
@@ -3530,7 +3530,6 @@
           if (res && !res.error) {
             const badge = document.createElement('div');
             badge.className = `quality-badge ${res.grade.cls}`;
-            badge.style.fontSize = '10px';
             badge.style.padding = '4px 6px';
             badge.style.whiteSpace = 'nowrap';
             badge.textContent = `${res.grade.label} (${res.score.toFixed(1)})`;
