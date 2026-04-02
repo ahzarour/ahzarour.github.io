@@ -260,6 +260,19 @@
       border: 1px solid rgba(255, 255, 255, 0.08);
     }
 
+.summary-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+    max-width: 450px;
+    margin: 0 auto 12px;
+}
+
+.summary-badge {
+    font-size: 11px !important;
+}
+
 .meta {
     display: flex;
     gap: 10px;
@@ -1049,6 +1062,7 @@
         <button id="showHistoryBtn" type="button">Show Historical Data</button>
       </div>
       <div id="historyDataContainer" style="display: none;">
+        <div id="historySummary" class="summary-container"></div>
         <div class="crunch-scroll"
           style="max-height: 300px; border: 1px solid rgba(255,255,255,0.06); border-radius:12px; max-width: 600px; margin: 0 auto;">
           <div class="crunch-header" style="grid-template-columns: 1fr 2.5fr 1.5fr 0.8fr;">
@@ -3491,12 +3505,24 @@
 
       function renderHistory() {
         list.innerHTML = '';
+        const summary = document.getElementById('historySummary');
+        if (summary) summary.innerHTML = '';
+        
         if (!state.draws || !state.draws.length) {
           list.innerHTML = '<div style="padding:10px; text-align:center; color:var(--muted);">No data loaded.</div>';
           return;
         }
         // Sort by date desc
         const sorted = [...state.draws].sort((a, b) => (b.date || 0) - (a.date || 0));
+
+        const gradeTallies = [
+          { label: 'Ultimate', cls: 'q-ultimate', count: 0 },
+          { label: 'Excellent', cls: 'q-excellent', count: 0 },
+          { label: 'Strong', cls: 'q-strong', count: 0 },
+          { label: 'Moderate', cls: 'q-moderate', count: 0 },
+          { label: 'Weak', cls: 'q-weak', count: 0 },
+          { label: 'Very Weak', cls: 'q-veryweak', count: 0 }
+        ];
 
         for (const d of sorted) {
           const row = document.createElement('div');
@@ -3529,6 +3555,9 @@
           
           const res = evaluateTicketQuality(d.whites[0], d.whites[1], d.whites[2], d.whites[3], d.whites[4], d.red);
           if (res && !res.error) {
+            const tally = gradeTallies.find(t => t.label === res.grade.label);
+            if (tally) tally.count++;
+
             const badge = document.createElement('div');
             badge.className = `quality-badge ${res.grade.cls}`;
             badge.style.padding = '4px 6px';
@@ -3555,6 +3584,16 @@
 
           row.append(dateDiv, ballsDiv, strengthDiv, btnDiv);
           list.appendChild(row);
+        }
+
+        if (summary) {
+          for (const t of gradeTallies) {
+            const badge = document.createElement('div');
+            badge.className = `quality-badge ${t.cls} summary-badge`;
+            badge.style.padding = '4px 8px';
+            badge.innerHTML = `${t.label}: <strong>${t.count.toLocaleString()}</strong>`;
+            summary.appendChild(badge);
+          }
         }
       }
     })();
