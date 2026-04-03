@@ -1113,10 +1113,10 @@
         <div id="historySummary" class="summary-container"></div>
         <div class="crunch-scroll"
           style="max-height: 300px; border: 1px solid rgba(255,255,255,0.06); border-radius:12px; max-width: 600px; margin: 0 auto;">
-          <div class="crunch-header" style="grid-template-columns: 1fr 2.5fr 1.5fr 0.8fr;">
-            <div>Date</div>
+          <div id="historyHeader" class="crunch-header" style="grid-template-columns: 1fr 2.5fr 1.5fr 0.8fr;">
+            <div data-sort="date" style="cursor: pointer; transition: color 0.2s;" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color=''">Date <span style="font-size:0.8em">▼</span></div>
             <div>Numbers</div>
-            <div style="width: 100%; text-align: right; padding-right: 4px;">Strength</div>
+            <div data-sort="strength" style="width: 100%; text-align: right; padding-right: 4px; cursor: pointer; transition: color 0.2s;" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color=''">Strength <span></span></div>
             <div>Action</div>
           </div>
           <div id="historyList"></div>
@@ -3552,8 +3552,28 @@
       const btn = document.getElementById('showHistoryBtn');
       const container = document.getElementById('historyDataContainer');
       const list = document.getElementById('historyList');
+      const headerDate = document.querySelector('#historyHeader [data-sort="date"]');
+      const headerStrength = document.querySelector('#historyHeader [data-sort="strength"]');
 
       if (!btn || !container || !list) return;
+      
+      let sortBy = 'date';
+      let sortDir = 'desc';
+      
+      if (headerDate) {
+        headerDate.addEventListener('click', () => {
+          if (sortBy === 'date') sortDir = sortDir === 'asc' ? 'desc' : 'asc';
+          else { sortBy = 'date'; sortDir = 'desc'; }
+          renderHistory();
+        });
+      }
+      if (headerStrength) {
+        headerStrength.addEventListener('click', () => {
+          if (sortBy === 'strength') sortDir = sortDir === 'asc' ? 'desc' : 'asc';
+          else { sortBy = 'strength'; sortDir = 'desc'; }
+          renderHistory();
+        });
+      }
 
       btn.addEventListener('click', () => {
         const isHidden = container.style.display === 'none';
@@ -3576,8 +3596,6 @@
           list.innerHTML = '<div style="padding:10px; text-align:center; color:var(--muted);">No data loaded.</div>';
           return;
         }
-        // Sort by date desc
-        const sorted = [...state.draws].sort((a, b) => (b.date || 0) - (a.date || 0));
 
         const gradeTallies = [
           { label: 'Ultimate', cls: 'q-ultimate', count: 0 },
@@ -3588,7 +3606,30 @@
           { label: 'Very Weak', cls: 'q-veryweak', count: 0 }
         ];
 
-        for (const d of sorted) {
+        // Evaluate scores for all draws
+        const drawsWithScores = state.draws.map(d => {
+          const res = evaluateTicketQuality(d.whites[0], d.whites[1], d.whites[2], d.whites[3], d.whites[4], d.red);
+          if (res && !res.error) {
+            const tally = gradeTallies.find(t => t.label === res.grade.label);
+            if (tally) tally.count++;
+          }
+          return { ...d, score: res && !res.error ? res.score : -1, res: res };
+        });
+
+        // Sort
+        const dir = sortDir === 'asc' ? 1 : -1;
+        drawsWithScores.sort((a, b) => {
+          if (sortBy === 'strength') {
+            return (a.score - b.score) * dir;
+          } else {
+            return ((a.date || 0) - (b.date || 0)) * dir;
+          }
+        });
+
+        if (headerDate) headerDate.innerHTML = `Date <span style="font-size:0.8em">${sortBy === 'date' ? (sortDir === 'asc' ? '▲' : '▼') : ''}</span>`;
+        if (headerStrength) headerStrength.innerHTML = `Strength <span style="font-size:0.8em">${sortBy === 'strength' ? (sortDir === 'asc' ? '▲' : '▼') : ''}</span>`;
+
+        for (const d of drawsWithScores) {
           const row = document.createElement('div');
           row.className = 'crunch-row';
           row.style.gridTemplateColumns = '1fr 2.5fr 1.5fr 0.8fr';
@@ -3618,11 +3659,8 @@
           strengthDiv.style.justifyContent = 'flex-end';
           strengthDiv.style.width = '100%';
 
-          const res = evaluateTicketQuality(d.whites[0], d.whites[1], d.whites[2], d.whites[3], d.whites[4], d.red);
+          const res = d.res;
           if (res && !res.error) {
-            const tally = gradeTallies.find(t => t.label === res.grade.label);
-            if (tally) tally.count++;
-
             const badge = document.createElement('div');
             badge.className = `quality-badge ${res.grade.cls}`;
             badge.style.padding = '4px 6px';
