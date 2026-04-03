@@ -1720,6 +1720,10 @@
         document.getElementById('groupTicketCheckBtn')?.click();
       }
 
+      if (typeof window.renderHistory === 'function' && document.getElementById('historyDataContainer')?.style.display !== 'none') {
+        window.renderHistory();
+      }
+
       const exportBtn = document.getElementById("exportBtn");
       if (exportBtn) exportBtn.disabled = false;
     }
@@ -3598,6 +3602,8 @@
           btn.textContent = 'Show Historical Data';
         }
       });
+
+      window.renderHistory = renderHistory; // Expose globally for dynamic slider updates
 
       function renderHistory() {
         list.innerHTML = '';
