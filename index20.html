@@ -275,6 +275,14 @@
       margin: 0 auto 12px;
     }
 
+    .history-total-text {
+      width: 100%;
+      text-align: center;
+      color: var(--text);
+      font-size: 14px;
+      margin-bottom: 4px;
+    }
+
     .summary-badge {
       font-size: 11px !important;
     }
@@ -3636,6 +3644,8 @@
           { label: 'Very Weak', cls: 'q-veryweak', count: 0 }
         ];
 
+        const totalDraws = state.draws.length;
+
         // Evaluate scores for all draws
         const drawsWithScores = state.draws.map(d => {
           const res = evaluateTicketQuality(d.whites[0], d.whites[1], d.whites[2], d.whites[3], d.whites[4], d.red);
@@ -3727,6 +3737,11 @@
         }
 
         if (summary) {
+          const totalDiv = document.createElement('div');
+          totalDiv.className = 'history-total-text';
+          totalDiv.innerHTML = `Total Draws: <strong>${totalDraws.toLocaleString()}</strong>`;
+          summary.appendChild(totalDiv);
+
           for (const t of gradeTallies) {
             const badge = document.createElement('div');
             badge.className = `quality-badge ${t.cls} summary-badge`;
@@ -3736,7 +3751,9 @@
             if (currentStrengthFilters.size > 0 && !currentStrengthFilters.has(t.label)) {
               badge.style.opacity = '0.3';
             }
-            badge.innerHTML = `${t.label}: <strong>${t.count.toLocaleString()}</strong>`;
+            
+            const pct = totalDraws > 0 ? ((t.count / totalDraws) * 100).toFixed(1) : 0;
+            badge.innerHTML = `${t.label}: <strong>${t.count.toLocaleString()}</strong> (${pct}%)`;
             
             badge.addEventListener('click', () => {
               if (currentStrengthFilters.has(t.label)) {
