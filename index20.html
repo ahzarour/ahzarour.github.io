@@ -3559,7 +3559,7 @@
       
       let sortBy = 'date';
       let sortDir = 'desc';
-      let currentStrengthFilter = null;
+      let currentStrengthFilters = new Set();
       
       if (headerDate) {
         headerDate.addEventListener('click', () => {
@@ -3618,8 +3618,8 @@
         });
 
         let filteredDraws = drawsWithScores;
-        if (currentStrengthFilter) {
-          filteredDraws = drawsWithScores.filter(d => d.res && !d.res.error && d.res.grade.label === currentStrengthFilter);
+        if (currentStrengthFilters.size > 0) {
+          filteredDraws = drawsWithScores.filter(d => d.res && !d.res.error && currentStrengthFilters.has(d.res.grade.label));
         }
 
         // Sort
@@ -3702,13 +3702,17 @@
             badge.style.padding = '4px 8px';
             badge.style.cursor = 'pointer';
             badge.style.transition = 'opacity 0.2s';
-            if (currentStrengthFilter && currentStrengthFilter !== t.label) {
+            if (currentStrengthFilters.size > 0 && !currentStrengthFilters.has(t.label)) {
               badge.style.opacity = '0.3';
             }
             badge.innerHTML = `${t.label}: <strong>${t.count.toLocaleString()}</strong>`;
             
             badge.addEventListener('click', () => {
-              currentStrengthFilter = currentStrengthFilter === t.label ? null : t.label;
+              if (currentStrengthFilters.has(t.label)) {
+                currentStrengthFilters.delete(t.label);
+              } else {
+                currentStrengthFilters.add(t.label);
+              }
               renderHistory();
             });
 
