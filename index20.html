@@ -860,17 +860,12 @@
 
     <!-- date selector and quick range  -->
     <section class="sectionPanelSettings" style="margin-bottom: 16px; padding: 16px">
-      <div id="dateRange" style="display: flex; gap: 16px; flex-wrap: nowrap; overflow-x: auto; align-items: center; ">
-        <div class="date-labels" style="display: flex; flex-direction: column; gap: 14px">
-          <div style="font-size: 13px; color: var(--muted)">Quick:</div>
-          <div style="font-size: 13px; color: var(--muted)">From</div>
-          <div style="font-size: 13px; color: var(--muted)">Draws</div>
-        </div>
-
-        <div class="date-controls" style=" display: flex; flex-direction: column; gap: 12px; flex: 1; ">
-          <div style="display: flex; gap: 12px;">
-            <select id="datePreset" style="max-width: 150px; flex: 1;">
-              <option value="since-2015-10-07" selected>From 10/07/2015</option>
+      <div id="dateRange">
+        <div class="modern-date-container" style="margin: 0 auto;">
+          <div class="modern-date-header">
+            <span class="modern-label">Period</span>
+            <select id="datePreset" class="modern-select">
+              <option value="since-2015-10-07" selected="">From 10/07/2015</option>
               <option value="1m">Last month</option>
               <option value="3m">Last 3 months</option>
               <option value="6m">Last 6 months</option>
@@ -880,21 +875,13 @@
               <option value="all">All time</option>
               <option value="custom">Custom dates</option>
             </select>
-            Dates
+            <div id="drawsInfo" style="font-size: 12px; color: var(--accent); font-weight: 700; white-space: nowrap;"><strong id="drawsCount">—————</strong> Draws</div>
           </div>
-
-          <div style="display: flex; gap: 8px; align-items: center">
-            <input id="dateFromInput" type="date"
-              style="flex: 1; background-color: white; color: black; border: 0; max-width: 150px;" />
-            <div style="white-space: nowrap; color: var(--text)">to</div>
-            <input id="dateToInput" type="date"
-              style="flex: 1; background-color: white; color: black; border: 0; max-width: 150px;" />
-          </div>
-
-          <div>
-            <div id="drawsInfo" style="color: var(--text);">
-              <strong id="drawsCount">—————</strong>
-            </div>
+          
+          <div class="modern-dates-row">
+            <input id="dateFromInput" type="date" class="modern-date-input" disabled="">
+            <span class="modern-date-separator">TO</span>
+            <input id="dateToInput" type="date" class="modern-date-input" disabled="">
           </div>
         </div>
       </div>
@@ -935,11 +922,11 @@
 
         <!-- Duplicated Date Range Selector for Ultimate Ticket -->
         <div id="dateRange2">
-          <div style="max-width: 350px; margin: 0 auto; text-align: center;">
-            <div style="display: flex; gap: 8px; justify-self: center; padding-bottom: 20px;">
-              Quick Selection
-              <select id="datePreset2" style="max-width: fit-content; flex: 1;">
-                <option value="since-2015-10-07" selected>From 10/07/2015</option>
+          <div class="modern-date-container">
+            <div class="modern-date-header">
+              <span class="modern-label">Period</span>
+              <select id="datePreset2" class="modern-select">
+                <option value="since-2015-10-07" selected="">From 10/07/2015</option>
                 <option value="1m">Last month</option>
                 <option value="3m">Last 3 months</option>
                 <option value="6m">Last 6 months</option>
@@ -949,28 +936,14 @@
                 <option value="all">All time</option>
                 <option value="custom">Custom dates</option>
               </select>
-              <div id="drawsInfo2" style="flex: 1;"><strong id="drawsCount2">—————</strong></div>
+              <div id="drawsInfo2" style="font-size: 12px; color: var(--accent); font-weight: 700; white-space: nowrap;"><strong id="drawsCount2">—————</strong> Draws</div>
             </div>
-
-            <style>
-              input[type="date"] {
-                color: black;
-              }
-
-              input[type="date"]:disabled {
-                color: rgb(0, 0, 0);
-                -webkit-text-fill-color: rgb(0, 0, 0);
-                opacity: 1;
-              }
-            </style>
-
-            <input id="dateFromInput2" type="date" style="width: auto; background-color: rgb(255, 255, 255);" />
-
-            <strong style="white-space: nowrap;">to</strong>
-
-            <input id="dateToInput2" type="date" style="width: auto; background-color: rgb(255, 255, 255);" />
-
-
+            
+            <div class="modern-dates-row">
+              <input id="dateFromInput2" type="date" class="modern-date-input" disabled="">
+              <span class="modern-date-separator">TO</span>
+              <input id="dateToInput2" type="date" class="modern-date-input" disabled="">
+            </div>
           </div>
         </div>
 
