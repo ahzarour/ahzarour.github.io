@@ -3559,6 +3559,7 @@
       
       let sortBy = 'date';
       let sortDir = 'desc';
+      let currentStrengthFilter = null;
       
       if (headerDate) {
         headerDate.addEventListener('click', () => {
@@ -3616,9 +3617,14 @@
           return { ...d, score: res && !res.error ? res.score : -1, res: res };
         });
 
+        let filteredDraws = drawsWithScores;
+        if (currentStrengthFilter) {
+          filteredDraws = drawsWithScores.filter(d => d.res && !d.res.error && d.res.grade.label === currentStrengthFilter);
+        }
+
         // Sort
         const dir = sortDir === 'asc' ? 1 : -1;
-        drawsWithScores.sort((a, b) => {
+        filteredDraws.sort((a, b) => {
           if (sortBy === 'strength') {
             return (a.score - b.score) * dir;
           } else {
@@ -3629,7 +3635,7 @@
         if (headerDate) headerDate.innerHTML = `Date <span style="font-size:0.8em">${sortBy === 'date' ? (sortDir === 'asc' ? '▲' : '▼') : ''}</span>`;
         if (headerStrength) headerStrength.innerHTML = `Strength <span style="font-size:0.8em">${sortBy === 'strength' ? (sortDir === 'asc' ? '▲' : '▼') : ''}</span>`;
 
-        for (const d of drawsWithScores) {
+        for (const d of filteredDraws) {
           const row = document.createElement('div');
           row.className = 'crunch-row';
           row.style.gridTemplateColumns = '1fr 2.5fr 1.5fr 0.8fr';
@@ -3694,7 +3700,18 @@
             const badge = document.createElement('div');
             badge.className = `quality-badge ${t.cls} summary-badge`;
             badge.style.padding = '4px 8px';
+            badge.style.cursor = 'pointer';
+            badge.style.transition = 'opacity 0.2s';
+            if (currentStrengthFilter && currentStrengthFilter !== t.label) {
+              badge.style.opacity = '0.3';
+            }
             badge.innerHTML = `${t.label}: <strong>${t.count.toLocaleString()}</strong>`;
+            
+            badge.addEventListener('click', () => {
+              currentStrengthFilter = currentStrengthFilter === t.label ? null : t.label;
+              renderHistory();
+            });
+
             summary.appendChild(badge);
           }
         }
