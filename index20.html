@@ -488,6 +488,7 @@
       align-items: center;
       justify-items: center;
       text-align: center;
+      font-size: clamp(6px, 2cqi, 11px);
     }
 
     .crunch-header {
@@ -497,20 +498,15 @@
       top: 0;
       background: linear-gradient(180deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0)), var(--panel);
       z-index: 1;
-      font-size: clamp(11px, 1.8vw, 13px);
     }
 
-    /* .crunch-row {
-      font-size: clamp(11px, 1.8vw, 13px);
-    } */
-
-    .crunch-header>div,
+    /* .crunch-header>div,
     .crunch-row>div {
       max-width: 100%;
-      /* overflow: hidden; */
+      overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
-    }
+    } */
 
     .crunch-header>div[data-sort-key] {
       cursor: pointer;
