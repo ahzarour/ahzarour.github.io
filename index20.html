@@ -631,7 +631,7 @@
 
     .history-ticket {
       gap: 2px;
-      font-size: 8px;
+      font-size: clamp(6px, 2cqi, 11px);
     }
 
     /* Custom class for the Ultimate Smart Ticket */
@@ -648,8 +648,8 @@
     }
 
     .action-historical-ticket{
-      font-size: 8px;
-      padding: 2px 6px;
+      font-size: clamp(6px, 2cqi, 11px);
+      padding: 6px 10px;
       border-radius: 8px;
       background: #232a61;
       color: var(--text);
@@ -661,15 +661,15 @@
     .ball-historical-ticket  {
       width: 12cqw !important;
       max-width: 32px;
-      min-width: 16px !important;
-      aspect-ratio: 1 / 1 !important;
-      height: auto !important;
-      border-radius: 50% !important;
+      min-width: 16px;
+      aspect-ratio: 1 / 1;
+      height: auto;
+      border-radius: 50%;
       /* font-size: clamp(9px, 5cqw, 11px) !important; */
-      display: flex !important;
-      align-items: center !important;
-      justify-content: center !important;
-      flex-shrink: 1 !important;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 1;
       background: #1e2554;
       border: 1px solid rgba(255, 255, 255, 0.08);
       font-weight: 700;
@@ -706,7 +706,8 @@
     }
 
     .date-historical-ticket {
-      font-size: clamp(6px, 4cqw, 10px);
+      font-size: clamp(6px, 2cqi, 11px);
+      font-weight: 700;
     }
 
     /* Number Quality Checker */
