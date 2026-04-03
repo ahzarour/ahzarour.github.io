@@ -617,15 +617,21 @@
     }
 
     .ticket,
-    .smart-ticket {
-      display: flex !important;
-      flex-wrap: nowrap !important;
-      width: 100% !important;
-      max-width: 160px !important;
-      container-type: inline-size !important;
-      justify-content: space-between !important;
-      gap: 4px !important;
+    .smart-ticket,
+    .history-ticket {
+      display: flex;
+      flex-wrap: nowrap;
+      width: 100% ;
+      max-width: 160px;
+      container-type: inline-size;
+      justify-content: space-between;
+      gap: 4px;
       font-size: clamp(11px, 1.8vw, 13px);
+    }
+
+    .history-ticket {
+      gap: 2px;
+      font-size: 8px;
     }
 
     /* Custom class for the Ultimate Smart Ticket */
@@ -641,7 +647,8 @@
       font-size: 18px;
     }
 
-    .ball {
+    .ball,
+    .ball-historical-ticket  {
       width: 12cqw !important;
       max-width: 32px;
       min-width: 16px !important;
@@ -658,7 +665,8 @@
       font-weight: 700;
     }
 
-    .pball {
+    .pball,
+    .ball-historical-ticket.pball {
       background: #4b1f2c;
       border-color: rgba(255, 255, 255, 0.14);
     }
@@ -669,17 +677,20 @@
       margin-left: 8px;
     }
 
-    .ball.hot {
+    .ball.hot,
+    .ball-historical-ticket.hot {
       outline: 2px solid var(--hot);
       box-shadow: inset 0 0 0 999px rgba(255, 89, 90, 0.08);
     }
 
-    .ball.cold {
+    .ball.cold,
+    .ball-historical-ticket.cold {
       outline: 2px solid var(--cold);
       box-shadow: inset 0 0 0 999px rgba(79, 155, 255, 0.08);
     }
 
-    .ball.natural {
+    .ball.natural,
+    .ball-historical-ticket.natural {
       outline: 2px solid var(--natural);
       box-shadow: inset 0 0 0 999px rgba(52, 211, 153, 0.08);
     }
@@ -3644,18 +3655,18 @@
           dateDiv.textContent = d.date ? fmtDMY(d.date) : '—';
 
           const ballsDiv = document.createElement('div');
-          ballsDiv.className = 'ticket history-ticket';
+          ballsDiv.className = 'history-ticket';
           for (const w of d.whites) {
             const b = document.createElement('div');
             const cls = state.classes?.white?.cls?.[w] || 'natural';
-            b.className = `ball ${cls}`;
+            b.className = `ball-historical-ticket ${cls}`;
             b.textContent = w;
             ballsDiv.appendChild(b);
           }
 
           const pb = document.createElement('div');
           const redCls = state.classes?.red?.cls?.[d.red] || 'natural';
-          pb.className = `ball pball ${redCls}`;
+          pb.className = `ball-historical-ticket pball ${redCls}`;
           pb.textContent = d.red;
           ballsDiv.appendChild(pb);
 
