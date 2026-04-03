@@ -647,6 +647,16 @@
       font-size: 18px;
     }
 
+    .action-historical-ticket{
+      font-size: 8px;
+      padding: 2px 6px;
+      border-radius: 8px;
+      background: #232a61;
+      color: var(--text);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      cursor: pointer;
+    }
+
     .ball,
     .ball-historical-ticket  {
       width: 12cqw !important;
@@ -3700,11 +3710,12 @@
           }
 
           const btnDiv = document.createElement('div');
+          btnDiv.style.display = 'flex';
+          btnDiv.style.justifyContent = 'center';
+          btnDiv.style.alignItems = 'center';
           const copyBtn = document.createElement('button');
+          copyBtn.className = 'action-historical-ticket';
           copyBtn.textContent = 'Copy';
-          copyBtn.style.fontSize = '10px';
-          copyBtn.style.padding = '2px 6px';
-          copyBtn.style.margin = '0';
           copyBtn.type = 'button';
           copyBtn.addEventListener('click', () => {
             navigator.clipboard.writeText(`${d.whites.join(' ')} ${d.red}`);
