@@ -3095,7 +3095,6 @@
           } else {
             const ballsDiv = document.createElement('div');
             ballsDiv.className = 'ticket';
-            ballsDiv.style.justifyContent = 'flex-start';
             ballsDiv.innerHTML = res.whites.map(w => `<div class="ball ${state.classes?.white?.cls?.[w] || 'natural'}">${w}</div>`).join('') +
               `<div class="ball pball ${state.classes?.red?.cls?.[res.red] || 'natural'}">${res.red}</div>`;
 
