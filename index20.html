@@ -626,7 +626,7 @@
       container-type: inline-size;
       justify-content: space-between;
       gap: 4px;
-      font-size: clamp(11px, 1.8vw, 13px);
+      font-size: clamp(6px, 2cqi, 11px);
     }
 
     .history-ticket {
@@ -659,9 +659,7 @@
 
     .ball,
     .ball-historical-ticket  {
-      width: 12cqw !important;
-      max-width: 32px;
-      min-width: 16px;
+      width: clamp(20px, 12cqi, 32px) !important;
       aspect-ratio: 1 / 1;
       height: auto;
       border-radius: 50%;
