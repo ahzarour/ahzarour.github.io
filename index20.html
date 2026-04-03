@@ -885,9 +885,9 @@
         <div>
           <div class="row">
             <label for="coldPct">Cold threshold (bottom % by frequency)</label><span class="val"
-              id="coldPctVal">20%</span>
+              id="coldPctVal">10%</span>
           </div>
-          <input id="coldPct" type="range" min="5" max="40" step="1" value="20" />
+          <input id="coldPct" type="range" min="5" max="40" step="1" value="10" />
         </div>
       </div>
       <div class="meta" style="margin-top: 12px">
@@ -1049,9 +1049,9 @@
           <div>
             <div class="row">
               <label for="coldPct2">Cold threshold (bottom % by frequency)</label><span class="val"
-                id="coldPctVal2">20%</span>
+                id="coldPctVal2">10%</span>
             </div>
-            <input id="coldPct2" type="range" min="5" max="40" step="1" value="20" />
+            <input id="coldPct2" type="range" min="5" max="40" step="1" value="10" />
           </div>
         </div>
 
@@ -1088,6 +1088,24 @@
     <!-- historical data show -->
     <section class="sectionPanelSettings">
       <h2 class="h2SectionStyle">Historical Data</h2>
+      <div class="controls"
+        style="margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid rgba(255,255,255,0.08);">
+        <div>
+          <div class="row">
+            <label for="hotPct3">Hot threshold (top % by frequency)</label><span class="val"
+              id="hotPctVal3">10%</span>
+          </div>
+          <input id="hotPct3" type="range" min="5" max="40" step="1" value="10" />
+        </div>
+        <div>
+          <div class="row">
+            <label for="coldPct3">Cold threshold (bottom % by frequency)</label><span class="val"
+              id="coldPctVal3">10%</span>
+          </div>
+          <input id="coldPct3" type="range" min="5" max="40" step="1" value="10" />
+        </div>
+      </div>
+
       <div class="quality-controls" style="justify-content:center; margin-bottom: 12px;">
         <button id="showHistoryBtn" type="button">Show Historical Data</button>
       </div>
@@ -1625,7 +1643,7 @@
       counts: null,
       classes: null,
       hotPct: 10,
-      coldPct: 20,
+      coldPct: 10,
       crunchShowAll: false,
       crunchSortKey: 'qtyWhite', // 'n', 'qtyWhite', 'lastW', 'qtyRed', 'lastR'
       crunchSortDir: 'desc', // 'asc' or 'desc'
@@ -2049,11 +2067,15 @@
       document.getElementById("hotPctVal").textContent = state.hotPct + "%";
       const hotPct2Val = document.getElementById("hotPctVal2");
       if (hotPct2Val) hotPct2Val.textContent = state.hotPct + "%";
+      const hotPct3Val = document.getElementById("hotPctVal3");
+      if (hotPct3Val) hotPct3Val.textContent = state.hotPct + "%";
 
       const hotPct = document.getElementById("hotPct");
       const hotPct2 = document.getElementById("hotPct2");
+      const hotPct3 = document.getElementById("hotPct3");
       if (hotPct && e.target !== hotPct) hotPct.value = state.hotPct;
       if (hotPct2 && e.target !== hotPct2) hotPct2.value = state.hotPct;
+      if (hotPct3 && e.target !== hotPct3) hotPct3.value = state.hotPct;
 
       updateClassification();
     }
@@ -2063,11 +2085,15 @@
       document.getElementById("coldPctVal").textContent = state.coldPct + "%";
       const coldPct2Val = document.getElementById("coldPctVal2");
       if (coldPct2Val) coldPct2Val.textContent = state.coldPct + "%";
+      const coldPct3Val = document.getElementById("coldPctVal3");
+      if (coldPct3Val) coldPct3Val.textContent = state.coldPct + "%";
 
       const coldPct = document.getElementById("coldPct");
       const coldPct2 = document.getElementById("coldPct2");
+      const coldPct3 = document.getElementById("coldPct3");
       if (coldPct && e.target !== coldPct) coldPct.value = state.coldPct;
       if (coldPct2 && e.target !== coldPct2) coldPct2.value = state.coldPct;
+      if (coldPct3 && e.target !== coldPct3) coldPct3.value = state.coldPct;
 
       updateClassification();
     }
@@ -2081,6 +2107,12 @@
     const coldPct2El = document.getElementById("coldPct2");
     if (coldPct2El) coldPct2El.addEventListener("input", handleColdPctChange);
 
+    const hotPct3El = document.getElementById("hotPct3");
+    if (hotPct3El) hotPct3El.addEventListener("input", handleHotPctChange);
+
+    const coldPct3El = document.getElementById("coldPct3");
+    if (coldPct3El) coldPct3El.addEventListener("input", handleColdPctChange);
+
     // Removed Export Results button and its event listener
 
     // Initialize labels
@@ -2090,6 +2122,10 @@
     if (hotPctVal2El) hotPctVal2El.textContent = state.hotPct + "%";
     const coldPctVal2El = document.getElementById("coldPctVal2");
     if (coldPctVal2El) coldPctVal2El.textContent = state.coldPct + "%";
+    const hotPctVal3El = document.getElementById("hotPctVal3");
+    if (hotPctVal3El) hotPctVal3El.textContent = state.hotPct + "%";
+    const coldPctVal3El = document.getElementById("coldPctVal3");
+    if (coldPctVal3El) coldPctVal3El.textContent = state.coldPct + "%";
 
     // Shared logic for preset change
     function handlePresetChange(e) {
