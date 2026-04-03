@@ -123,14 +123,17 @@
     }
 
     .row {
-      display: grid;
-      grid-template-columns: 1fr auto;
-      align-items: center;
-      gap: 12px;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    gap: 12px;
+    height: 100%;
+    min-height: 40px;
     }
 
     label {
-      font-size: 13px;
+      /* font-size: 13px; */
+      font-size: clamp(6px, 2cqw, 11px);
       color: var(--muted);
     }
 
@@ -875,7 +878,7 @@
               <option value="all">All time</option>
               <option value="custom">Custom dates</option>
             </select>
-            <div id="drawsInfo" style="font-size: 12px; color: var(--accent); font-weight: 700; white-space: nowrap;"><strong id="drawsCount">—————</strong> Draws</div>
+          <div id="drawsInfo" class="date-selector-total-draws"><strong id="drawsCount">—————</strong> Draws</div>
           </div>
           
           <div class="modern-dates-row">
@@ -936,7 +939,7 @@
                 <option value="all">All time</option>
                 <option value="custom">Custom dates</option>
               </select>
-              <div id="drawsInfo2" style="font-size: 12px; color: var(--accent); font-weight: 700; white-space: nowrap;"><strong id="drawsCount2">—————</strong> Draws</div>
+          <div id="drawsInfo2" class="date-selector-total-draws"><strong id="drawsCount2">—————</strong> Draws</div>
             </div>
             
             <div class="modern-dates-row">
@@ -1115,6 +1118,12 @@
             letter-spacing: 1px;
             white-space: nowrap;
           }
+      .date-selector-total-draws {
+        font-size: clamp(6px, 2cqw, 11px);
+        color: var(--accent);
+        font-weight: 700;
+        white-space: nowrap;
+      }
           .modern-select {
             appearance: none;
             flex: 1;
@@ -1192,7 +1201,7 @@
               <option value="all">All time</option>
               <option value="custom">Custom dates</option>
             </select>
-            <div id="drawsInfo3" style="display: none;"></div>
+          <div id="drawsInfo3" class="date-selector-total-draws" style="display: none;"></div>
           </div>
           
           <div class="modern-dates-row">
