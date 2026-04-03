@@ -3644,7 +3644,7 @@
           dateDiv.textContent = d.date ? fmtDMY(d.date) : '—';
 
           const ballsDiv = document.createElement('div');
-          ballsDiv.className = 'ticket';
+          ballsDiv.className = 'ticket history-ticket';
           for (const w of d.whites) {
             const b = document.createElement('div');
             const cls = state.classes?.white?.cls?.[w] || 'natural';
