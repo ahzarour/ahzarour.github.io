@@ -667,7 +667,7 @@
 
     .ball,
     .ball-historical-ticket  {
-      width: clamp(20px, 12cqi, 32px) !important;
+      width: clamp(20px, 12cqi, 32px);
       aspect-ratio: 1 / 1;
       height: auto;
       border-radius: 50%;
@@ -710,6 +710,19 @@
       outline: 2px solid var(--natural);
       box-shadow: inset 0 0 0 999px rgba(52, 211, 153, 0.08);
     }
+
+
+    .combo-ball {
+      width: 24px;
+      height: 24px;
+      min-width: 24px;
+      font-size: 11px;
+    }
+
+    .combo-pball {
+      margin-left: 6px;
+    }
+
 
     .date-historical-ticket {
       font-size: clamp(6px, 2cqi, 11px);
@@ -1280,9 +1293,6 @@
     <!-- combination pattern -->
     <section class="sectionPanelSettings">
       <h2 class="h2SectionStyle">Combination Patterns</h2>
-      <div class="meta" style="justify-content: center; margin-bottom: 12px; text-align: center;">
-        <span>H = Hot • N = Natural • C = Cold • PB = Powerball</span>
-      </div>
       <div class="combo-scroll" style="max-width: 450px; margin: 0 auto;">
         <div class="combo-header">
           <div>Pattern</div>
@@ -1906,7 +1916,7 @@
         ballsContainer.style.gap = "4px";
 
         const makeBall = (cls, text, isPb=false) => {
-          return `<div class="ball ${isPb ? 'pball' : ''} ${cls}" style="width:24px !important; height:24px !important; min-width:24px !important; font-size:11px !important; ${isPb ? 'margin-left: 6px;' : ''}">${text}</div>`;
+          return `<div class="ball combo-ball ${isPb ? 'pball combo-pball' : ''} ${cls}">${text}</div>`;
         };
 
         let html = '';
