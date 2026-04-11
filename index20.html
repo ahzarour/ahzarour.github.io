@@ -1042,6 +1042,32 @@
       <div class="quality-wrap">
         <h2 class="h2SectionStyle">Group Ticket Quality Checker</h2>
 
+      <div id="dateRange4">
+        <div class="modern-date-container">
+          <div class="modern-date-header">
+            <span class="modern-label">Period</span>
+            <select id="datePreset4" class="modern-select">
+              <option value="since-2015-10-07" selected="">From 10/07/2015</option>
+              <option value="1m">Last month</option>
+              <option value="3m">Last 3 months</option>
+              <option value="6m">Last 6 months</option>
+              <option value="1y">Last year</option>
+              <option value="2y">Last 2 years</option>
+              <option value="3y">Last 3 years</option>
+              <option value="all">All time</option>
+              <option value="custom">Custom dates</option>
+            </select>
+          <div id="drawsInfo4" class="date-selector-total-draws" style="display: none;"></div>
+          </div>
+          
+          <div class="modern-dates-row">
+            <input id="dateFromInput4" type="date" class="modern-date-input" disabled="">
+            <span class="modern-date-separator">TO</span>
+            <input id="dateToInput4" type="date" class="modern-date-input" disabled="">
+          </div>
+        </div>
+      </div>
+
         <div class="controls"
           style="margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid rgba(255,255,255,0.08);">
           <div>
@@ -1253,11 +1279,14 @@
 
     <!-- combination pattern -->
     <section class="sectionPanelSettings">
-      <h2 class="h2SectionStyle">Combination patterns</h2>
+      <h2 class="h2SectionStyle">Combination Patterns</h2>
+      <div class="meta" style="justify-content: center; margin-bottom: 12px; text-align: center;">
+        <span>H = Hot • N = Natural • C = Cold • PB = Powerball</span>
+      </div>
       <div class="combo-scroll" style="max-width: 450px; margin: 0 auto;">
         <div class="combo-header">
-          <div>Combination</div>
-          <div>Count</div>
+          <div>Pattern</div>
+          <div style="text-align: right;">Count</div>
         </div>
         <div id="comboList"></div>
       </div>
@@ -1403,10 +1432,10 @@
         <div class="crunch-header">
           <div data-sort-key="n">#</div>
           <div data-sort-key="qtyWhite">Qty Drawn</div>
-          <div>% of total balls drawn</div>
+          <div data-sort-key="pctWhite">% of total balls drawn</div>
           <div data-sort-key="lastW">Last Drawn</div>
           <div data-sort-key="qtyRed">Total as Powerball</div>
-          <div>% of total draws held</div>
+          <div data-sort-key="pctRed">% of total draws held</div>
           <div data-sort-key="lastR">Last drawn as Powerball</div>
         </div>
         <div id="crunchList"></div>
@@ -1867,14 +1896,32 @@
       const combos = computeCombinationCounts();
       const rows = Array.from(combos.entries()).sort((a, b) => b[1] - a[1]);
       for (const [k, v] of rows) {
+        const spec = parseCombinationKey(k);
         const row = document.createElement("div");
         row.className = "combo-row";
-        const key = document.createElement("div");
-        key.textContent = k;
+        row.style.alignItems = "center";
+
+        const ballsContainer = document.createElement("div");
+        ballsContainer.style.display = "flex";
+        ballsContainer.style.gap = "4px";
+
+        const makeBall = (cls, text, isPb=false) => {
+          return `<div class="ball ${isPb ? 'pball' : ''} ${cls}" style="width:24px !important; height:24px !important; min-width:24px !important; font-size:11px !important; ${isPb ? 'margin-left: 6px;' : ''}">${text}</div>`;
+        };
+
+        let html = '';
+        for(let i=0; i<spec.hot; i++) html += makeBall('hot', 'H');
+        for(let i=0; i<spec.natural; i++) html += makeBall('natural', 'N');
+        for(let i=0; i<spec.cold; i++) html += makeBall('cold', 'C');
+        html += makeBall(spec.redClass, 'PB', true);
+        ballsContainer.innerHTML = html;
+
         const cnt = document.createElement("div");
         cnt.className = "combo-count";
         cnt.textContent = v.toLocaleString();
-        row.appendChild(key);
+        cnt.style.fontWeight = "600";
+        cnt.style.textAlign = "right";
+        row.appendChild(ballsContainer);
         row.appendChild(cnt);
         list.appendChild(row);
       }
@@ -1891,7 +1938,7 @@
       const list = document.getElementById('crunchList');
       const wrap = document.getElementById('crunchScrollWrap');
       const toggleBtn = document.getElementById('crunchToggleBtn');
-      const header = document.querySelector('.crunch-header');
+      const header = document.querySelector('#crunchScrollWrap .crunch-header');
       if (!list || !state.counts || !state.draws) return;
       list.innerHTML = '';
 
@@ -2090,12 +2137,15 @@
       const drawsEl = document.getElementById("drawsCount");
       const drawsEl2 = document.getElementById("drawsCount2");
       const drawsEl3 = document.getElementById("drawsCount3");
+      const drawsEl4 = document.getElementById("drawsCount4");
       if (drawsEl)
         drawsEl.textContent = totalDraws ? totalDraws.toLocaleString() : "—";
       if (drawsEl2)
         drawsEl2.textContent = totalDraws ? totalDraws.toLocaleString() : "—";
       if (drawsEl3)
         drawsEl3.textContent = totalDraws ? totalDraws.toLocaleString() + ' Draws' : "—";
+      if (drawsEl4)
+        drawsEl4.textContent = totalDraws ? totalDraws.toLocaleString() + ' Draws' : "—";
 
       // Update the date range display to reflect the dates used for this computation.
       if (from && to) {
@@ -2107,12 +2157,16 @@
         const ti2 = document.getElementById("dateToInput2");
         const fi3 = document.getElementById("dateFromInput3");
         const ti3 = document.getElementById("dateToInput3");
+        const fi4 = document.getElementById("dateFromInput4");
+        const ti4 = document.getElementById("dateToInput4");
         if (fi) fi.value = fmtISO(from);
         if (ti) ti.value = fmtISO(to);
         if (fi2) fi2.value = fmtISO(from);
         if (ti2) ti2.value = fmtISO(to);
         if (fi3) fi3.value = fmtISO(from);
         if (ti3) ti3.value = fmtISO(to);
+        if (fi4) fi4.value = fmtISO(from);
+        if (ti4) ti4.value = fmtISO(to);
 
       }
 
@@ -2139,6 +2193,8 @@
       const ti2 = document.getElementById("dateToInput2");
       const fi3 = document.getElementById("dateFromInput3");
       const ti3 = document.getElementById("dateToInput3");
+      const fi4 = document.getElementById("dateFromInput4");
+      const ti4 = document.getElementById("dateToInput4");
       if (dr) {
         // Don't set the display here; let applyDateFilterAndRecompute handle it based on the selected preset.
         // Set date inputs to full range (ISO)
@@ -2148,6 +2204,8 @@
         if (ti2) ti2.value = dr.toISO;
         if (fi3) fi3.value = dr.fromISO;
         if (ti3) ti3.value = dr.toISO;
+        if (fi4) fi4.value = dr.fromISO;
+        if (ti4) ti4.value = dr.toISO;
       } else {
         if (fi) fi.value = "";
         if (ti) ti.value = "";
@@ -2155,22 +2213,28 @@
         if (ti2) ti2.value = "";
         if (fi3) fi3.value = "";
         if (ti3) ti3.value = "";
+        if (fi4) fi4.value = "";
+        if (ti4) ti4.value = "";
       }
 
       // Set preset to the default (or 'all' if none) and disable date inputs
       const preset = document.getElementById("datePreset");
       const preset2 = document.getElementById("datePreset2");
       const preset3 = document.getElementById("datePreset3");
+      const preset4 = document.getElementById("datePreset4");
       // This now respects the 'selected' attribute in the HTML
       if (preset && !preset.value) preset.value = "all";
       if (preset2) preset2.value = preset ? preset.value : "all";
       if (preset3) preset3.value = preset ? preset.value : "all";
+      if (preset4) preset4.value = preset ? preset.value : "all";
       if (fi) fi.disabled = true;
       if (ti) ti.disabled = true;
       if (fi2) fi2.disabled = true;
       if (ti2) ti2.disabled = true;
       if (fi3) fi3.disabled = true;
       if (ti3) ti3.disabled = true;
+      if (fi4) fi4.disabled = true;
+      if (ti4) ti4.disabled = true;
 
       // Run analysis for the full range
       applyDateFilterAndRecompute();
@@ -2277,7 +2341,7 @@
     function handlePresetChange(e) {
       const v = e.target.value;
       // Sync the other preset selectors
-      const presets = ["datePreset", "datePreset2", "datePreset3"];
+    const presets = ["datePreset", "datePreset2", "datePreset3", "datePreset4"];
       presets.forEach(id => {
         if (id !== e.target.id) {
           const el = document.getElementById(id);
@@ -2300,6 +2364,8 @@
       const ti2 = document.getElementById("dateToInput2");
       const fi3 = document.getElementById("dateFromInput3");
       const ti3 = document.getElementById("dateToInput3");
+      const fi4 = document.getElementById("dateFromInput4");
+      const ti4 = document.getElementById("dateToInput4");
 
       if (v === "custom") {
         if (fi) fi.disabled = false;
@@ -2308,6 +2374,8 @@
         if (ti2) ti2.disabled = false;
         if (fi3) fi3.disabled = false;
         if (ti3) ti3.disabled = false;
+        if (fi4) fi4.disabled = false;
+        if (ti4) ti4.disabled = false;
       } else {
         if (fi) fi.disabled = true;
         if (ti) ti.disabled = true;
@@ -2315,6 +2383,8 @@
         if (ti2) ti2.disabled = true;
         if (fi3) fi3.disabled = true;
         if (ti3) ti3.disabled = true;
+        if (fi4) fi4.disabled = true;
+        if (ti4) ti4.disabled = true;
         // For convenience, when user picks a preset compute and populate inputs
         if (v && v.startsWith("since-")) {
           const dateStr = v.slice("since-".length);
@@ -2326,6 +2396,8 @@
           if (ti2) ti2.value = latestDateISO;
           if (fi3) fi3.value = fmtISO(from);
           if (ti3) ti3.value = latestDateISO;
+          if (fi4) fi4.value = fmtISO(from);
+          if (ti4) ti4.value = latestDateISO;
           // Fall through to applyDateFilterAndRecompute at the end
         }
         if (v === "all") {
@@ -2337,6 +2409,8 @@
             if (ti2) ti2.value = dr.toISO;
             if (fi3) fi3.value = dr.fromISO;
             if (ti3) ti3.value = dr.toISO;
+            if (fi4) fi4.value = dr.fromISO;
+            if (ti4) ti4.value = dr.toISO;
           }
         } else if (v === "1y") {
           // "Last year" is from Jan 1 of the previous year to today
@@ -2348,6 +2422,8 @@
           if (ti2) ti2.value = latestDateISO;
           if (fi3) fi3.value = fmtISO(from);
           if (ti3) ti3.value = latestDateISO;
+          if (fi4) fi4.value = fmtISO(from);
+          if (ti4) ti4.value = latestDateISO;
         } else if (v.endsWith("m")) {
           const months = parseInt(v.slice(0, -1), 10);
           // Start from the 1st day of the month, N months ago.
@@ -2358,6 +2434,8 @@
           if (ti2) ti2.value = latestDateISO;
           if (fi3) fi3.value = fmtISO(from);
           if (ti3) ti3.value = latestDateISO;
+          if (fi4) fi4.value = fmtISO(from);
+          if (ti4) ti4.value = latestDateISO;
         } else if (v.endsWith("y")) {
           const years = parseInt(v.slice(0, -1), 10);
           const from = new Date(latestDate);
@@ -2369,6 +2447,8 @@
           if (ti2) ti2.value = latestDateISO;
           if (fi3) fi3.value = fmtISO(from);
           if (ti3) ti3.value = latestDateISO;
+          if (fi4) fi4.value = fmtISO(from);
+          if (ti4) ti4.value = latestDateISO;
         }
         // Centralize the call to recompute
         applyDateFilterAndRecompute();
@@ -2380,13 +2460,15 @@
     if (preset2) preset2.addEventListener("change", handlePresetChange);
     const preset3 = document.getElementById("datePreset3");
     if (preset3) preset3.addEventListener("change", handlePresetChange);
+    const preset4 = document.getElementById("datePreset4");
+    if (preset4) preset4.addEventListener("change", handlePresetChange);
 
     // Auto-apply when custom date inputs change
     function handleDateInputChange(e) {
       // Sync the other input
       const id = e.target.id;
-      const fromInputs = ["dateFromInput", "dateFromInput2", "dateFromInput3"];
-      const toInputs = ["dateToInput", "dateToInput2", "dateToInput3"];
+      const fromInputs = ["dateFromInput", "dateFromInput2", "dateFromInput3", "dateFromInput4"];
+      const toInputs = ["dateToInput", "dateToInput2", "dateToInput3", "dateToInput4"];
 
       if (fromInputs.includes(id)) {
         fromInputs.forEach(otherId => {
@@ -2404,7 +2486,7 @@
         });
       }
 
-      ["datePreset", "datePreset2", "datePreset3"].forEach(pid => {
+      ["datePreset", "datePreset2", "datePreset3", "datePreset4"].forEach(pid => {
         const p = document.getElementById(pid);
         if (p) p.value = "custom";
       });
@@ -2426,6 +2508,11 @@
     if (_fi3) _fi3.addEventListener("change", handleDateInputChange);
     if (_ti3) _ti3.addEventListener("change", handleDateInputChange);
 
+    const _fi4 = document.getElementById("dateFromInput4");
+    const _ti4 = document.getElementById("dateToInput4");
+    if (_fi4) _fi4.addEventListener("change", handleDateInputChange);
+    if (_ti4) _ti4.addEventListener("change", handleDateInputChange);
+
     // Toggle Show All / Top 5 for Number Cruncher
     (function attachCrunchToggle() {
       const crunchBtn = document.getElementById('crunchToggleBtn');
@@ -2438,7 +2525,7 @@
 
     // Handle sorting for Number Cruncher
     (function attachCrunchSort() {
-      const header = document.querySelector('.crunch-header');
+      const header = document.querySelector('#crunchScrollWrap .crunch-header');
       if (!header) return;
       header.addEventListener('click', (e) => {
         const key = e.target.dataset.sortKey;
