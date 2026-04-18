@@ -5,7 +5,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>إلعب ما تلعب</title>
-  
+
   <link rel="stylesheet" href="assets/css/style.css" />
 </head>
 
@@ -36,9 +36,9 @@
               <option value="all">All time</option>
               <option value="custom">Custom dates</option>
             </select>
-          <div id="drawsInfo" class="date-selector-total-draws"><strong id="drawsCount">—————</strong> Draws</div>
+            <div id="drawsInfo" class="date-selector-total-draws"><strong id="drawsCount">—————</strong> Draws</div>
           </div>
-          
+
           <div class="modern-dates-row">
             <input id="dateFromInput" type="date" class="modern-date-input" disabled="">
             <span class="modern-date-separator">TO</span>
@@ -97,9 +97,9 @@
                 <option value="all">All time</option>
                 <option value="custom">Custom dates</option>
               </select>
-          <div id="drawsInfo2" class="date-selector-total-draws"><strong id="drawsCount2">—————</strong> Draws</div>
+              <div id="drawsInfo2" class="date-selector-total-draws"><strong id="drawsCount2">—————</strong> Draws</div>
             </div>
-            
+
             <div class="modern-dates-row">
               <input id="dateFromInput2" type="date" class="modern-date-input" disabled="">
               <span class="modern-date-separator">TO</span>
@@ -108,7 +108,7 @@
           </div>
         </div>
 
-        
+
 
         <div class="FreqXYZ" style="max-width: 250px; margin: 0 auto; padding: 16px 0; align-items: center;">
           <label for="ultimateFreqX" style="color:var(--muted); font-size:13px; margin-right: 10px;">Sum of Pairs
@@ -127,7 +127,7 @@
             style="width: auto; padding: 4px; border-radius: 4px; border: 1px solid rgba(255,255,255,0.2); background: var(--chip); color: var(--text); text-align: left;">
         </div>
 
-        
+
 
       </div>
       <div class="button-spec">
@@ -188,31 +188,31 @@
       <div class="quality-wrap">
         <h2 class="h2SectionStyle">Group Ticket Quality Checker</h2>
 
-      <div id="dateRange4">
-        <div class="modern-date-container">
-          <div class="modern-date-header">
-            <span class="modern-label">Period</span>
-            <select id="datePreset4" class="modern-select">
-              <option value="since-2015-10-07" selected="">From 10/07/2015</option>
-              <option value="1m">Last month</option>
-              <option value="3m">Last 3 months</option>
-              <option value="6m">Last 6 months</option>
-              <option value="1y">Last year</option>
-              <option value="2y">Last 2 years</option>
-              <option value="3y">Last 3 years</option>
-              <option value="all">All time</option>
-              <option value="custom">Custom dates</option>
-            </select>
-          <div id="drawsInfo4" class="date-selector-total-draws" style="display: none;"></div>
-          </div>
-          
-          <div class="modern-dates-row">
-            <input id="dateFromInput4" type="date" class="modern-date-input" disabled="">
-            <span class="modern-date-separator">TO</span>
-            <input id="dateToInput4" type="date" class="modern-date-input" disabled="">
+        <div id="dateRange4">
+          <div class="modern-date-container">
+            <div class="modern-date-header">
+              <span class="modern-label">Period</span>
+              <select id="datePreset4" class="modern-select">
+                <option value="since-2015-10-07" selected="">From 10/07/2015</option>
+                <option value="1m">Last month</option>
+                <option value="3m">Last 3 months</option>
+                <option value="6m">Last 6 months</option>
+                <option value="1y">Last year</option>
+                <option value="2y">Last 2 years</option>
+                <option value="3y">Last 3 years</option>
+                <option value="all">All time</option>
+                <option value="custom">Custom dates</option>
+              </select>
+              <div id="drawsInfo4" class="date-selector-total-draws" style="display: none;"></div>
+            </div>
+
+            <div class="modern-dates-row">
+              <input id="dateFromInput4" type="date" class="modern-date-input" disabled="">
+              <span class="modern-date-separator">TO</span>
+              <input id="dateToInput4" type="date" class="modern-date-input" disabled="">
+            </div>
           </div>
         </div>
-      </div>
 
         <div class="controls"
           style="margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid rgba(255,255,255,0.08);">
@@ -267,7 +267,7 @@
       <h2 class="h2SectionStyle">Historical Data</h2>
 
       <div id="dateRange3">
-        
+
 
         <div class="modern-date-container">
           <div class="modern-date-header">
@@ -283,9 +283,9 @@
               <option value="all">All time</option>
               <option value="custom">Custom dates</option>
             </select>
-          <div id="drawsInfo3" class="date-selector-total-draws" style="display: none;"></div>
+            <div id="drawsInfo3" class="date-selector-total-draws" style="display: none;"></div>
           </div>
-          
+
           <div class="modern-dates-row">
             <input id="dateFromInput3" type="date" class="modern-date-input" disabled="">
             <span class="modern-date-separator">TO</span>
@@ -298,8 +298,7 @@
         style="padding: 20px 0px; margin-bottom: 16px; border-bottom: 1px solid rgba(255,255,255,0.08);">
         <div>
           <div class="row">
-            <label for="hotPct3">Hot threshold (top % by frequency)</label><span class="val"
-              id="hotPctVal3">10%</span>
+            <label for="hotPct3">Hot threshold (top % by frequency)</label><span class="val" id="hotPctVal3">10%</span>
           </div>
           <input id="hotPct3" type="range" min="5" max="40" step="1" value="10" />
         </div>
@@ -320,9 +319,14 @@
         <div class="crunch-scroll"
           style="max-height: 300px; border: 1px solid rgba(255,255,255,0.06); border-radius:12px; max-width: 600px; margin: 0 auto;">
           <div id="historyHeader" class="crunch-header" style="grid-template-columns: 1fr 2.5fr 1.5fr 0.8fr;">
-            <div data-sort="date" style="cursor: pointer; transition: color 0.2s;" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color=''">Date <span style="font-size:0.8em">▼</span></div>
+            <div data-sort="date" style="cursor: pointer; transition: color 0.2s;"
+              onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color=''">Date <span
+                style="font-size:0.8em">▼</span></div>
             <div>Numbers</div>
-            <div data-sort="strength" style="width: 100%; text-align: right; padding-right: 4px; cursor: pointer; transition: color 0.2s;" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color=''">Strength <span></span></div>
+            <div data-sort="strength"
+              style="width: 100%; text-align: right; padding-right: 4px; cursor: pointer; transition: color 0.2s;"
+              onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color=''">Strength <span></span>
+            </div>
             <div>Action</div>
           </div>
           <div id="historyList"></div>
@@ -347,7 +351,7 @@
 
     <!-- White Red Number  -->
     <section>
-      
+
       <div class="warpper2panels">
         <div class="sectionPanelSettings" style="flex: 1; min-width: 0;">
           <div style=" align-items: center; justify-content: space-between; margin-bottom: 8px; min-width: 0; ">
